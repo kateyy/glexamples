@@ -33,13 +33,23 @@ public:
     virtual ~Application() = default;
 };
 
+class Viewer : public gloperate_qtapplication::Viewer
+{
+public:
+    Viewer(QWidget * parent = nullptr, Qt::WindowFlags flags = NULL)
+        : gloperate_qtapplication::Viewer(parent, flags)
+    { 
+    }
+};
+
 int main(int argc, char * argv[])
 {
     Application app(argc, argv);
 
     widgetzeug::enableDarkFusionStyle();
 
-    gloperate_qtapplication::Viewer viewer;
+    Viewer viewer;
+
     viewer.show();
 
     return app.exec();
