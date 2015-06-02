@@ -91,4 +91,7 @@ protected:
     float m_transparency;
     float m_maxSubpixelShift;
     glm::mat4 m_lastTransform;
+
+    float m_maxDofShift;
+    float m_focalDepth;
 };

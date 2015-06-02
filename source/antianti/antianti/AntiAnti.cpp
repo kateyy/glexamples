@@ -25,6 +25,7 @@
 #include <gloperate/painter/ViewportCapability.h>
 #include <gloperate/painter/PerspectiveProjectionCapability.h>
 #include <gloperate/painter/CameraCapability.h>
+#include <gloperate/painter/Camera.h>
 #include <gloperate/primitives/AdaptiveGrid.h>
 #include <gloperate/primitives/Scene.h>
 #include <gloperate/primitives/PolygonalDrawable.h>
@@ -52,6 +53,8 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_multisamplingChanged(false)
     , m_transparency(1.0f)
     , m_maxSubpixelShift(1.0f)
+    , m_maxDofShift(0.01f)
+    , m_focalDepth(3.0f)
     , m_frame(0)
 {    
     setupPropertyGroup();
@@ -76,6 +79,28 @@ void AntiAnti::setupPropertyGroup()
             { "minimum", 0.0f },
             { "step", 0.05f },
             { "precision", 2u },
+    });
+
+    addProperty<float>("maxDofShift",
+        [this] (){return m_maxDofShift; },
+        [this] (float shift) {
+        m_maxDofShift = shift;
+        m_frame = 0;
+    })->setOptions({
+            { "minimum", 0.0f },
+            { "step", 0.001f },
+            { "precision", 2u },
+    });
+
+    addProperty<float>("focalDepth",
+        [this] (){return m_focalDepth; },
+        [this] (float d) {
+        m_focalDepth = d;
+        m_frame = 0;
+    })->setOptions({
+        { "minimum", 0.0f },
+        { "step", 0.05f },
+        { "precision", 2u },
     });
 }
 
@@ -157,13 +182,30 @@ void AntiAnti::onPaint()
         updateFramebuffer();
     }
 
-    const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
+    const auto inputTransform = m_projectionCapability->projection() * m_cameraCapability->view();
 
-    if (m_lastTransform != transform)
+    if (m_lastTransform != inputTransform)
     {
-        m_lastTransform = transform;
+        m_lastTransform = inputTransform;
         m_frame = 0;
     }
+
+    glm::vec3 inputEye = m_cameraCapability->eye();
+    glm::vec3 dofShift{ glm::diskRand(m_maxDofShift), 0.0f };
+    glm::vec3 dofShiftWorld = glm::mat3(m_cameraCapability->view()) * dofShift;
+    auto dofShiftedEye = inputEye + dofShiftWorld;
+
+    glm::vec3 viewVec = glm::normalize(m_cameraCapability->center() - inputEye) * m_focalDepth;
+
+    glm::vec3 focalPoint = m_cameraCapability->eye() + viewVec;
+
+    gloperate::Camera camera(
+        dofShiftedEye,
+        focalPoint,
+        m_cameraCapability->up());
+
+    const auto transform = m_projectionCapability->projection() * camera.view();
+
 
     m_fbo->bind(GL_FRAMEBUFFER);
     m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4{0.85f, 0.87f, 0.91f, 1.0f});
@@ -171,22 +213,20 @@ void AntiAnti::onPaint()
     
     glEnable(GL_DEPTH_TEST);
 
-    const auto eye = m_cameraCapability->eye();
-
-    glm::vec2 shift = glm::vec2(
+    glm::vec2 aaShift = glm::vec2(
         glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f),
         glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f))
         / glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
 
-    m_grid->update(eye, transform);
-    m_grid->draw(shift);
+    m_grid->update(inputEye, transform);
+    m_grid->draw(aaShift);
     
     glEnable(GL_SAMPLE_SHADING);
     glMinSampleShading(1.0);
     
     m_program->use();
 
-    m_program->setUniform("subpixelShift", shift);
+    m_program->setUniform("subpixelShift", aaShift);
     m_program->setUniform(m_transformLocation, transform);
     
     for (auto i = 0u; i < m_drawables.size(); ++i)
