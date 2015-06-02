@@ -166,18 +166,18 @@ void AntiAnti::onPaint()
     const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
     const auto eye = m_cameraCapability->eye();
 
+    glm::vec2 shift = glm::vec2(
+        glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f),
+        glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f))
+        / glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
+
     m_grid->update(eye, transform);
-    m_grid->draw();
+    m_grid->draw(shift);
     
     glEnable(GL_SAMPLE_SHADING);
     glMinSampleShading(1.0);
     
     m_program->use();
-
-    glm::vec2 shift = glm::vec2(
-        glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f),
-        glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f))
-        / glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
 
     m_program->setUniform("subpixelShift", shift);
     m_program->setUniform(m_transformLocation, transform);
