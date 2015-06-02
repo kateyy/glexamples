@@ -50,7 +50,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
     , m_multisampling(false)
     , m_multisamplingChanged(false)
-    , m_transparency(0.5)
+    , m_transparency(1.0f)
     , m_maxSubpixelShift(1.0f)
     , m_frame(0)
 {    
@@ -157,13 +157,20 @@ void AntiAnti::onPaint()
         updateFramebuffer();
     }
 
+    const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
+
+    if (m_lastTransform != transform)
+    {
+        m_lastTransform = transform;
+        m_frame = 0;
+    }
+
     m_fbo->bind(GL_FRAMEBUFFER);
     m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4{0.85f, 0.87f, 0.91f, 1.0f});
     m_fbo->clearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
     
     glEnable(GL_DEPTH_TEST);
 
-    const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
     const auto eye = m_cameraCapability->eye();
 
     glm::vec2 shift = glm::vec2(

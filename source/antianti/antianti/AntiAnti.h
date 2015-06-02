@@ -4,6 +4,8 @@
 
 #include <vector>
 
+#include <glm/mat4x4.hpp>
+
 #include <glbinding/gl/types.h>
 
 #include <globjects/base/ref_ptr.h>
@@ -88,4 +90,5 @@ protected:
     bool m_multisamplingChanged;
     float m_transparency;
     float m_maxSubpixelShift;
+    glm::mat4 m_lastTransform;
 };
