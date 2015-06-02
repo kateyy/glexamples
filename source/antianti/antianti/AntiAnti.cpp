@@ -203,10 +203,11 @@ void AntiAnti::onPaint()
     m_colorAttachment->bindActive(GL_TEXTURE0);
     m_ppTexture->bindActive(GL_TEXTURE1);
 
+    ++m_frame;
+
     m_quad->program()->setUniform("frame", m_frame);
     m_quad->draw();
 
-    ++m_frame;
 
     m_ppfbo->unbind(GL_FRAMEBUFFER);
 
@@ -324,9 +325,9 @@ void AntiAnti::updateFramebuffer()
     }
     else
     {
-        m_colorAttachment->image2D(0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        m_colorAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
         m_depthAttachment->image2D(0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
     }
 
-    m_ppTexture->image2D(0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    m_ppTexture->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
 }
