@@ -49,13 +49,14 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
     , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
     , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
+    , m_frame(0)
     , m_multisampling(false)
     , m_multisamplingChanged(false)
     , m_transparency(1.0f)
     , m_maxSubpixelShift(1.0f)
+    , m_pointOrPlaneDoF(true)
     , m_maxDofShift(0.01f)
     , m_focalDepth(3.0f)
-    , m_frame(0)
 {    
     setupPropertyGroup();
 }
@@ -81,6 +82,14 @@ void AntiAnti::setupPropertyGroup()
             { "precision", 2u },
     });
 
+
+    addProperty<bool>("focalPlaneNotPoint",
+        [this] () {return m_pointOrPlaneDoF; },
+        [this] (bool doPoint) {
+        m_pointOrPlaneDoF = doPoint;
+        m_frame = 0;
+    })->setOption("title", "Use Focal Plane (not Focal Point)");
+
     addProperty<float>("maxDofShift",
         [this] (){return m_maxDofShift; },
         [this] (float shift) {
@@ -89,7 +98,7 @@ void AntiAnti::setupPropertyGroup()
     })->setOptions({
             { "minimum", 0.0f },
             { "step", 0.001f },
-            { "precision", 2u },
+            { "precision", 3u },
     });
 
     addProperty<float>("focalDepth",
@@ -196,12 +205,18 @@ void AntiAnti::onPaint()
     glm::vec3 viewVec = glm::normalize(m_cameraCapability->center() - inputEye) * m_focalDepth;
     glm::vec3 focalPoint = m_cameraCapability->eye() + viewVec;
 
-    if (!cameraHasChanged)
+    if (!m_pointOrPlaneDoF)
     {
-        glm::vec3 dofShift{ glm::diskRand(m_maxDofShift), 0.0f };
-        glm::vec3 dofShiftWorld = glm::mat3(m_cameraCapability->view()) * dofShift;
-        dofShiftedEye = inputEye + dofShiftWorld;
+        // rotation around focal point
+        if (!cameraHasChanged)
+        {
+            glm::vec3 dofShift{ glm::diskRand(m_maxDofShift), 0.0f };
+            glm::vec3 dofShiftWorld = glm::mat3(m_cameraCapability->view()) * dofShift;
+            dofShiftedEye = inputEye + dofShiftWorld;
+        }
     }
+
+    glm::vec2 shearingFactor = m_pointOrPlaneDoF ? glm::diskRand(m_maxDofShift) : glm::vec2();
 
     gloperate::Camera camera(
         dofShiftedEye,
@@ -231,7 +246,11 @@ void AntiAnti::onPaint()
     m_program->use();
 
     m_program->setUniform("subpixelShift", aaShift);
+    m_program->setUniform("viewMatrix", camera.view());
+    m_program->setUniform("projection", m_projectionCapability->projection());
     m_program->setUniform(m_transformLocation, transform);
+    m_program->setUniform("focalPlane", m_focalDepth);
+    m_program->setUniform("shearingFactor", shearingFactor);
     
     for (auto i = 0u; i < m_drawables.size(); ++i)
     {

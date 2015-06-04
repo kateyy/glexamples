@@ -92,6 +92,7 @@ protected:
     float m_maxSubpixelShift;
     glm::mat4 m_lastTransform;
 
+    bool m_pointOrPlaneDoF;
     float m_maxDofShift;
     float m_focalDepth;
 };
