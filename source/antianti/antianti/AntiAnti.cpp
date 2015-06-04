@@ -184,20 +184,24 @@ void AntiAnti::onPaint()
 
     const auto inputTransform = m_projectionCapability->projection() * m_cameraCapability->view();
 
-    if (m_lastTransform != inputTransform)
+    const bool cameraHasChanged = m_lastTransform != inputTransform;
+    if (cameraHasChanged)
     {
         m_lastTransform = inputTransform;
         m_frame = 0;
     }
 
     glm::vec3 inputEye = m_cameraCapability->eye();
-    glm::vec3 dofShift{ glm::diskRand(m_maxDofShift), 0.0f };
-    glm::vec3 dofShiftWorld = glm::mat3(m_cameraCapability->view()) * dofShift;
-    auto dofShiftedEye = inputEye + dofShiftWorld;
-
+    glm::vec3 dofShiftedEye = inputEye;
     glm::vec3 viewVec = glm::normalize(m_cameraCapability->center() - inputEye) * m_focalDepth;
-
     glm::vec3 focalPoint = m_cameraCapability->eye() + viewVec;
+
+    if (!cameraHasChanged)
+    {
+        glm::vec3 dofShift{ glm::diskRand(m_maxDofShift), 0.0f };
+        glm::vec3 dofShiftWorld = glm::mat3(m_cameraCapability->view()) * dofShift;
+        dofShiftedEye = inputEye + dofShiftWorld;
+    }
 
     gloperate::Camera camera(
         dofShiftedEye,
