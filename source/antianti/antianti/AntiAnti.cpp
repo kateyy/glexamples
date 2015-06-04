@@ -299,7 +299,10 @@ void AntiAnti::onPaint()
     }
     
     m_ppfbo->blit(GL_COLOR_ATTACHMENT0, rect, targetfbo, drawBuffer, rect,
-        GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    
+    m_fbo->blit(GL_COLOR_ATTACHMENT0, rect, targetfbo, drawBuffer, rect,
+        GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 }
 
 void AntiAnti::setupFramebuffer()
