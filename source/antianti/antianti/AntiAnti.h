@@ -23,11 +23,14 @@ namespace globjects
 namespace gloperate
 {
     class AdaptiveGrid;
+    class CoordinateProvider;
     class ResourceManager;
     class AbstractTargetFramebufferCapability;
+    class TypedRenderTargetCapability;
     class AbstractViewportCapability;
     class AbstractPerspectiveProjectionCapability;
     class AbstractCameraCapability;
+    class AbstractInputCapability;
     class PolygonalDrawable;
     class ScreenAlignedQuad;
 }
@@ -63,11 +66,16 @@ protected:
     void updateFramebuffer();
 
 protected:
+
+    class HackedInputCapability;    // I'm sure it's not meant to be used that way
+
     /* capabilities */
     gloperate::AbstractTargetFramebufferCapability * m_targetFramebufferCapability;
+    gloperate::TypedRenderTargetCapability * m_renderTargetCapability;
     gloperate::AbstractViewportCapability * m_viewportCapability;
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability * m_cameraCapability;
+    HackedInputCapability * m_inputCapability;
 
     /* members */
     globjects::ref_ptr<globjects::Framebuffer> m_fbo;
@@ -85,6 +93,10 @@ protected:
     gl::GLint m_transparencyLocation;
     std::vector<std::unique_ptr<gloperate::PolygonalDrawable>> m_drawables;
 
+    std::unique_ptr<gloperate::CoordinateProvider> m_coordProvider;
+
+protected:
+
     int m_frame;
     bool m_multisampling;
     bool m_multisamplingChanged;
@@ -95,4 +107,5 @@ protected:
     bool m_pointOrPlaneDoF;
     float m_maxDofShift;
     float m_focalDepth;
+    bool m_dofAtCursor;
 };

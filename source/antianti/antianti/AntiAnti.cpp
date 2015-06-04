@@ -22,15 +22,19 @@
 #include <gloperate/base/make_unique.hpp>
 #include <gloperate/resources/ResourceManager.h>
 #include <gloperate/painter/TargetFramebufferCapability.h>
+#include <gloperate/painter/TypedRenderTargetCapability.h>
 #include <gloperate/painter/ViewportCapability.h>
 #include <gloperate/painter/PerspectiveProjectionCapability.h>
 #include <gloperate/painter/CameraCapability.h>
 #include <gloperate/painter/Camera.h>
+#include <gloperate/painter/InputCapability.h>
 #include <gloperate/primitives/AdaptiveGrid.h>
 #include <gloperate/primitives/Scene.h>
 #include <gloperate/primitives/PolygonalDrawable.h>
 #include <gloperate/primitives/PolygonalGeometry.h>
 #include <gloperate/primitives/ScreenAlignedQuad.h>
+#include <gloperate/tools/CoordinateProvider.h>
+#include <gloperate/tools/DepthExtractor.h>
 
 #include <reflectionzeug/PropertyGroup.h>
 
@@ -40,15 +44,47 @@
 using namespace gl;
 using namespace glm;
 using namespace globjects;
+using namespace gloperate;
 
 using widgetzeug::make_unique;
+
+class AntiAnti::HackedInputCapability : public InputCapability
+{
+public:
+    void onMouseMove(int x, int y) override
+    {
+        lastMousePosition = { x, y };
+    }
+
+    void onMousePress(int x, int y, gloperate::MouseButton button) override
+    {
+        lastMousePosition = { x, y };
+    }
+
+    void onKeyDown(gloperate::Key key) override
+    {
+        if (key == gloperate::KeyLeftControl || key == gloperate::KeyRightControl)
+            ctrlPressed = true;
+    }
+
+    void onKeyUp(gloperate::Key key) override
+    {
+        if (key == gloperate::KeyLeftControl || key == gloperate::KeyRightControl)
+            ctrlPressed = false;
+    }
+
+    glm::vec2 lastMousePosition;
+    bool ctrlPressed = false;
+};
 
 AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     : Painter(resourceManager)
     , m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
+    , m_renderTargetCapability(addCapability(new gloperate::TypedRenderTargetCapability()))
     , m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
     , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
     , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
+    , m_inputCapability(addCapability(new HackedInputCapability()))
     , m_frame(0)
     , m_multisampling(false)
     , m_multisamplingChanged(false)
@@ -57,6 +93,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_pointOrPlaneDoF(true)
     , m_maxDofShift(0.01f)
     , m_focalDepth(3.0f)
+    , m_dofAtCursor(false)
 {    
     setupPropertyGroup();
 }
@@ -110,6 +147,12 @@ void AntiAnti::setupPropertyGroup()
         { "minimum", 0.0f },
         { "step", 0.05f },
         { "precision", 2u },
+    });
+
+    addProperty<bool>("doofAtCursor",
+        [this] () {return m_dofAtCursor; },
+        [this] (bool atCursor) {
+        m_dofAtCursor = true;
     });
 }
 
@@ -191,6 +234,22 @@ void AntiAnti::onPaint()
         updateFramebuffer();
     }
 
+    if (m_dofAtCursor || m_inputCapability->ctrlPressed)
+    {
+        float depth = m_coordProvider->depthAt(m_inputCapability->lastMousePosition);
+
+        if (depth < 1.0 - std::numeric_limits<float>::epsilon())
+        {
+            glm::vec3 mouseWorldPos = m_coordProvider->unproject(m_inputCapability->lastMousePosition, depth);
+
+            float clickDistance = glm::length(m_cameraCapability->center() - mouseWorldPos);
+            std::cout << std::to_string(depth) << " -> " << mouseWorldPos.x << ", " << mouseWorldPos.y << ", " << mouseWorldPos.z << std::endl;
+
+            if (glm::distance(clickDistance, m_focalDepth) > 0.01f)
+                property<float>("focalDepth")->setValue(clickDistance);
+        }
+    }
+
     const auto inputTransform = m_projectionCapability->projection() * m_cameraCapability->view();
 
     const bool cameraHasChanged = m_lastTransform != inputTransform;
@@ -270,6 +329,7 @@ void AntiAnti::onPaint()
     glDisable(GL_DEPTH_TEST);
 
     m_ppfbo->bind(GL_FRAMEBUFFER);
+
     m_colorAttachment->bindActive(GL_TEXTURE0);
     m_ppTexture->bindActive(GL_TEXTURE1);
 
@@ -334,6 +394,19 @@ void AntiAnti::setupFramebuffer()
 
     m_fbo->printStatus(true);
     m_ppfbo->printStatus(true);
+
+
+    m_renderTargetCapability->setRenderTarget(
+        RenderTargetType::Depth,
+        m_fbo,
+        GL_DEPTH_ATTACHMENT,
+        GL_DEPTH_COMPONENT);
+
+    m_coordProvider = std::make_unique<CoordinateProvider>(
+        m_cameraCapability,
+        m_projectionCapability,
+        m_viewportCapability, 
+        m_renderTargetCapability);
 }
 
 void AntiAnti::setupProjection()
