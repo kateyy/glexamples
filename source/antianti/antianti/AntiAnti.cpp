@@ -152,7 +152,7 @@ void AntiAnti::setupPropertyGroup()
     addProperty<bool>("doofAtCursor",
         [this] () {return m_dofAtCursor; },
         [this] (bool atCursor) {
-        m_dofAtCursor = true;
+        m_dofAtCursor = atCursor;
     });
 }
 
@@ -242,11 +242,10 @@ void AntiAnti::onPaint()
         {
             glm::vec3 mouseWorldPos = m_coordProvider->unproject(m_inputCapability->lastMousePosition, depth);
 
-            float clickDistance = glm::length(m_cameraCapability->center() - mouseWorldPos);
-            std::cout << std::to_string(depth) << " -> " << mouseWorldPos.x << ", " << mouseWorldPos.y << ", " << mouseWorldPos.z << std::endl;
+            float clickZDistance = -(m_cameraCapability->view() * glm::vec4(mouseWorldPos, 1.0)).z;
 
-            if (glm::distance(clickDistance, m_focalDepth) > 0.01f)
-                property<float>("focalDepth")->setValue(clickDistance);
+            if (glm::distance(clickZDistance, m_focalDepth) > 0.01f)
+                property<float>("focalDepth")->setValue(clickZDistance);
         }
     }
 
