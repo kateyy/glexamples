@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <random>
+#include <limits>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -121,6 +122,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_useObjectBasedTransparency(true)
     , m_transparency(0.5f)
     , m_numTransparencySamples(1024)
+    , m_numFrames(10000)
 {    
     setupPropertyGroup();
 }
@@ -176,6 +178,14 @@ void AntiAnti::setupPropertyGroup()
         [this] () {return m_dofAtCursor; },
         [this] (bool atCursor) {
         m_dofAtCursor = atCursor;
+    });
+
+    addProperty<int>("numFrames",
+        [this]() {return m_numFrames; },
+        [this](int numFrames) {
+        if (numFrames < m_numFrames)
+            m_frame = 0;
+        m_numFrames = numFrames;
     });
 
     addProperty<bool>("useSSAO",
@@ -544,11 +554,14 @@ void AntiAnti::onPaint()
 
     glDisable(GL_CULL_FACE);
 
-    ++m_frame;
+    bool continueRendering = m_frame < m_numFrames;
+
+    if (continueRendering)
+        ++m_frame;
 
     m_postProcessing.camera = camera;
     m_postProcessing.viewport = glm::vec2(m_viewportCapability->x(), m_viewportCapability->y());
-    m_postProcessing.frame = m_frame;
+    m_postProcessing.frame = continueRendering ? m_frame : std::numeric_limits<int>::max();
 
     m_postProcessing.process();
 

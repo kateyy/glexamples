@@ -124,6 +124,8 @@ protected:
     float m_focalDepth;
     bool m_dofAtCursor;
 
+    int m_numFrames;
+    
     glm::vec3 m_lightPosition;
     glm::vec3 m_lightFocus;
     glm::vec2 m_lightZRange;
