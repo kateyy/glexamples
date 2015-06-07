@@ -295,8 +295,8 @@ void AntiAnti::onPaint()
         glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f))
         / glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
 
-    m_grid->update(inputEye, transform);
-    m_grid->draw(aaShift);
+    m_grid->setCamera(&camera);
+    m_grid->draw(aaShift, m_focalDepth, shearingFactor);
     
     glEnable(GL_SAMPLE_SHADING);
     glMinSampleShading(1.0);
