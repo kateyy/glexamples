@@ -298,8 +298,8 @@ void AntiAnti::onPaint()
     m_grid->setCamera(&camera);
     m_grid->draw(aaShift, m_focalDepth, shearingFactor);
     
-    glEnable(GL_SAMPLE_SHADING);
-    glMinSampleShading(1.0);
+    /*glEnable(GL_SAMPLE_SHADING);
+    glMinSampleShading(1.0);*/
     
     m_program->use();
 
@@ -312,14 +312,16 @@ void AntiAnti::onPaint()
     
     for (auto i = 0u; i < m_drawables.size(); ++i)
     {
+        glBindAttribLocation(m_program->id(), 0, "a_vertex");
+        glBindAttribLocation(m_program->id(), 1, "a_normal");
         m_program->setUniform(m_transparencyLocation, i % 2 == 0 ? m_transparency : 1.0f);
         m_drawables[i]->draw();
     }
     
     m_program->release();
     
-    glDisable(GL_SAMPLE_SHADING);
-    glMinSampleShading(0.0);
+    /*glDisable(GL_SAMPLE_SHADING);
+    glMinSampleShading(0.0);*/
 
     Framebuffer::unbind(GL_FRAMEBUFFER);
 
@@ -334,6 +336,8 @@ void AntiAnti::onPaint()
 
     ++m_frame;
 
+    m_quad->program()->setUniform("ColorTexture", 0);
+    m_quad->program()->setUniform("lastFrame", 1);
     m_quad->program()->setUniform("frame", m_frame);
     m_quad->draw();
 

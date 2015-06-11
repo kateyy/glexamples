@@ -1,8 +1,7 @@
-#version 150 core
-#extension GL_ARB_explicit_attrib_location : require
+#version 140
 
-layout(location = 0) in vec3 a_vertex;
-layout(location = 1) in vec3 a_normal;
+in vec3 a_vertex;
+in vec3 a_normal;
 
 out vec3 v_normal;
 

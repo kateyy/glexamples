@@ -1,13 +1,13 @@
-#version 420
+#version 140
 
 in vec2 v_uv;
 
 uniform int frame;
 
-layout(binding=0) uniform sampler2D ColorTexture;
-layout(binding=1) uniform sampler2D lastFrame;
+uniform sampler2D ColorTexture;
+uniform sampler2D lastFrame;
 
-layout (location=0) out vec4 outColor;
+out vec4 outColor;
 
 
 void main()
