@@ -12,6 +12,8 @@
 
 #include <gloperate/painter/Painter.h>
 
+#include "PostProcessing.h"
+
 
 namespace globjects
 {
@@ -80,6 +82,7 @@ protected:
     /* members */
     globjects::ref_ptr<globjects::Framebuffer> m_fbo;
     globjects::ref_ptr<globjects::Texture> m_colorAttachment;
+    globjects::ref_ptr<globjects::Texture> m_normalAttachment;
     globjects::ref_ptr<globjects::Texture> m_depthAttachment;
 
     globjects::ref_ptr<globjects::Framebuffer> m_ppfbo;
@@ -87,7 +90,6 @@ protected:
 
     
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
-    globjects::ref_ptr<gloperate::ScreenAlignedQuad> m_quad;
     globjects::ref_ptr<globjects::Program> m_program;
     gl::GLint m_transformLocation;
     gl::GLint m_transparencyLocation;
@@ -108,4 +110,6 @@ protected:
     float m_maxDofShift;
     float m_focalDepth;
     bool m_dofAtCursor;
+
+    PostProcessing m_postProcessing;
 };

@@ -3,6 +3,7 @@
 in vec3 v_normal;
 
 out vec4 fragColor;
+out vec4 fragNormal;
 
 uniform float transparency;
 
@@ -21,5 +22,6 @@ void main()
     if (threshold > transparency)
         discard;
 
-	fragColor = vec4(v_normal * 0.5 + 0.5, 1.0);
+    fragColor = vec4(v_normal * 0.5 + 0.5, 1.0);
+    fragNormal = vec4(v_normal, 1.0);
 }

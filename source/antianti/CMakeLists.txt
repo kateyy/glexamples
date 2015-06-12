@@ -38,10 +38,12 @@ set(source_path "${CMAKE_CURRENT_SOURCE_DIR}/")
 set(sources
     ${source_path}/plugin.cpp
     ${source_path}/antianti/AntiAnti.cpp
+    ${source_path}/antianti/PostProcessing.cpp
 )
 
 set(api_includes
     ${include_path}/antianti/AntiAnti.h
+    ${include_path}/antianti/PostProcessing.h
 )
 
 # Group source files

@@ -17,6 +17,8 @@
 #include <globjects/DebugMessage.h>
 #include <globjects/Program.h>
 #include <globjects/Texture.h>
+#include <globjects/NamedString.h>
+#include <globjects/base/File.h>
 
 #include <gloperate/base/RenderTargetType.h>
 #include <gloperate/base/make_unique.hpp>
@@ -154,6 +156,35 @@ void AntiAnti::setupPropertyGroup()
         [this] (bool atCursor) {
         m_dofAtCursor = atCursor;
     });
+
+    addProperty<bool>("useSSAO",
+        [this]() {return m_postProcessing.useSSAO; },
+        [this](bool useSSAO) {
+        m_postProcessing.useSSAO = useSSAO;
+        m_frame = 0;
+    });
+
+    addProperty<float>("SSAORadius",
+        [this]() {return m_postProcessing.ssaoRadius; },
+        [this](float ssaoRadius) {
+        m_postProcessing.ssaoRadius = ssaoRadius;
+        m_frame = 0;
+    })->setOptions({
+        { "minimum", 0.0f },
+        { "step", 0.005f },
+        { "precision", 3u },
+    });
+
+    addProperty<float>("SSAOIntensity",
+        [this]() {return m_postProcessing.ssaoIntensity; },
+        [this](float ssaoIntensity) {
+        m_postProcessing.ssaoIntensity = ssaoIntensity;
+        m_frame = 0;
+    })->setOptions({
+        { "minimum", 0.0f },
+        { "step", 0.05f },
+        { "precision", 2u },
+    });
 }
 
 bool AntiAnti::multisampling() const
@@ -209,6 +240,15 @@ void AntiAnti::onInitialize()
     setupProgram();
     setupProjection();
     setupFramebuffer();
+
+    m_postProcessing.lastFrame = m_ppTexture;
+    m_postProcessing.fbo = m_ppfbo;
+    m_postProcessing.depthBufferTexture = m_depthAttachment;
+    m_postProcessing.normalTexture = m_normalAttachment;
+    m_postProcessing.colorTexture = m_colorAttachment;
+    m_postProcessing.initialize();
+
+    globjects::NamedString::create("/data/antianti/ssao.glsl", new globjects::File("data/antianti/ssao.glsl"));
 }
 
 void AntiAnti::onPaint()
@@ -276,26 +316,30 @@ void AntiAnti::onPaint()
 
     glm::vec2 shearingFactor = m_pointOrPlaneDoF ? glm::diskRand(m_maxDofShift) : glm::vec2();
 
-    gloperate::Camera camera(
+
+    auto camera = make_ref<gloperate::Camera>(
         dofShiftedEye,
         focalPoint,
         m_cameraCapability->up());
+    camera->setZNear(m_projectionCapability->zNear());
+    camera->setZFar(m_projectionCapability->zFar());
+    camera->setFovy(m_projectionCapability->fovy());
+    camera->setAspectRatio(m_projectionCapability->aspectRatio());
 
-    const auto transform = m_projectionCapability->projection() * camera.view();
+    const auto transform = m_projectionCapability->projection() * camera->view();
 
 
     m_fbo->bind(GL_FRAMEBUFFER);
-    m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4{0.85f, 0.87f, 0.91f, 1.0f});
+    m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4{ 0.85f, 0.87f, 0.91f, 1.0f });
+    m_fbo->clearBuffer(GL_COLOR, 1, glm::vec4{ 0.0f, 0.0f, 0.0f, 0.0f });
     m_fbo->clearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
-    
-    glEnable(GL_DEPTH_TEST);
 
     glm::vec2 aaShift = glm::vec2(
         glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f),
         glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f))
         / glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
 
-    m_grid->setCamera(&camera);
+    m_grid->setCamera(camera);
     m_grid->draw(aaShift, m_focalDepth, shearingFactor);
     
     /*glEnable(GL_SAMPLE_SHADING);
@@ -304,7 +348,7 @@ void AntiAnti::onPaint()
     m_program->use();
 
     m_program->setUniform("subpixelShift", aaShift);
-    m_program->setUniform("viewMatrix", camera.view());
+    m_program->setUniform("viewMatrix", camera->view());
     m_program->setUniform("projection", m_projectionCapability->projection());
     m_program->setUniform(m_transformLocation, transform);
     m_program->setUniform("focalPlane", m_focalDepth);
@@ -327,22 +371,13 @@ void AntiAnti::onPaint()
 
 
 
-    glDisable(GL_DEPTH_TEST);
-
-    m_ppfbo->bind(GL_FRAMEBUFFER);
-
-    m_colorAttachment->bindActive(GL_TEXTURE0);
-    m_ppTexture->bindActive(GL_TEXTURE1);
-
     ++m_frame;
 
-    m_quad->program()->setUniform("ColorTexture", 0);
-    m_quad->program()->setUniform("lastFrame", 1);
-    m_quad->program()->setUniform("frame", m_frame);
-    m_quad->draw();
+    m_postProcessing.camera = camera;
+    m_postProcessing.viewport = glm::vec2(m_viewportCapability->x(), m_viewportCapability->y());
+    m_postProcessing.frame = m_frame;
 
-
-    m_ppfbo->unbind(GL_FRAMEBUFFER);
+    m_postProcessing.process();
 
 
     
@@ -374,19 +409,25 @@ void AntiAnti::setupFramebuffer()
     {
         m_colorAttachment = new Texture(GL_TEXTURE_2D_MULTISAMPLE);
         m_colorAttachment->bind(); // workaround
+        m_normalAttachment = new Texture(GL_TEXTURE_2D_MULTISAMPLE);
+        m_normalAttachment->bind(); // workaround
         m_depthAttachment = new Texture(GL_TEXTURE_2D_MULTISAMPLE);
         m_depthAttachment->bind(); // workaround
     }
     else
     {
         m_colorAttachment = Texture::createDefault(GL_TEXTURE_2D);
+        m_normalAttachment = Texture::createDefault(GL_TEXTURE_2D);
         m_depthAttachment = Texture::createDefault(GL_TEXTURE_2D);
     }
     
     m_fbo = make_ref<Framebuffer>();
 
     m_fbo->attachTexture(GL_COLOR_ATTACHMENT0, m_colorAttachment);
+    m_fbo->attachTexture(GL_COLOR_ATTACHMENT1, m_normalAttachment);
     m_fbo->attachTexture(GL_DEPTH_ATTACHMENT, m_depthAttachment);
+
+    m_fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 });
 
     m_ppTexture = Texture::createDefault(GL_TEXTURE_2D);
 
@@ -425,9 +466,6 @@ void AntiAnti::setupProjection()
 
 void AntiAnti::setupDrawable()
 {
-
-    m_quad = new gloperate::ScreenAlignedQuad(Shader::fromFile(GL_FRAGMENT_SHADER, "data/antianti/postprocessing.frag"));
-
     // Load scene
     const auto scene = m_resourceManager.load<gloperate::Scene>("data/transparency/transparency_scene.obj");
     if (!scene)
@@ -470,11 +508,13 @@ void AntiAnti::updateFramebuffer()
     if (m_multisampling)
     {
         m_colorAttachment->image2DMultisample(numSamples, GL_RGBA8, width, height, GL_TRUE);
+        m_normalAttachment->image2DMultisample(numSamples, GL_RGBA8, width, height, GL_TRUE);
         m_depthAttachment->image2DMultisample(numSamples, GL_DEPTH_COMPONENT, width, height, GL_TRUE);
     }
     else
     {
         m_colorAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+        m_normalAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
         m_depthAttachment->image2D(0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
     }
 
