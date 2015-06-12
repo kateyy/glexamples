@@ -47,9 +47,6 @@ public:
 public:
     void setupPropertyGroup();
     
-    bool multisampling() const;
-    void setMultisampling(bool b);
-    
     float transparency() const;
     void setTransparency(float transparency);
 
@@ -100,8 +97,6 @@ protected:
 protected:
 
     int m_frame;
-    bool m_multisampling;
-    bool m_multisamplingChanged;
     float m_transparency;
     float m_maxSubpixelShift;
     glm::mat4 m_lastTransform;

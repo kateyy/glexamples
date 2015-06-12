@@ -88,8 +88,6 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
     , m_inputCapability(addCapability(new HackedInputCapability()))
     , m_frame(0)
-    , m_multisampling(false)
-    , m_multisamplingChanged(false)
     , m_transparency(1.0f)
     , m_maxSubpixelShift(1.0f)
     , m_pointOrPlaneDoF(true)
@@ -104,9 +102,6 @@ AntiAnti::~AntiAnti() = default;
 
 void AntiAnti::setupPropertyGroup()
 {
-    addProperty<bool>("multisampling", this,
-        &AntiAnti::multisampling, &AntiAnti::setMultisampling);
-    
     addProperty<float>("transparency", this,
         &AntiAnti::transparency, &AntiAnti::setTransparency)->setOptions({
         { "minimum", 0.0f },
@@ -187,18 +182,6 @@ void AntiAnti::setupPropertyGroup()
     });
 }
 
-bool AntiAnti::multisampling() const
-{
-    return m_multisampling;
-}
-
-void AntiAnti::setMultisampling(bool b)
-{
-    m_multisamplingChanged = m_multisampling != b;
-    m_multisampling = b;
-    m_frame = 0;
-}
-
 float AntiAnti::transparency() const
 {
     return m_transparency;
@@ -253,14 +236,6 @@ void AntiAnti::onInitialize()
 
 void AntiAnti::onPaint()
 {
-
-    if (m_multisamplingChanged)
-    {
-        m_multisamplingChanged = false;
-        setupProgram();
-        setupFramebuffer();
-    }
-    
     if (m_viewportCapability->hasChanged())
     {
         glViewport(
@@ -405,21 +380,9 @@ void AntiAnti::onPaint()
 
 void AntiAnti::setupFramebuffer()
 {
-    if (m_multisampling)
-    {
-        m_colorAttachment = new Texture(GL_TEXTURE_2D_MULTISAMPLE);
-        m_colorAttachment->bind(); // workaround
-        m_normalAttachment = new Texture(GL_TEXTURE_2D_MULTISAMPLE);
-        m_normalAttachment->bind(); // workaround
-        m_depthAttachment = new Texture(GL_TEXTURE_2D_MULTISAMPLE);
-        m_depthAttachment->bind(); // workaround
-    }
-    else
-    {
-        m_colorAttachment = Texture::createDefault(GL_TEXTURE_2D);
-        m_normalAttachment = Texture::createDefault(GL_TEXTURE_2D);
-        m_depthAttachment = Texture::createDefault(GL_TEXTURE_2D);
-    }
+    m_colorAttachment = Texture::createDefault(GL_TEXTURE_2D);
+    m_normalAttachment = Texture::createDefault(GL_TEXTURE_2D);
+    m_depthAttachment = Texture::createDefault(GL_TEXTURE_2D);
     
     m_fbo = make_ref<Framebuffer>();
 
@@ -486,7 +449,7 @@ void AntiAnti::setupDrawable()
 void AntiAnti::setupProgram()
 {
     static const auto shaderPath = std::string{"data/antianti/"};
-    const auto shaderName = m_multisampling ? "screendoor_multisample" : "screendoor";
+    const auto shaderName = "screendoor";
     
     const auto vertexShader = shaderPath + shaderName + ".vert";
     const auto fragmentShader = shaderPath + shaderName + ".frag";
@@ -505,18 +468,9 @@ void AntiAnti::updateFramebuffer()
     static const auto numSamples = 4u;
     const auto width = m_viewportCapability->width(), height = m_viewportCapability->height();
     
-    if (m_multisampling)
-    {
-        m_colorAttachment->image2DMultisample(numSamples, GL_RGBA8, width, height, GL_TRUE);
-        m_normalAttachment->image2DMultisample(numSamples, GL_RGBA8, width, height, GL_TRUE);
-        m_depthAttachment->image2DMultisample(numSamples, GL_DEPTH_COMPONENT, width, height, GL_TRUE);
-    }
-    else
-    {
-        m_colorAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
-        m_normalAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
-        m_depthAttachment->image2D(0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
-    }
+    m_colorAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    m_normalAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    m_depthAttachment->image2D(0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
 
     m_ppTexture->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
 }
