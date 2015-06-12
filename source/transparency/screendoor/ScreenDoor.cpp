@@ -141,7 +141,7 @@ void ScreenDoor::onPaint()
     const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
     const auto eye = m_cameraCapability->eye();
 
-    m_grid->update(eye, transform);
+    m_grid->update(eye, m_cameraCapability->view(), m_projectionCapability->projection());
     m_grid->draw();
     
     glEnable(GL_SAMPLE_SHADING);

@@ -1,4 +1,4 @@
-#include "StochasticTransparency.h"
+#include "ProgressiveTransparency.h"
 
 #include <iostream>
 
@@ -35,7 +35,7 @@
 #include <widgetzeug/make_unique.hpp>
 
 #include "MasksTableGenerator.h"
-#include "StochasticTransparencyOptions.h"
+#include "ProgressiveTransparencyOptions.h"
 
 
 using namespace gl;
@@ -44,19 +44,20 @@ using namespace globjects;
 
 using widgetzeug::make_unique;
 
-StochasticTransparency::StochasticTransparency(gloperate::ResourceManager & resourceManager)
+ProgressiveTransparency::ProgressiveTransparency(gloperate::ResourceManager & resourceManager)
 :   Painter(resourceManager)
 ,   m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
 ,   m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
 ,   m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 ,   m_cameraCapability(addCapability(new gloperate::CameraCapability()))
-,   m_options(new StochasticTransparencyOptions(*this))
+,   m_options(new ProgressiveTransparencyOptions(*this))
+,   m_frame(0)
 {
 }
 
-StochasticTransparency::~StochasticTransparency() = default;
+ProgressiveTransparency::~ProgressiveTransparency() = default;
 
-void StochasticTransparency::onInitialize()
+void ProgressiveTransparency::onInitialize()
 {
     globjects::init();
     globjects::DebugMessage::enable();
@@ -67,8 +68,6 @@ void StochasticTransparency::onInitialize()
 
     debug() << "Using global OS X shader replacement '#version 140' -> '#version 150'" << std::endl;
 #endif
-
-    m_options->initGL();
     
     m_grid = make_ref<gloperate::AdaptiveGrid>();
     m_grid->setColor({0.6f, 0.6f, 0.6f});
@@ -80,10 +79,12 @@ void StochasticTransparency::onInitialize()
     setupDrawable();
 }
 
-void StochasticTransparency::onPaint()
+void ProgressiveTransparency::onPaint()
 {
     if (m_viewportCapability->hasChanged())
     {
+        m_frame = 0;
+
         glViewport(
             m_viewportCapability->x(),
             m_viewportCapability->y(),
@@ -96,6 +97,11 @@ void StochasticTransparency::onPaint()
         m_alphaToCoverageProgram->setUniform("viewport", viewport);
         
         updateFramebuffer();
+    }
+
+    if (m_cameraCapability->hasChanged())
+    {
+        m_frame = 0;
     }
     
     if (m_options->numSamplesChanged())
@@ -111,13 +117,7 @@ void StochasticTransparency::onPaint()
         if (m_options->backFaceCulling())
             glEnable(GL_CULL_FACE);
         
-        glEnable(GL_SAMPLE_SHADING);
-        glMinSampleShading(1.0);
-        
         renderAlphaToCoverage(kOpaqueColorAttachment);
-        
-        glDisable(GL_SAMPLE_SHADING);
-        glDisable(GL_CULL_FACE);
         
         blit();
     }
@@ -129,14 +129,16 @@ void StochasticTransparency::onPaint()
     }
     
     Framebuffer::unbind(GL_FRAMEBUFFER);
+
+    ++m_frame;
 }
 
-void StochasticTransparency::setupFramebuffer()
+void ProgressiveTransparency::setupFramebuffer()
 {
-    m_opaqueColorAttachment = make_ref<Texture>(GL_TEXTURE_2D_MULTISAMPLE);
-    m_transparentColorAttachment = make_ref<Texture>(GL_TEXTURE_2D_MULTISAMPLE);
-    m_totalAlphaAttachment = make_ref<Texture>(GL_TEXTURE_2D_MULTISAMPLE);
-    m_depthAttachment = make_ref<Texture>(GL_TEXTURE_2D_MULTISAMPLE);
+    m_opaqueColorAttachment = make_ref<Texture>(GL_TEXTURE_2D);
+    m_transparentColorAttachment = make_ref<Texture>(GL_TEXTURE_2D);
+    m_totalAlphaAttachment = make_ref<Texture>(GL_TEXTURE_2D);
+    m_depthAttachment = make_ref<Texture>(GL_TEXTURE_2D);
     
     updateFramebuffer();
     
@@ -150,7 +152,7 @@ void StochasticTransparency::setupFramebuffer()
     m_fbo->printStatus(true);
 }
 
-void StochasticTransparency::setupProjection()
+void ProgressiveTransparency::setupProjection()
 {
     static const auto zNear = 0.3f, zFar = 30.f, fovy = 50.f;
 
@@ -161,7 +163,7 @@ void StochasticTransparency::setupProjection()
     m_grid->setNearFar(zNear, zFar);
 }
 
-void StochasticTransparency::setupDrawable()
+void ProgressiveTransparency::setupDrawable()
 {
     // Load scene
     const auto scene = m_resourceManager.load<gloperate::Scene>("data/transparency/transparency_scene.obj");
@@ -180,7 +182,7 @@ void StochasticTransparency::setupDrawable()
     delete scene;
 }
 
-void StochasticTransparency::setupPrograms()
+void ProgressiveTransparency::setupPrograms()
 {
     static const auto totalAlphaShaders = "total_alpha";
     static const auto alphaToCoverageShaders = "alpha_to_coverage";
@@ -189,7 +191,7 @@ void StochasticTransparency::setupPrograms()
     
     const auto initProgram = [] (globjects::ref_ptr<globjects::Program> & program, const char * shaders)
     {
-        static const auto shaderPath = std::string{"data/transparency/"};
+        static const auto shaderPath = std::string{"data/progressive_transparency/"};
         
         program = make_ref<Program>();
         program->attach(
@@ -202,7 +204,12 @@ void StochasticTransparency::setupPrograms()
     initProgram(m_colorAccumulationProgram, transparentColorsShaders);
     initProgram(m_compositingProgram, compositingShaders);
     
+    glBindAttribLocation(m_alphaToCoverageProgram->id(), 0, "a_vertex");
+    glBindAttribLocation(m_alphaToCoverageProgram->id(), 1, "a_normal");
     m_alphaToCoverageProgram->setUniform("masksTexture", 0);
+
+    glBindAttribLocation(m_colorAccumulationProgram->id(), 0, "a_vertex");
+    glBindAttribLocation(m_colorAccumulationProgram->id(), 1, "a_normal");
     
     updateNumSamplesUniforms();
     
@@ -217,49 +224,50 @@ void StochasticTransparency::setupPrograms()
     m_compositingQuad = make_ref<gloperate::ScreenAlignedQuad>(m_compositingProgram);
 }
 
-void StochasticTransparency::setupMasksTexture()
+void ProgressiveTransparency::setupMasksTexture()
 {
     static const auto numSamples = m_options->numSamples();
     const auto table = MasksTableGenerator::generateDistributions(numSamples);
     
     m_masksTexture = Texture::createDefault(GL_TEXTURE_2D);
-    m_masksTexture->image2D(0, GL_R8, table->at(0).size(), table->size(), 0, GL_RED, GL_UNSIGNED_BYTE, table->data());
+    m_masksTexture->image2D(0, GL_R8, static_cast<GLint>(table->at(0).size()), static_cast<GLint>(table->size()), 0, 
+        GL_RED, GL_UNSIGNED_BYTE, table->data());
 }
 
-void StochasticTransparency::updateFramebuffer()
+void ProgressiveTransparency::updateFramebuffer()
 {
     const auto numSamples = m_options->numSamples();
     const auto size = glm::ivec2{m_viewportCapability->width(), m_viewportCapability->height()};
     
-    m_opaqueColorAttachment->image2DMultisample(numSamples, GL_RGBA8, size, GL_FALSE);
-    m_transparentColorAttachment->image2DMultisample(numSamples, GL_RGBA32F, size, GL_FALSE);
-    m_totalAlphaAttachment->image2DMultisample(numSamples, GL_R32F, size, GL_FALSE);
-    m_depthAttachment->image2DMultisample(numSamples, GL_DEPTH_COMPONENT, size, GL_FALSE);
+    m_opaqueColorAttachment->image2D(0, GL_RGBA8, size, 0, GL_RGBA, GL_FLOAT, nullptr);
+    m_transparentColorAttachment->image2D(0, GL_R32F, size, 0, GL_RED, GL_FLOAT, nullptr);
+    m_totalAlphaAttachment->image2D(0, GL_R32F, size, 0, GL_RED, GL_FLOAT, nullptr);
+    m_depthAttachment->image2D(0, GL_DEPTH_COMPONENT, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 }
 
-void StochasticTransparency::updateNumSamples()
+void ProgressiveTransparency::updateNumSamples()
 {
     setupMasksTexture();
     updateFramebuffer();
     updateNumSamplesUniforms();
 }
 
-void StochasticTransparency::updateNumSamplesUniforms()
+void ProgressiveTransparency::updateNumSamplesUniforms()
 {
     m_compositingProgram->setUniform("numSamples", static_cast<int>(m_options->numSamples()));
 }
 
-void StochasticTransparency::clearBuffers()
+void ProgressiveTransparency::clearBuffers()
 {
     m_fbo->setDrawBuffers({ kOpaqueColorAttachment, kTransparentColorAttachment, kTotalAlphaAttachment });
     
     m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4(0.85f, 0.87f, 0.91f, 1.0f));
     m_fbo->clearBuffer(GL_COLOR, 1, glm::vec4(0.0f));
     m_fbo->clearBuffer(GL_COLOR, 2, glm::vec4(1.0f));
-    m_fbo->clearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0.0f);
+    m_fbo->clearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
 }
 
-void StochasticTransparency::updateUniforms()
+void ProgressiveTransparency::updateUniforms()
 {
     const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
     const auto eye = m_cameraCapability->eye();
@@ -278,7 +286,7 @@ void StochasticTransparency::updateUniforms()
     updateProgramUniforms(m_colorAccumulationProgram);
 }
 
-void StochasticTransparency::renderOpaqueGeometry()
+void ProgressiveTransparency::renderOpaqueGeometry()
 {
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
@@ -289,15 +297,12 @@ void StochasticTransparency::renderOpaqueGeometry()
     m_grid->draw();
 }
 
-void StochasticTransparency::renderTransparentGeometry()
+void ProgressiveTransparency::renderTransparentGeometry()
 {
     if (m_options->backFaceCulling())
         glEnable(GL_CULL_FACE);
     
     renderTotalAlpha();
-    
-    glEnable(GL_SAMPLE_SHADING);
-    glMinSampleShading(1.0);
 
     if (m_options->optimization() == StochasticTransparencyOptimization::AlphaCorrection)
     {
@@ -311,12 +316,9 @@ void StochasticTransparency::renderTransparentGeometry()
         
         renderColorAccumulation();
     }
-    
-    glDisable(GL_SAMPLE_SHADING);
-    glDisable(GL_CULL_FACE);
 }
 
-void StochasticTransparency::renderTotalAlpha()
+void ProgressiveTransparency::renderTotalAlpha()
 {
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
@@ -337,7 +339,7 @@ void StochasticTransparency::renderTotalAlpha()
     glDisable(GL_BLEND);
 }
 
-void StochasticTransparency::renderAlphaToCoverage(gl::GLenum colorAttachment)
+void ProgressiveTransparency::renderAlphaToCoverage(gl::GLenum colorAttachment)
 {
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
@@ -348,6 +350,8 @@ void StochasticTransparency::renderAlphaToCoverage(gl::GLenum colorAttachment)
     m_masksTexture->bindActive(GL_TEXTURE0);
 
     m_alphaToCoverageProgram->use();
+    m_alphaToCoverageProgram->setUniform("numSamples", m_options->numSamples());
+    m_alphaToCoverageProgram->setUniform("frame", m_frame);
 
     for (auto & drawable : m_drawables)
         drawable->draw();
@@ -355,7 +359,7 @@ void StochasticTransparency::renderAlphaToCoverage(gl::GLenum colorAttachment)
     m_alphaToCoverageProgram->release();
 }
 
-void StochasticTransparency::renderColorAccumulation()
+void ProgressiveTransparency::renderColorAccumulation()
 {
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
@@ -379,7 +383,7 @@ void StochasticTransparency::renderColorAccumulation()
     glDepthFunc(GL_LESS);
 }
 
-void StochasticTransparency::blit()
+void ProgressiveTransparency::blit()
 {
     auto targetfbo = m_targetFramebufferCapability->framebuffer();
     auto drawBuffer = GL_COLOR_ATTACHMENT0;
@@ -401,7 +405,7 @@ void StochasticTransparency::blit()
         GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 }
 
-void StochasticTransparency::composite()
+void ProgressiveTransparency::composite()
 {
     glDisable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
