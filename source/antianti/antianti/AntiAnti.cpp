@@ -107,11 +107,13 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_dofAtCursor(false)
     , m_maxLightSourceShift(0.1f)
     , m_linearizedShadowMap(false)
+    , m_accTextureFormat(gl::GL_RGBA8)
 {    
     setupPropertyGroup();
 }
 
 AntiAnti::~AntiAnti() = default;
+
 
 void AntiAnti::setupPropertyGroup()
 {
@@ -216,6 +218,18 @@ void AntiAnti::setupPropertyGroup()
             m_frame = 0;
         });
     }
+    
+    addProperty<GLenum>("textureFormat",
+        [this]() {return m_accTextureFormat; },
+        [this](GLenum accTextureFormat) {
+        m_accTextureFormat = accTextureFormat;
+        updateFramebuffer();
+        m_frame = 0;
+    })->setStrings({ 
+        { GLenum::GL_RGBA8, "GL_RGBA8" },
+        { GLenum::GL_RGBA32F, "GL_RGBA32F" },
+        { GLenum::GL_RGBA16, "GL_RGBA16" }
+    });
 }
 
 float AntiAnti::transparency() const
@@ -282,13 +296,6 @@ void AntiAnti::onInitialize()
     setupProgram();
     setupProjection();
     setupFramebuffer();
-
-    m_postProcessing.lastFrame = m_ppTexture;
-    m_postProcessing.fbo = m_ppfbo;
-    m_postProcessing.depthBufferTexture = m_depthAttachment;
-    m_postProcessing.normalTexture = m_normalAttachment;
-    m_postProcessing.colorTexture = m_colorAttachment;
-    m_postProcessing.initialize();
 
     globjects::NamedString::create("/data/antianti/ssao.glsl", new globjects::File("data/antianti/ssao.glsl"));
 }
@@ -503,6 +510,13 @@ void AntiAnti::setupFramebuffer()
         m_projectionCapability,
         m_viewportCapability, 
         m_renderTargetCapability);
+
+    m_postProcessing.lastFrame = m_ppTexture;
+    m_postProcessing.fbo = m_ppfbo;
+    m_postProcessing.depthBufferTexture = m_depthAttachment;
+    m_postProcessing.normalTexture = m_normalAttachment;
+    m_postProcessing.colorTexture = m_colorAttachment;
+    m_postProcessing.initialize();
 }
 
 void AntiAnti::setupProjection()
@@ -585,7 +599,7 @@ void AntiAnti::updateFramebuffer()
     m_normalAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
     m_depthAttachment->image2D(0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
 
-    m_ppTexture->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    m_ppTexture->image2D(0, m_accTextureFormat, m_accTextureFormat, height, 0, GL_RGBA, GL_FLOAT, nullptr);
 }
 
 void AntiAnti::drawShadowMap()

@@ -122,4 +122,6 @@ protected:
     bool m_linearizedShadowMap;
 
     PostProcessing m_postProcessing;
+
+    gl::GLenum m_accTextureFormat;
 };
