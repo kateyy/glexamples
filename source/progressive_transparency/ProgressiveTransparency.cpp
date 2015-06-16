@@ -1,6 +1,7 @@
 #include "ProgressiveTransparency.h"
 
 #include <iostream>
+#include <chrono>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -75,7 +76,6 @@ void ProgressiveTransparency::onInitialize()
     setupPrograms();
     setupProjection();
     setupFramebuffer();
-    setupMasksTexture();
     setupDrawable();
 }
 
@@ -103,30 +103,22 @@ void ProgressiveTransparency::onPaint()
     {
         m_frame = 0;
     }
-    
-    if (m_options->numSamplesChanged())
-        updateNumSamples();
+
+    auto now = std::chrono::steady_clock::now();
+    auto now2 = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
+
+    m_alphaToCoverageProgram->setUniform("time", static_cast<GLuint>(now2));
+
     
     clearBuffers();
     updateUniforms();
     
-    if (m_options->optimization() == StochasticTransparencyOptimization::NoOptimization)
-    {
-        renderOpaqueGeometry();
+    if (m_options->backFaceCulling())
+        glEnable(GL_CULL_FACE);
         
-        if (m_options->backFaceCulling())
-            glEnable(GL_CULL_FACE);
+    renderAlphaToCoverage(GL_COLOR_ATTACHMENT0);
         
-        renderAlphaToCoverage(kOpaqueColorAttachment);
-        
-        blit();
-    }
-    else
-    {
-        renderOpaqueGeometry();
-        renderTransparentGeometry();
-        composite();
-    }
+    blit();
     
     Framebuffer::unbind(GL_FRAMEBUFFER);
 
@@ -135,18 +127,14 @@ void ProgressiveTransparency::onPaint()
 
 void ProgressiveTransparency::setupFramebuffer()
 {
-    m_opaqueColorAttachment = make_ref<Texture>(GL_TEXTURE_2D);
-    m_transparentColorAttachment = make_ref<Texture>(GL_TEXTURE_2D);
-    m_totalAlphaAttachment = make_ref<Texture>(GL_TEXTURE_2D);
+    m_colorAttachment = make_ref<Texture>(GL_TEXTURE_2D);
     m_depthAttachment = make_ref<Texture>(GL_TEXTURE_2D);
     
     updateFramebuffer();
     
     m_fbo = make_ref<Framebuffer>();
     
-    m_fbo->attachTexture(kOpaqueColorAttachment, m_opaqueColorAttachment);
-    m_fbo->attachTexture(kTransparentColorAttachment, m_transparentColorAttachment);
-    m_fbo->attachTexture(kTotalAlphaAttachment, m_totalAlphaAttachment);
+    m_fbo->attachTexture(GL_COLOR_ATTACHMENT0, m_colorAttachment);
     m_fbo->attachTexture(GL_DEPTH_ATTACHMENT, m_depthAttachment);
 
     m_fbo->printStatus(true);
@@ -184,10 +172,7 @@ void ProgressiveTransparency::setupDrawable()
 
 void ProgressiveTransparency::setupPrograms()
 {
-    static const auto totalAlphaShaders = "total_alpha";
     static const auto alphaToCoverageShaders = "alpha_to_coverage";
-    static const auto transparentColorsShaders = "transparent_colors";
-    static const auto compositingShaders = "compositing";
     
     const auto initProgram = [] (globjects::ref_ptr<globjects::Program> & program, const char * shaders)
     {
@@ -199,67 +184,23 @@ void ProgressiveTransparency::setupPrograms()
             Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + shaders + ".frag"));
     };
     
-    initProgram(m_totalAlphaProgram, totalAlphaShaders);
     initProgram(m_alphaToCoverageProgram, alphaToCoverageShaders);
-    initProgram(m_colorAccumulationProgram, transparentColorsShaders);
-    initProgram(m_compositingProgram, compositingShaders);
     
     glBindAttribLocation(m_alphaToCoverageProgram->id(), 0, "a_vertex");
     glBindAttribLocation(m_alphaToCoverageProgram->id(), 1, "a_normal");
-    m_alphaToCoverageProgram->setUniform("masksTexture", 0);
-
-    glBindAttribLocation(m_colorAccumulationProgram->id(), 0, "a_vertex");
-    glBindAttribLocation(m_colorAccumulationProgram->id(), 1, "a_normal");
-    
-    updateNumSamplesUniforms();
-    
-    const auto opaqueColorLocation = m_compositingProgram->getUniformLocation("opaqueColorTexture");
-    const auto totalAlphaLocation = m_compositingProgram->getUniformLocation("totalAlphaTexture");
-    const auto transparentColorLocation = m_compositingProgram->getUniformLocation("transparentColorTexture");
-    
-    m_compositingProgram->setUniform(opaqueColorLocation, 0);
-    m_compositingProgram->setUniform(totalAlphaLocation, 1);
-    m_compositingProgram->setUniform(transparentColorLocation, 2);
-    
-    m_compositingQuad = make_ref<gloperate::ScreenAlignedQuad>(m_compositingProgram);
-}
-
-void ProgressiveTransparency::setupMasksTexture()
-{
-    static const auto numSamples = m_options->numSamples();
-    const auto table = MasksTableGenerator::generateDistributions(numSamples);
-    
-    m_masksTexture = Texture::createDefault(GL_TEXTURE_2D);
-    m_masksTexture->image2D(0, GL_R8, static_cast<GLint>(table->at(0).size()), static_cast<GLint>(table->size()), 0, 
-        GL_RED, GL_UNSIGNED_BYTE, table->data());
 }
 
 void ProgressiveTransparency::updateFramebuffer()
 {
-    const auto numSamples = m_options->numSamples();
     const auto size = glm::ivec2{m_viewportCapability->width(), m_viewportCapability->height()};
     
-    m_opaqueColorAttachment->image2D(0, GL_RGBA8, size, 0, GL_RGBA, GL_FLOAT, nullptr);
-    m_transparentColorAttachment->image2D(0, GL_R32F, size, 0, GL_RED, GL_FLOAT, nullptr);
-    m_totalAlphaAttachment->image2D(0, GL_R32F, size, 0, GL_RED, GL_FLOAT, nullptr);
+    m_colorAttachment->image2D(0, GL_RGBA32F, size, 0, GL_RGBA, GL_FLOAT, nullptr);
     m_depthAttachment->image2D(0, GL_DEPTH_COMPONENT, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-}
-
-void ProgressiveTransparency::updateNumSamples()
-{
-    setupMasksTexture();
-    updateFramebuffer();
-    updateNumSamplesUniforms();
-}
-
-void ProgressiveTransparency::updateNumSamplesUniforms()
-{
-    m_compositingProgram->setUniform("numSamples", static_cast<int>(m_options->numSamples()));
 }
 
 void ProgressiveTransparency::clearBuffers()
 {
-    m_fbo->setDrawBuffers({ kOpaqueColorAttachment, kTransparentColorAttachment, kTotalAlphaAttachment });
+    m_fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });
     
     m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4(0.85f, 0.87f, 0.91f, 1.0f));
     m_fbo->clearBuffer(GL_COLOR, 1, glm::vec4(0.0f));
@@ -271,7 +212,7 @@ void ProgressiveTransparency::updateUniforms()
 {
     const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
     const auto eye = m_cameraCapability->eye();
-    const auto transparency = static_cast<unsigned int>(m_options->transparency());
+    const auto transparency = m_options->transparency();
     
     m_grid->update(eye, m_cameraCapability->view(), m_projectionCapability->projection());
     
@@ -281,62 +222,7 @@ void ProgressiveTransparency::updateUniforms()
         program->setUniform("transparency", transparency);
     };
     
-    updateProgramUniforms(m_totalAlphaProgram);
     updateProgramUniforms(m_alphaToCoverageProgram);
-    updateProgramUniforms(m_colorAccumulationProgram);
-}
-
-void ProgressiveTransparency::renderOpaqueGeometry()
-{
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-
-    m_fbo->bind(GL_FRAMEBUFFER);
-    m_fbo->setDrawBuffer(kOpaqueColorAttachment);
-
-    m_grid->draw();
-}
-
-void ProgressiveTransparency::renderTransparentGeometry()
-{
-    if (m_options->backFaceCulling())
-        glEnable(GL_CULL_FACE);
-    
-    renderTotalAlpha();
-
-    if (m_options->optimization() == StochasticTransparencyOptimization::AlphaCorrection)
-    {
-        renderAlphaToCoverage(kTransparentColorAttachment);
-    }
-    else if (m_options->optimization() == StochasticTransparencyOptimization::AlphaCorrectionAndDepthBased)
-    {
-        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-        renderAlphaToCoverage(kTransparentColorAttachment);
-        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-        
-        renderColorAccumulation();
-    }
-}
-
-void ProgressiveTransparency::renderTotalAlpha()
-{
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
-    
-    glEnable (GL_BLEND);
-    glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
-    
-    m_fbo->bind(GL_FRAMEBUFFER);
-    m_fbo->setDrawBuffer(kTotalAlphaAttachment);
-    
-    m_totalAlphaProgram->use();
-    
-    for (auto & drawable : m_drawables)
-        drawable->draw();
-    
-    m_totalAlphaProgram->release();
-    
-    glDisable(GL_BLEND);
 }
 
 void ProgressiveTransparency::renderAlphaToCoverage(gl::GLenum colorAttachment)
@@ -346,41 +232,15 @@ void ProgressiveTransparency::renderAlphaToCoverage(gl::GLenum colorAttachment)
 
     m_fbo->bind(GL_FRAMEBUFFER);
     m_fbo->setDrawBuffer(colorAttachment);
-    
-    m_masksTexture->bindActive(GL_TEXTURE0);
 
     m_alphaToCoverageProgram->use();
-    m_alphaToCoverageProgram->setUniform("numSamples", m_options->numSamples());
-    m_alphaToCoverageProgram->setUniform("frame", m_frame);
 
     for (auto & drawable : m_drawables)
         drawable->draw();
 
     m_alphaToCoverageProgram->release();
-}
 
-void ProgressiveTransparency::renderColorAccumulation()
-{
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
-    
-    glDepthFunc(GL_LEQUAL);
-    
-    glEnable (GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE);
-    
-    m_fbo->bind(GL_FRAMEBUFFER);
-    m_fbo->setDrawBuffer(kTransparentColorAttachment);
-    
-    m_colorAccumulationProgram->use();
-    
-    for (auto & drawable : m_drawables)
-        drawable->draw();
-    
-    m_colorAccumulationProgram->release();
-
-    glDisable(GL_BLEND);
-    glDepthFunc(GL_LESS);
+    m_fbo->unbind();
 }
 
 void ProgressiveTransparency::blit()
@@ -401,34 +261,10 @@ void ProgressiveTransparency::blit()
         m_viewportCapability->height()
     }};
     
-    m_fbo->blit(kOpaqueColorAttachment, rect, targetfbo, drawBuffer, rect,
+    targetfbo->bind();
+
+    m_fbo->blit(GL_COLOR_ATTACHMENT0, rect, targetfbo, drawBuffer, rect,
         GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-}
 
-void ProgressiveTransparency::composite()
-{
-    glDisable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-    
-    auto targetfbo = m_targetFramebufferCapability->framebuffer();
-    
-    if (!targetfbo)
-        targetfbo = Framebuffer::defaultFBO();
-    
-    targetfbo->bind(GL_FRAMEBUFFER);
-    
-    m_opaqueColorAttachment->bindActive(GL_TEXTURE0);
-    m_totalAlphaAttachment->bindActive(GL_TEXTURE1);
-    m_transparentColorAttachment->bindActive(GL_TEXTURE2);
-    
-    m_compositingQuad->draw();
-    
-    const auto rect = std::array<GLint, 4>{{
-        m_viewportCapability->x(),
-        m_viewportCapability->y(),
-        m_viewportCapability->width(),
-        m_viewportCapability->height()
-    }};
-
-    m_fbo->blit(GL_COLOR_ATTACHMENT0, rect, targetfbo, GL_BACK_LEFT, rect, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    targetfbo->unbind();
 }

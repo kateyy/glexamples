@@ -46,22 +46,14 @@ protected:
     void setupFramebuffer();
     void setupProjection();
     void setupPrograms();
-    void setupMasksTexture();
     void setupDrawable();
     void updateFramebuffer();
-    void updateNumSamples();
-    void updateNumSamplesUniforms();
     
 protected:
     void clearBuffers();
     void updateUniforms();
-    void renderOpaqueGeometry();
-    void renderTransparentGeometry();
-    void renderTotalAlpha();
     void renderAlphaToCoverage(gl::GLenum colorAttachment);
-    void renderColorAccumulation();
     void blit();
-    void composite();
 
 private:
     /** \name Capabilities */
@@ -77,14 +69,8 @@ private:
     /** \name Framebuffers and Textures */
     /** \{ */
     
-    static const auto kOpaqueColorAttachment = gl::GL_COLOR_ATTACHMENT0;
-    static const auto kTransparentColorAttachment = gl::GL_COLOR_ATTACHMENT1;
-    static const auto kTotalAlphaAttachment = gl::GL_COLOR_ATTACHMENT2;
-    
     globjects::ref_ptr<globjects::Framebuffer> m_fbo;
-    globjects::ref_ptr<globjects::Texture> m_opaqueColorAttachment;
-    globjects::ref_ptr<globjects::Texture> m_transparentColorAttachment;
-    globjects::ref_ptr<globjects::Texture> m_totalAlphaAttachment;
+    globjects::ref_ptr<globjects::Texture> m_colorAttachment;
     globjects::ref_ptr<globjects::Texture> m_depthAttachment;
     
     /** \} */
@@ -92,14 +78,7 @@ private:
     /** \name Programs */
     /** \{ */
     
-    globjects::ref_ptr<globjects::Program> m_totalAlphaProgram;
-    
     globjects::ref_ptr<globjects::Program> m_alphaToCoverageProgram;
-    globjects::ref_ptr<globjects::Texture> m_masksTexture;
-    
-    globjects::ref_ptr<globjects::Program> m_colorAccumulationProgram;
-    
-    globjects::ref_ptr<globjects::Program> m_compositingProgram;
     
     /** \} */
     
@@ -108,7 +87,6 @@ private:
     
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     std::vector<std::unique_ptr<gloperate::PolygonalDrawable>> m_drawables;
-    globjects::ref_ptr<gloperate::ScreenAlignedQuad> m_compositingQuad;
     
     /** \} */
 

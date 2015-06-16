@@ -5,25 +5,19 @@ flat in float v_rand;
 
 out vec4 fragColor;
 
-uniform uint transparency;
-uniform sampler2D masksTexture;
+uniform float transparency;
 uniform vec2 viewport;
-uniform int frame;
-uniform int numSamples;
+uniform uint time;
 
 
 float rand();
 float calculateAlpha(uint mask);
 
-const float denormFactor = pow(2.0, 8.0) - 1.0;
-
 void main()
 {
-    ivec2 index = ivec2(rand() * 1023.0, transparency);
-    uint mask = uint(texelFetch(masksTexture, index, 0).r * denormFactor);
-
-    uint sampleBit = 1u << (frame % numSamples);
-    if ((mask & sampleBit) != sampleBit)
+    float random = rand();
+    
+    if (random < transparency)
         discard;
 
     vec3 color = vec3(v_normal * 0.5 + 0.5);
@@ -42,6 +36,6 @@ highp float rand(vec2 co)
 
 float rand()
 {
-    vec2 normFragCoord = floor(gl_FragCoord.xy) / viewport * v_rand;
+    vec2 normFragCoord = floor(gl_FragCoord.xy) / viewport * v_rand * float(time % 1024u) / 1024.0;
     return rand(normFragCoord.xy);
 }
