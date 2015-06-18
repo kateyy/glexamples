@@ -50,6 +50,9 @@ public:
     float transparency() const;
     void setTransparency(float transparency);
 
+    bool backFaceCulling() const;
+    void setBackFaceCulling(bool backFaceCulling);
+
     float subpixelShift() const;
     void setSubpixelShift(float shift);
     
@@ -85,11 +88,14 @@ protected:
     globjects::ref_ptr<globjects::Framebuffer> m_ppfbo;
     globjects::ref_ptr<globjects::Texture> m_ppTexture;
 
+    globjects::ref_ptr<globjects::Texture> m_transparencyNoise;
     
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<globjects::Program> m_program;
     gl::GLint m_transformLocation;
     gl::GLint m_transparencyLocation;
+    gl::GLint m_viewportLocation;
+    gl::GLint m_timeLocation;
     std::vector<std::unique_ptr<gloperate::PolygonalDrawable>> m_drawables;
 
     std::unique_ptr<gloperate::CoordinateProvider> m_coordProvider;
@@ -98,6 +104,7 @@ protected:
 
     int m_frame;
     float m_transparency;
+    bool m_backFaceCulling;
     float m_maxSubpixelShift;
     glm::mat4 m_lastTransform;
 

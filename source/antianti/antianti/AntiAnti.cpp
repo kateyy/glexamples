@@ -1,6 +1,8 @@
 #include "AntiAnti.h"
 
+#include <chrono>
 #include <iostream>
+#include <random>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -50,6 +52,11 @@ using namespace gloperate;
 
 using widgetzeug::make_unique;
 
+namespace
+{
+    GLuint transparencyNoise1DSamples = 1024;
+}
+
 class AntiAnti::HackedInputCapability : public InputCapability
 {
 public:
@@ -88,7 +95,8 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
     , m_inputCapability(addCapability(new HackedInputCapability()))
     , m_frame(0)
-    , m_transparency(1.0f)
+    , m_transparency(0.5f)
+    , m_backFaceCulling(false)
     , m_maxSubpixelShift(1.0f)
     , m_pointOrPlaneDoF(true)
     , m_maxDofShift(0.01f)
@@ -107,7 +115,10 @@ void AntiAnti::setupPropertyGroup()
         { "minimum", 0.0f },
         { "maximum", 1.0f },
         { "step", 0.1f },
-        { "precision", 1u }});
+        { "precision", 1u } });
+
+    addProperty<bool>("backFaceCulling", this,
+        &AntiAnti::backFaceCulling, &AntiAnti::setBackFaceCulling);
 
     addProperty<float>("subPixelShift", this,
         &AntiAnti::subpixelShift, &AntiAnti::setSubpixelShift)->setOptions({
@@ -193,6 +204,18 @@ void AntiAnti::setTransparency(float transparency)
     m_transparency = transparency;
     m_frame = 0;
 }
+
+bool AntiAnti::backFaceCulling() const
+{
+    return m_backFaceCulling;
+}
+
+void AntiAnti::setBackFaceCulling(bool backFaceCulling)
+{
+    m_backFaceCulling = backFaceCulling;
+    m_frame = 0;
+}
+
 float AntiAnti::subpixelShift() const
 {
     return m_maxSubpixelShift;
@@ -317,34 +340,44 @@ void AntiAnti::onPaint()
     m_grid->setCamera(camera);
     m_grid->draw(aaShift, m_focalDepth, shearingFactor);
     
-    /*glEnable(GL_SAMPLE_SHADING);
-    glMinSampleShading(1.0);*/
+
+    if (m_backFaceCulling)
+    {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    }
+
+    auto time_now = static_cast<GLuint>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
     
     m_program->use();
 
     m_program->setUniform("subpixelShift", aaShift);
     m_program->setUniform("viewMatrix", camera->view());
     m_program->setUniform("projection", m_projectionCapability->projection());
-    m_program->setUniform(m_transformLocation, transform);
+    //m_program->setUniform(m_transformLocation, transform);
     m_program->setUniform("focalPlane", m_focalDepth);
     m_program->setUniform("shearingFactor", shearingFactor);
-    
+    //m_program->setUniform(m_timeLocation, time_now);
+    m_program->setUniform("frame", m_frame);
+    m_program->setUniform(m_viewportLocation, glm::vec2{ m_viewportCapability->width(), m_viewportCapability->height() });
+    m_program->setUniform(m_transparencyLocation, m_transparency);
+
+    m_program->setUniform("transparencyNoise1DSamples", transparencyNoise1DSamples);
+    m_program->setUniform("transparencyNoise1D", 7);
+    m_transparencyNoise->bindActive(GL_TEXTURE7);
+
     for (auto i = 0u; i < m_drawables.size(); ++i)
     {
-        glBindAttribLocation(m_program->id(), 0, "a_vertex");
-        glBindAttribLocation(m_program->id(), 1, "a_normal");
-        m_program->setUniform(m_transparencyLocation, i % 2 == 0 ? m_transparency : 1.0f);
+        //m_program->setUniform(m_transparencyLocation, i % 2 == 0 ? m_transparency : 1.0f);
         m_drawables[i]->draw();
     }
     
     m_program->release();
     
-    /*glDisable(GL_SAMPLE_SHADING);
-    glMinSampleShading(0.0);*/
-
     Framebuffer::unbind(GL_FRAMEBUFFER);
 
 
+    glDisable(GL_CULL_FACE);
 
     ++m_frame;
 
@@ -356,7 +389,7 @@ void AntiAnti::onPaint()
 
 
     
-    const auto rect = std::array<gl::GLint, 4>{{
+    const auto rect = std::array<GLint, 4>{{
         m_viewportCapability->x(),
         m_viewportCapability->y(),
         m_viewportCapability->width(),
@@ -444,12 +477,28 @@ void AntiAnti::setupDrawable()
 
     // Release scene
     delete scene;
+
+
+    std::vector<float> noise(transparencyNoise1DSamples);
+    for (GLuint i = 0; i < transparencyNoise1DSamples; ++i)
+        noise[i] = float(i) / float(transparencyNoise1DSamples);
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    std::shuffle(noise.begin(), noise.end(), g);
+
+    m_transparencyNoise = make_ref<Texture>(GL_TEXTURE_1D);
+    m_transparencyNoise->setParameter(gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
+    m_transparencyNoise->setParameter(gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
+    m_transparencyNoise->setParameter(gl::GL_TEXTURE_WRAP_S, gl::GL_MIRRORED_REPEAT);
+    m_transparencyNoise->image1D(0, GL_R32F, static_cast<GLsizei>(transparencyNoise1DSamples), 0, GL_RED, GL_FLOAT, noise.data());
 }
 
 void AntiAnti::setupProgram()
 {
     static const auto shaderPath = std::string{"data/antianti/"};
-    const auto shaderName = "screendoor";
+    const auto shaderName = "geometry";
     
     const auto vertexShader = shaderPath + shaderName + ".vert";
     const auto fragmentShader = shaderPath + shaderName + ".frag";
@@ -461,6 +510,11 @@ void AntiAnti::setupProgram()
     
     m_transformLocation = m_program->getUniformLocation("transform");
     m_transparencyLocation = m_program->getUniformLocation("transparency");
+    m_viewportLocation = m_program->getUniformLocation("viewport");
+    m_timeLocation = m_program->getUniformLocation("time");
+
+    glBindAttribLocation(m_program->id(), 0, "a_vertex");
+    glBindAttribLocation(m_program->id(), 1, "a_normal");
 }
 
 void AntiAnti::updateFramebuffer()

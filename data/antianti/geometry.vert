@@ -4,10 +4,10 @@ in vec3 a_vertex;
 in vec3 a_normal;
 
 out vec3 v_normal;
+flat out int v_rand;
 
 uniform mat4 viewMatrix;
 uniform mat4 projection;
-uniform mat4 transform;
 uniform vec2 subpixelShift;  // [-0.5,0.5]
 uniform float focalPlane;
 uniform vec2 shearingFactor;
@@ -23,4 +23,5 @@ void main()
     
 	gl_Position = pos;
     v_normal = a_normal;
+    v_rand = gl_VertexID;
 }
