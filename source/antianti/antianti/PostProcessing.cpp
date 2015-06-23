@@ -112,8 +112,8 @@ PostProcessing::PostProcessing()
 , useSSAO(true)
 , ssaoIntensity(1.0f)
 , ssaoRadius(0.05f)
+, output(Output::Source_Final)
 {
-
 }
 
 void PostProcessing::initialize()
@@ -128,6 +128,7 @@ void PostProcessing::initialize()
     m_screenAlignedQuad->program()->setUniform("ColorTexture", static_cast<int>(1));
     m_screenAlignedQuad->program()->setUniform("NormalTexture", static_cast<int>(2));
     m_screenAlignedQuad->program()->setUniform("lastFrame", static_cast<int>(3));
+    m_screenAlignedQuad->program()->setUniform("shadowMap", static_cast<int>(4));
 
     m_ssaoKernel = ssaoKernelTexture(kernelSize);
     m_ssaoNoise = ssaoNoiseTexture(noiseSize);
@@ -175,11 +176,13 @@ void PostProcessing::render()
         m_ssaoNoise->image2D(0, gl::GL_RGBA32F, glm::ivec2(noiseSize), 0, gl::GL_RGB, gl::GL_FLOAT, ssaoNoise(noiseSize).data());
     }
 
+    m_screenAlignedQuad->program()->setUniform("Source", static_cast<gl::GLint>(output));
     m_screenAlignedQuad->program()->setUniform("frame", frame);
 
     depthBufferTexture->bindActive(gl::GL_TEXTURE0);
     colorTexture->bindActive(gl::GL_TEXTURE1);
     normalTexture->bindActive(gl::GL_TEXTURE2);
+    shadowMap->bindActive(gl::GL_TEXTURE4);
 
     m_ssaoKernel->bindActive(gl::GL_TEXTURE7);
     m_ssaoNoise->bindActive(gl::GL_TEXTURE8);
@@ -195,6 +198,7 @@ void PostProcessing::render()
     depthBufferTexture->unbindActive(gl::GL_TEXTURE0);
     colorTexture->unbindActive(gl::GL_TEXTURE1);
     normalTexture->unbindActive(gl::GL_TEXTURE2);
+    shadowMap->unbindActive(gl::GL_TEXTURE4);
 
     m_ssaoKernel->unbindActive(gl::GL_TEXTURE7);
     m_ssaoNoise->unbindActive(gl::GL_TEXTURE8);

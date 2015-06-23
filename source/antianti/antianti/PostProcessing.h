@@ -32,17 +32,30 @@ public:
 
     void initialize();
 public:
+    enum Output : gl::GLint {
+        Source_Final = 0,
+        Source_Color = 1,
+        Source_Normals = 3,
+        Source_Geometry = 4,
+        Source_Depth = 5,
+        Source_ShadowMap = 6,
+    };
+
     glm::vec2 viewport;
     bool useSSAO;
     float ssaoRadius;
     float ssaoIntensity;
     bool duringInterpolation;
     bool inInteraction;
+
+    Output output;
+
     globjects::ref_ptr<gloperate::Camera> camera;
 
     globjects::ref_ptr<globjects::Texture> colorTexture;
     globjects::ref_ptr<globjects::Texture> normalTexture;
     globjects::ref_ptr<globjects::Texture> depthBufferTexture;
+    globjects::ref_ptr<globjects::Texture> shadowMap;
 
     globjects::ref_ptr<globjects::Texture> lastFrame;
     globjects::ref_ptr<globjects::Framebuffer> fbo;

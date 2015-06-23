@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <string>
 #include <random>
 
 #include <glm/glm.hpp>
@@ -41,6 +42,7 @@
 #include <gloperate/tools/DepthExtractor.h>
 
 #include <reflectionzeug/PropertyGroup.h>
+#include <reflectionzeug/extensions/GlmProperties.hpp>
 
 #include <widgetzeug/make_unique.hpp>
 
@@ -55,9 +57,6 @@ using widgetzeug::make_unique;
 namespace
 {
     GLuint transparencyNoise1DSamples = 1024;
-
-    glm::vec3 lightSource{ 0, 5,  0 };
-    GLuint shadowMapSize = 4096u;
 }
 
 class AntiAnti::HackedInputCapability : public InputCapability
@@ -105,9 +104,14 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_maxDofShift(0.01f)
     , m_focalDepth(3.0f)
     , m_dofAtCursor(false)
+    , m_lightPosition({0, 5, 0})
+    , m_lightFocus()
     , m_maxLightSourceShift(0.1f)
     , m_linearizedShadowMap(false)
-    , m_accTextureFormat(gl::GL_RGBA8)
+    , m_shadowMapParamsChanged(true)
+    , m_shadowDepthFormat(GL_DEPTH_COMPONENT32F)
+    , m_shadowMapWidth(4096)
+    , m_accTextureFormat(GL_RGBA32F)
 {    
     setupPropertyGroup();
 }
@@ -117,6 +121,11 @@ AntiAnti::~AntiAnti() = default;
 
 void AntiAnti::setupPropertyGroup()
 {
+    GLint maxTextureSize;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+    //m_shadowMapWidth = std::max(maxTextureSize, m_shadowMapWidth);
+    globjects::debug() << "GL_MAX_TEXTURE_SIZE: " << std::to_string(maxTextureSize) << std::endl;
+
     addProperty<float>("transparency", this,
         &AntiAnti::transparency, &AntiAnti::setTransparency)->setOptions({
         { "minimum", 0.0f },
@@ -202,6 +211,19 @@ void AntiAnti::setupPropertyGroup()
     {
         auto shadows = addGroup("Shadows");
 
+        shadows->addProperty<vec3>("LightPosition",
+            [this] () { return m_lightPosition; },
+            [this] (const vec3 & pos) {
+            m_lightPosition = pos;
+            m_frame = 0;
+        });
+        shadows->addProperty<vec3>("LightFocus",
+            [this] () { return m_lightFocus; },
+            [this] (const vec3 & pos) {
+            m_lightFocus = pos;
+            m_frame = 0;
+        });
+
         shadows->addProperty<float>("LightSourceRadius", this,
             &AntiAnti::maxLightSourceShift,
             &AntiAnti::setMaxLightSourceShift)->setOptions({
@@ -217,19 +239,60 @@ void AntiAnti::setupPropertyGroup()
             m_linearizedShadowMap = l;
             m_frame = 0;
         });
+
+        shadows->addProperty<GLenum>("depthFormat",
+            [this] () {return m_shadowDepthFormat; },
+            [this] (GLenum depthFormat) {
+            m_shadowDepthFormat = depthFormat;
+            m_shadowMapParamsChanged = true;
+            m_frame = 0;
+        })->setStrings({
+            { GLenum::GL_DEPTH_COMPONENT16, "GL_DEPTH_COMPONENT16" },
+            { GLenum::GL_DEPTH_COMPONENT24, "GL_DEPTH_COMPONENT24" },
+            { GLenum::GL_DEPTH_COMPONENT32, "GL_DEPTH_COMPONENT32" },
+            { GLenum::GL_DEPTH_COMPONENT32F, "GL_DEPTH_COMPONENT32F" }
+        });
+
+        shadows->addProperty<GLint>("shadowMapWidth",
+            [this] () { return m_shadowMapWidth; },
+            [this] (GLint width) {
+            m_shadowMapWidth = width;
+            m_shadowMapParamsChanged = true;
+            m_frame = 0;
+        })->setOptions({
+            {"minimum", 1},
+            {"maximum", std::numeric_limits<GLint>::max() } });
+            //{"maximum", maxTextureSize } });
     }
     
-    addProperty<GLenum>("textureFormat",
-        [this]() {return m_accTextureFormat; },
-        [this](GLenum accTextureFormat) {
-        m_accTextureFormat = accTextureFormat;
-        updateFramebuffer();
-        m_frame = 0;
-    })->setStrings({ 
-        { GLenum::GL_RGBA8, "GL_RGBA8" },
-        { GLenum::GL_RGBA32F, "GL_RGBA32F" },
-        { GLenum::GL_RGBA16, "GL_RGBA16" }
-    });
+    {
+        auto ppGroup = addGroup("Postprocessing");
+
+        ppGroup->addProperty<PostProcessing::Output>("Output",
+            [this] () {return m_postProcessing.output; },
+            [this] (PostProcessing::Output o) {
+            m_postProcessing.output = o; })
+            ->setStrings({
+                {PostProcessing::Output::Source_Final, "Final" },
+                {PostProcessing::Output::Source_Color, "Color" },
+                {PostProcessing::Output::Source_Normals, "Normals"},
+                {PostProcessing::Output::Source_Geometry, "Geometry"},
+                {PostProcessing::Output::Source_Depth, "Depth"},
+                {PostProcessing::Output::Source_ShadowMap, "ShadowMap"}
+            });
+
+        ppGroup->addProperty<GLenum>("textureFormat",
+            [this] () {return m_accTextureFormat; },
+            [this] (GLenum accTextureFormat) {
+            m_accTextureFormat = accTextureFormat;
+            updateFramebuffer();
+            m_frame = 0;
+        })->setStrings({
+            { GLenum::GL_RGBA8, "GL_RGBA8" },
+            { GLenum::GL_RGBA32F, "GL_RGBA32F" },
+            { GLenum::GL_RGBA16, "GL_RGBA16" }
+        });
+    }
 }
 
 float AntiAnti::transparency() const
@@ -412,7 +475,7 @@ void AntiAnti::onPaint()
     m_program->setUniform("frame", m_frame);
     m_program->setUniform("viewport", glm::vec2{ m_viewportCapability->width(), m_viewportCapability->height() });
     m_program->setUniform("transparency", m_transparency);
-    m_program->setUniform("lightSource", lightSource);
+    m_program->setUniform("lightSource", m_lightPosition);
 
     m_program->setUniform("transparencyNoise1DSamples", transparencyNoise1DSamples);
     m_program->setUniform("transparencyNoise1D", 1);
@@ -492,11 +555,9 @@ void AntiAnti::setupFramebuffer()
 
 
     m_shadowMap = Texture::createDefault(GL_TEXTURE_2D);
-    m_shadowMap->image2D(0, GL_DEPTH_COMPONENT16, shadowMapSize, shadowMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
     m_fboShadowing = make_ref<Framebuffer>();
     m_fboShadowing->attachTexture(GL_DEPTH_ATTACHMENT, m_shadowMap);
-    m_fboShadowing->printStatus(true);
 
 
     m_renderTargetCapability->setRenderTarget(
@@ -516,6 +577,7 @@ void AntiAnti::setupFramebuffer()
     m_postProcessing.depthBufferTexture = m_depthAttachment;
     m_postProcessing.normalTexture = m_normalAttachment;
     m_postProcessing.colorTexture = m_colorAttachment;
+    m_postProcessing.shadowMap = m_shadowMap;
     m_postProcessing.initialize();
 }
 
@@ -599,17 +661,23 @@ void AntiAnti::updateFramebuffer()
     m_normalAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
     m_depthAttachment->image2D(0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
 
-    m_ppTexture->image2D(0, m_accTextureFormat, m_accTextureFormat, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    m_ppTexture->image2D(0, m_accTextureFormat, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
 }
 
 void AntiAnti::drawShadowMap()
 {
+    if (m_shadowMapParamsChanged)
+    {
+        m_shadowMap->image2D(0, m_shadowDepthFormat, m_shadowMapWidth, m_shadowMapWidth, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        m_fboShadowing->printStatus(true);
+        m_shadowMapParamsChanged = false;
+    }
+
     glEnable(GL_DEPTH_TEST);
 
     m_fboShadowing->bind(GL_FRAMEBUFFER);
-
     
-    glViewport(0, 0, shadowMapSize, shadowMapSize);
+    glViewport(0, 0, m_shadowMapWidth, m_shadowMapWidth);
 
     glClearDepth(1.f);
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -620,8 +688,7 @@ void AntiAnti::drawShadowMap()
         m_projectionCapability->zNear(),
         m_projectionCapability->zFar());
 
-    auto lightCenter = glm::vec3();
-    auto lightViewDir = glm::normalize(lightCenter - lightSource);
+    auto lightViewDir = glm::normalize(m_lightFocus - m_lightPosition);
 
     auto lightShift = glm::diskRand(m_maxLightSourceShift);
     // https://stackoverflow.com/questions/10161553/rotate-a-vector-to-reach-another-vector
@@ -631,8 +698,8 @@ void AntiAnti::drawShadowMap()
     auto orientedLightShift = glm::vec3(glm::rotate(glm::mat4(), rndDiscToViewDirAngle, rndDiscToViewDirAxis) * glm::vec4(lightShift, 0, 1));
 
     // shift the whole light viewport on its disk (don't rotate it around its center!)
-    auto shiftedLightEye = lightSource + orientedLightShift;
-    auto shiftedLightCenter = lightCenter + orientedLightShift;
+    auto shiftedLightEye = m_lightPosition + orientedLightShift;
+    auto shiftedLightCenter = m_lightFocus + orientedLightShift;
     auto lightUp = glm::cross(-shiftedLightEye, glm::vec3(-1, 1, 0));
 
     auto transform = 

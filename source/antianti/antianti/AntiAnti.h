@@ -118,8 +118,13 @@ protected:
     float m_focalDepth;
     bool m_dofAtCursor;
 
+    glm::vec3 m_lightPosition;
+    glm::vec3 m_lightFocus;
     float m_maxLightSourceShift;
     bool m_linearizedShadowMap;
+    bool m_shadowMapParamsChanged;
+    gl::GLenum m_shadowDepthFormat;
+    gl::GLint m_shadowMapWidth;
 
     PostProcessing m_postProcessing;
 
