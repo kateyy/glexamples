@@ -106,6 +106,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_focalDepth(3.0f)
     , m_dofAtCursor(false)
     , m_maxLightSourceShift(0.1f)
+    , m_linearizedShadowMap(false)
 {    
     setupPropertyGroup();
 }
@@ -196,14 +197,25 @@ void AntiAnti::setupPropertyGroup()
         { "precision", 2u },
     });
 
-    addProperty<float>("LightSourceRadius", this,
-        &AntiAnti::maxLightSourceShift,
-        &AntiAnti::setMaxLightSourceShift)->setOptions({
-        { "minimum", 0.0f },
-        { "step", 0.05f },
-        { "precision", 2u },
-        { "title", "Light Radius" }
-    });
+    {
+        auto shadows = addGroup("Shadows");
+
+        shadows->addProperty<float>("LightSourceRadius", this,
+            &AntiAnti::maxLightSourceShift,
+            &AntiAnti::setMaxLightSourceShift)->setOptions({
+            { "minimum", 0.0f },
+            { "step", 0.05f },
+            { "precision", 2u },
+            { "title", "Light Radius" }
+        });
+
+        shadows->addProperty<bool>("linearizedShadowMap",
+            [this] () { return m_linearizedShadowMap; },
+            [this] (bool l) {
+            m_linearizedShadowMap = l;
+            m_frame = 0;
+        });
+    }
 }
 
 float AntiAnti::transparency() const
@@ -319,6 +331,12 @@ void AntiAnti::onPaint()
     if (cameraHasChanged)
     {
         m_lastTransform = inputTransform;
+
+        auto zRange = glm::vec2(
+            m_projectionCapability->zNear(),
+            m_projectionCapability->zFar());
+        m_program->setUniform("zRange", zRange);
+
         m_frame = 0;
     }
 
@@ -540,11 +558,13 @@ void AntiAnti::setupProgram()
     
     const auto vertexShader = shaderPath + shaderName + ".vert";
     const auto fragmentShader = shaderPath + shaderName + ".frag";
+    auto depthUtilShader = Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + "depth_util.frag");
     
     m_program = make_ref<Program>();
     m_program->attach(
         Shader::fromFile(GL_VERTEX_SHADER, vertexShader),
-        Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShader));
+        Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShader),
+        depthUtilShader);
 
     glBindAttribLocation(m_program->id(), 0, "a_vertex");
     glBindAttribLocation(m_program->id(), 1, "a_normal");
@@ -552,7 +572,8 @@ void AntiAnti::setupProgram()
     m_programShadowing = make_ref<Program>();
     m_programShadowing->attach(
         Shader::fromFile(GL_VERTEX_SHADER, shaderPath + "shadowMap.vert"),
-        Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + "shadowMap.frag"));
+        Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + "shadowMap.frag"),
+        depthUtilShader);
 }
 
 void AntiAnti::updateFramebuffer()
@@ -581,6 +602,10 @@ void AntiAnti::drawShadowMap()
 
     m_programShadowing->use();
 
+    auto zRange = glm::vec2(
+        m_projectionCapability->zNear(),
+        m_projectionCapability->zFar());
+
     auto lightCenter = glm::vec3();
     auto lightViewDir = glm::normalize(lightCenter - lightSource);
 
@@ -598,10 +623,12 @@ void AntiAnti::drawShadowMap()
 
     auto transform = 
         glm::perspective(m_projectionCapability->fovy(), 
-            1.0f, m_projectionCapability->zNear(), m_projectionCapability->zFar())
+            1.0f, zRange.x, zRange.y)
         * glm::lookAt(shiftedLightEye, shiftedLightCenter, lightUp);
 
+    m_programShadowing->setUniform("zRange", zRange);
     m_programShadowing->setUniform("transform", transform);
+    m_programShadowing->setUniform("linearizedShadowMap", m_linearizedShadowMap);
 
     // transform depth NDC to texture coordinates for lookup in fragment shader
     auto shadowBias = glm::mat4(
@@ -610,6 +637,7 @@ void AntiAnti::drawShadowMap()
         , 0.0f, 0.0f, 0.5f, 0.0f
         , 0.5f, 0.5f, 0.5f, 1.0f);
     m_program->setUniform("biasedDepthTransform", shadowBias * transform);
+    m_program->setUniform("linearizedShadowMap", m_linearizedShadowMap);
 
     for (auto i = 0u; i < m_drawables.size(); ++i)
         m_drawables[i]->draw();

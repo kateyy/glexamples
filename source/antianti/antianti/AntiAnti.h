@@ -119,6 +119,7 @@ protected:
     bool m_dofAtCursor;
 
     float m_maxLightSourceShift;
+    bool m_linearizedShadowMap;
 
     PostProcessing m_postProcessing;
 };

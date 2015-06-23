@@ -16,10 +16,14 @@ uniform sampler1D transparencyNoise1D;
 uniform uint transparencyNoise1DSamples;
 
 uniform sampler2D shadowMap;
+uniform bool linearizedShadowMap;
 
 
 float rand();
 float calculateAlpha(uint mask);
+
+// depth_util.frag
+float linearize(float depth);
 
 void main()
 {
@@ -40,6 +44,8 @@ void main()
         discard;
 
     vec3 shadowCoord = v_shadowCoord.xyz / v_shadowCoord.w;
+    if (linearizedShadowMap)
+        shadowCoord.z = linearize(shadowCoord.z);
     shadowCoord.z -= 0.0001;
     float shadowDist = texture(shadowMap, shadowCoord.xy).x;
     
