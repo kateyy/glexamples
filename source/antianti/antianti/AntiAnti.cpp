@@ -263,6 +263,20 @@ void AntiAnti::setupPropertyGroup()
             {"minimum", 1},
             {"maximum", std::numeric_limits<GLint>::max() } });
             //{"maximum", maxTextureSize } });
+
+        shadows->addProperty<float>("zNear",
+            [this] () { return m_lightZRange.x; },
+            [this] (float zNear) {
+            m_lightZRange.x = zNear;
+            m_frame = 0;
+        })->setOptions({ { "step", 0.1f } });
+
+        shadows->addProperty<float>("zFar",
+            [this] () { return m_lightZRange.y; },
+            [this] (float zFar) {
+            m_lightZRange.y = zFar;
+            m_frame = 0;
+        })->setOptions({ { "step", 1.0f } });
     }
     
     {
@@ -588,6 +602,7 @@ void AntiAnti::setupProjection()
     m_projectionCapability->setZNear(zNear);
     m_projectionCapability->setZFar(zFar);
     m_projectionCapability->setFovy(radians(fovy));
+    m_lightZRange = { m_projectionCapability->zNear(), m_projectionCapability->zFar() };
 
     m_grid->setNearFar(zNear, zFar);
 }
@@ -684,10 +699,6 @@ void AntiAnti::drawShadowMap()
 
     m_programShadowing->use();
 
-    auto zRange = glm::vec2(
-        m_projectionCapability->zNear(),
-        m_projectionCapability->zFar());
-
     auto lightViewDir = glm::normalize(m_lightFocus - m_lightPosition);
 
     auto lightShift = glm::diskRand(m_maxLightSourceShift);
@@ -704,10 +715,10 @@ void AntiAnti::drawShadowMap()
 
     auto transform = 
         glm::perspective(m_projectionCapability->fovy(), 
-            1.0f, zRange.x, zRange.y)
+            1.0f, m_lightZRange.x, m_lightZRange.y)
         * glm::lookAt(shiftedLightEye, shiftedLightCenter, lightUp);
 
-    m_programShadowing->setUniform("zRange", zRange);
+    m_programShadowing->setUniform("zRange", m_lightZRange);
     m_programShadowing->setUniform("transform", transform);
     m_programShadowing->setUniform("linearizedShadowMap", m_linearizedShadowMap);
 

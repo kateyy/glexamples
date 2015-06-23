@@ -120,6 +120,7 @@ protected:
 
     glm::vec3 m_lightPosition;
     glm::vec3 m_lightFocus;
+    glm::vec2 m_lightZRange;
     float m_maxLightSourceShift;
     bool m_linearizedShadowMap;
     bool m_shadowMapParamsChanged;
