@@ -63,7 +63,7 @@ set(DEFAULT_COMPILE_FLAGS
     ${WIN32_COMPILE_FLAGS}
     $<$<CONFIG:Debug>:   
       /RTC1         # -> Runtime error checks
-      /RTCc   
+      # /RTCc   
       /Od           # -> Optimization: none
       /GS           # -> buffer security check
       /GF-          # -> enable string pooling
@@ -76,9 +76,10 @@ set(DEFAULT_COMPILE_FLAGS
     # /Ot           # -> favor size or speed: favor fast code
     # /Oy           # -> omit frame pointers: yes
       /GS-          # -> buffer security check: no 
-      /GL           # -> whole program optimization: enable link-time code generation
+      # /GL           # -> whole program optimization: enable link-time code generation
       /GF           # -> enable string pooling
       /GR           # -> runtime type information
+      /Zo
     >
 )
 
@@ -99,7 +100,7 @@ set(DEFAULT_LINKER_FLAGS_DEBUG
 )
 
 set(DEFAULT_LINKER_FLAGS_RELEASE
-    "${WIN32_LINKER_FLAGS} /OPT:REF /LTCG /OPT:ICF /DELAY:UNLOAD"
+    "${WIN32_LINKER_FLAGS} /OPT:REF /OPT:ICF /DELAY:UNLOAD /DEBUG"
     # OPT:REF      -> references: eliminate unreferenced data
     # OPT:ICF      -> enable comdat folding: remove redundant comdats
     # LTCG         -> link time code generation: use link time code generation
