@@ -55,6 +55,8 @@ using widgetzeug::make_unique;
 namespace
 {
     GLuint transparencyNoise1DSamples = 1024;
+
+    glm::vec3 lightSource{ 0, 5,  0 };
 }
 
 class AntiAnti::HackedInputCapability : public InputCapability
@@ -259,18 +261,20 @@ void AntiAnti::onInitialize()
 
 void AntiAnti::onPaint()
 {
+    drawShadowMap();
+
     if (m_viewportCapability->hasChanged())
     {
-        glViewport(
-            m_viewportCapability->x(),
-            m_viewportCapability->y(),
-            m_viewportCapability->width(),
-            m_viewportCapability->height());
-
         m_viewportCapability->setChanged(false);
         
         updateFramebuffer();
     }
+
+    glViewport(
+        m_viewportCapability->x(),
+        m_viewportCapability->y(),
+        m_viewportCapability->width(),
+        m_viewportCapability->height());
 
     if (m_dofAtCursor || m_inputCapability->ctrlPressed)
     {
@@ -359,12 +363,16 @@ void AntiAnti::onPaint()
     m_program->setUniform("shearingFactor", shearingFactor);
     //m_program->setUniform(m_timeLocation, time_now);
     m_program->setUniform("frame", m_frame);
-    m_program->setUniform(m_viewportLocation, glm::vec2{ m_viewportCapability->width(), m_viewportCapability->height() });
-    m_program->setUniform(m_transparencyLocation, m_transparency);
+    m_program->setUniform("viewport", glm::vec2{ m_viewportCapability->width(), m_viewportCapability->height() });
+    m_program->setUniform("transparency", m_transparency);
+    m_program->setUniform("lightSource", lightSource);
 
     m_program->setUniform("transparencyNoise1DSamples", transparencyNoise1DSamples);
-    m_program->setUniform("transparencyNoise1D", 7);
-    m_transparencyNoise->bindActive(GL_TEXTURE7);
+    m_program->setUniform("transparencyNoise1D", 1);
+    m_program->setUniform("shadowMap", 2);
+
+    m_transparencyNoise->bindActive(GL_TEXTURE1);
+    m_shadowMap->bindActive(GL_TEXTURE2);
 
     for (auto i = 0u; i < m_drawables.size(); ++i)
     {
@@ -434,6 +442,14 @@ void AntiAnti::setupFramebuffer()
 
     m_fbo->printStatus(true);
     m_ppfbo->printStatus(true);
+
+
+    m_shadowMap = Texture::createDefault(GL_TEXTURE_2D);
+    m_shadowMap->image2D(0, GL_DEPTH_COMPONENT24, 2048, 2048, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+
+    m_fboShadowing = make_ref<Framebuffer>();
+    m_fboShadowing->attachTexture(GL_DEPTH_ATTACHMENT, m_shadowMap);
+    m_fboShadowing->printStatus(true);
 
 
     m_renderTargetCapability->setRenderTarget(
@@ -507,14 +523,14 @@ void AntiAnti::setupProgram()
     m_program->attach(
         Shader::fromFile(GL_VERTEX_SHADER, vertexShader),
         Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShader));
-    
-    m_transformLocation = m_program->getUniformLocation("transform");
-    m_transparencyLocation = m_program->getUniformLocation("transparency");
-    m_viewportLocation = m_program->getUniformLocation("viewport");
-    m_timeLocation = m_program->getUniformLocation("time");
 
     glBindAttribLocation(m_program->id(), 0, "a_vertex");
     glBindAttribLocation(m_program->id(), 1, "a_normal");
+
+    m_programShadowing = make_ref<Program>();
+    m_programShadowing->attach(
+        Shader::fromFile(GL_VERTEX_SHADER, shaderPath + "shadowMap.vert"),
+        Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + "shadowMap.frag"));
 }
 
 void AntiAnti::updateFramebuffer()
@@ -527,4 +543,44 @@ void AntiAnti::updateFramebuffer()
     m_depthAttachment->image2D(0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
 
     m_ppTexture->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+}
+
+void AntiAnti::drawShadowMap()
+{
+    glEnable(GL_DEPTH_TEST);
+
+    m_fboShadowing->bind(GL_FRAMEBUFFER);
+
+    glViewport(0, 0, 2048, 2048);
+
+    glClearDepth(1.f);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    m_programShadowing->use();
+
+    auto lightUp = glm::cross(-lightSource, glm::vec3(-1, 1, 0));
+
+    auto transform = 
+        glm::perspective(m_projectionCapability->fovy(), 
+            1.0f, m_projectionCapability->zNear(), m_projectionCapability->zFar())
+        * glm::lookAt(lightSource, glm::vec3(), lightUp);
+
+    m_programShadowing->setUniform("transform", transform);
+
+    // transform depth NDC to texture coordinates for lookup in fragment shader
+    auto shadowBias = glm::mat4(
+        0.5f, 0.0f, 0.0f, 0.0f
+        , 0.0f, 0.5f, 0.0f, 0.0f
+        , 0.0f, 0.0f, 0.5f, 0.0f
+        , 0.5f, 0.5f, 0.5f, 1.0f);
+    m_program->setUniform("biasedDepthTransform", shadowBias * transform);
+
+    for (auto i = 0u; i < m_drawables.size(); ++i)
+        m_drawables[i]->draw();
+
+    m_programShadowing->release();
+
+    glDisable(GL_DEPTH_TEST);
+
+    m_fboShadowing->unbind();
 }

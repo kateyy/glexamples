@@ -2,6 +2,7 @@
 
 in vec3 v_normal;
 flat in int v_rand;
+in vec4 v_shadowCoord;
 
 out vec4 fragColor;
 out vec4 fragNormal;
@@ -13,6 +14,8 @@ uniform int frame;
 
 uniform sampler1D transparencyNoise1D;
 uniform uint transparencyNoise1DSamples;
+
+uniform sampler2D shadowMap;
 
 
 float rand();
@@ -36,7 +39,15 @@ void main()
     if (random < transparency)
         discard;
 
-    vec3 color = vec3(v_normal * 0.5 + 0.5);
+    vec3 shadowCoord = v_shadowCoord.xyz / v_shadowCoord.w;
+    shadowCoord.z -= 0.0001;
+    float shadowDist = texture(shadowMap, shadowCoord.xy).x;
+    
+    float shadow = step(0.0, sign(v_shadowCoord.w)) * step(shadowCoord.z, shadowDist);
+    
+	vec3 color = vec3(shadow);
+
+    // vec3 color = vec3(v_normal * 0.5 + 0.5);
     fragColor = vec4(color, 1.0);
     fragNormal = vec4(v_normal, 1.0);
 }

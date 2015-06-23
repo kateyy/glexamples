@@ -60,12 +60,14 @@ protected:
     virtual void onInitialize() override;
     virtual void onPaint() override;
 
-protected:
+private:
     void setupFramebuffer();
     void setupProjection();
     void setupDrawable();
     void setupProgram();
     void updateFramebuffer();
+
+    void drawShadowMap();
 
 protected:
 
@@ -85,6 +87,10 @@ protected:
     globjects::ref_ptr<globjects::Texture> m_normalAttachment;
     globjects::ref_ptr<globjects::Texture> m_depthAttachment;
 
+    globjects::ref_ptr<globjects::Framebuffer> m_fboShadowing;
+    globjects::ref_ptr<globjects::Texture> m_shadowMap;
+    globjects::ref_ptr<globjects::Program> m_programShadowing;
+
     globjects::ref_ptr<globjects::Framebuffer> m_ppfbo;
     globjects::ref_ptr<globjects::Texture> m_ppTexture;
 
@@ -92,10 +98,6 @@ protected:
     
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<globjects::Program> m_program;
-    gl::GLint m_transformLocation;
-    gl::GLint m_transparencyLocation;
-    gl::GLint m_viewportLocation;
-    gl::GLint m_timeLocation;
     std::vector<std::unique_ptr<gloperate::PolygonalDrawable>> m_drawables;
 
     std::unique_ptr<gloperate::CoordinateProvider> m_coordProvider;
