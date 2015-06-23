@@ -21,8 +21,9 @@ void main()
     posView.xy += shearingFactor * (posView.z + focalPlane);
     
     vec4 pos = projection * posView;
-    pos /= pos.w;
+    pos.xy /= pos.w;
     pos.xy += subpixelShift * 2.0;
+    pos.xy *= pos.w;
     
 	gl_Position = pos;
     v_normal = a_normal;
