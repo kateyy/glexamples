@@ -55,6 +55,9 @@ public:
 
     float subpixelShift() const;
     void setSubpixelShift(float shift);
+
+    float maxLightSourceShift() const;
+    void setMaxLightSourceShift(float shift);
     
 protected:
     virtual void onInitialize() override;
@@ -114,6 +117,8 @@ protected:
     float m_maxDofShift;
     float m_focalDepth;
     bool m_dofAtCursor;
+
+    float m_maxLightSourceShift;
 
     PostProcessing m_postProcessing;
 };

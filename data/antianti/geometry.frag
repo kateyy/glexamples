@@ -45,9 +45,9 @@ void main()
     
     float shadow = step(0.0, sign(v_shadowCoord.w)) * step(shadowCoord.z, shadowDist);
     
-	vec3 color = vec3(shadow);
+	// vec3 color = vec3(shadow);
 
-    // vec3 color = vec3(v_normal * 0.5 + 0.5);
+    vec3 color = shadow * vec3(v_normal * 0.5 + 0.5);
     fragColor = vec4(color, 1.0);
     fragNormal = vec4(v_normal, 1.0);
 }

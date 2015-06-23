@@ -57,6 +57,7 @@ namespace
     GLuint transparencyNoise1DSamples = 1024;
 
     glm::vec3 lightSource{ 0, 5,  0 };
+    GLuint shadowMapSize = 4096u;
 }
 
 class AntiAnti::HackedInputCapability : public InputCapability
@@ -104,6 +105,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_maxDofShift(0.01f)
     , m_focalDepth(3.0f)
     , m_dofAtCursor(false)
+    , m_maxLightSourceShift(0.1f)
 {    
     setupPropertyGroup();
 }
@@ -193,6 +195,15 @@ void AntiAnti::setupPropertyGroup()
         { "step", 0.05f },
         { "precision", 2u },
     });
+
+    addProperty<float>("LightSourceRadius", this,
+        &AntiAnti::maxLightSourceShift,
+        &AntiAnti::setMaxLightSourceShift)->setOptions({
+        { "minimum", 0.0f },
+        { "step", 0.05f },
+        { "precision", 2u },
+        { "title", "Light Radius" }
+    });
 }
 
 float AntiAnti::transparency() const
@@ -226,6 +237,17 @@ float AntiAnti::subpixelShift() const
 void AntiAnti::setSubpixelShift(float shift)
 {
     m_maxSubpixelShift = shift;
+    m_frame = 0;
+}
+
+float AntiAnti::maxLightSourceShift() const
+{
+    return m_maxLightSourceShift;
+}
+
+void AntiAnti::setMaxLightSourceShift(float shift)
+{
+    m_maxLightSourceShift = shift;
     m_frame = 0;
 }
 
@@ -445,7 +467,7 @@ void AntiAnti::setupFramebuffer()
 
 
     m_shadowMap = Texture::createDefault(GL_TEXTURE_2D);
-    m_shadowMap->image2D(0, GL_DEPTH_COMPONENT24, 2048, 2048, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    m_shadowMap->image2D(0, GL_DEPTH_COMPONENT16, shadowMapSize, shadowMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
     m_fboShadowing = make_ref<Framebuffer>();
     m_fboShadowing->attachTexture(GL_DEPTH_ATTACHMENT, m_shadowMap);
@@ -551,19 +573,33 @@ void AntiAnti::drawShadowMap()
 
     m_fboShadowing->bind(GL_FRAMEBUFFER);
 
-    glViewport(0, 0, 2048, 2048);
+    
+    glViewport(0, 0, shadowMapSize, shadowMapSize);
 
     glClearDepth(1.f);
     glClear(GL_DEPTH_BUFFER_BIT);
 
     m_programShadowing->use();
 
-    auto lightUp = glm::cross(-lightSource, glm::vec3(-1, 1, 0));
+    auto lightCenter = glm::vec3();
+    auto lightViewDir = glm::normalize(lightCenter - lightSource);
+
+    auto lightShift = glm::diskRand(m_maxLightSourceShift);
+    // https://stackoverflow.com/questions/10161553/rotate-a-vector-to-reach-another-vector
+    auto rndDiscToViewDirAxis = glm::cross(lightViewDir, glm::vec3(0, 0, 1));
+    float rndDiscToViewDirAngle = glm::asin(glm::length(rndDiscToViewDirAxis));
+
+    auto orientedLightShift = glm::vec3(glm::rotate(glm::mat4(), rndDiscToViewDirAngle, rndDiscToViewDirAxis) * glm::vec4(lightShift, 0, 1));
+
+    // shift the whole light viewport on its disk (don't rotate it around its center!)
+    auto shiftedLightEye = lightSource + orientedLightShift;
+    auto shiftedLightCenter = lightCenter + orientedLightShift;
+    auto lightUp = glm::cross(-shiftedLightEye, glm::vec3(-1, 1, 0));
 
     auto transform = 
         glm::perspective(m_projectionCapability->fovy(), 
             1.0f, m_projectionCapability->zNear(), m_projectionCapability->zFar())
-        * glm::lookAt(lightSource, glm::vec3(), lightUp);
+        * glm::lookAt(shiftedLightEye, shiftedLightCenter, lightUp);
 
     m_programShadowing->setUniform("transform", transform);
 
