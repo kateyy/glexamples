@@ -66,6 +66,7 @@ protected:
 private:
     void setupFramebuffer();
     void setupProjection();
+    void setupTransparencyRandomness();
     void setupDrawable();
     void setupProgram();
     void updateFramebuffer();
@@ -102,16 +103,21 @@ protected:
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<globjects::Program> m_program;
     std::vector<std::unique_ptr<gloperate::PolygonalDrawable>> m_drawables;
+    std::vector<std::vector<bool>> m_transparencyRandomness;
 
     std::unique_ptr<gloperate::CoordinateProvider> m_coordProvider;
 
 protected:
 
     int m_frame;
-    float m_transparency;
-    bool m_backFaceCulling;
     float m_maxSubpixelShift;
     glm::mat4 m_lastTransform;
+
+    bool m_backFaceCulling;
+    bool m_backFaceCullingShadows;
+    float m_transparency;
+    bool m_useObjectBasedTransparency;
+    int m_numTransparencySamples;
 
     bool m_pointOrPlaneDoF;
     float m_maxDofShift;

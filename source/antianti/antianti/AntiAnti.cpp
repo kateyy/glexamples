@@ -56,7 +56,13 @@ using widgetzeug::make_unique;
 
 namespace
 {
-    GLuint transparencyNoise1DSamples = 1024;
+    void glSet(GLenum glenum, bool enable)
+    {
+        if (enable)
+            glEnable(glenum);
+        else
+            glDisable(glenum);
+    }
 }
 
 class AntiAnti::HackedInputCapability : public InputCapability
@@ -97,8 +103,6 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
     , m_inputCapability(addCapability(new HackedInputCapability()))
     , m_frame(0)
-    , m_transparency(0.5f)
-    , m_backFaceCulling(false)
     , m_maxSubpixelShift(1.0f)
     , m_pointOrPlaneDoF(true)
     , m_maxDofShift(0.01f)
@@ -112,6 +116,11 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_shadowDepthFormat(GL_DEPTH_COMPONENT32F)
     , m_shadowMapWidth(4096)
     , m_accTextureFormat(GL_RGBA32F)
+    , m_backFaceCulling(false)
+    , m_backFaceCullingShadows(false)
+    , m_useObjectBasedTransparency(true)
+    , m_transparency(0.5f)
+    , m_numTransparencySamples(1024)
 {    
     setupPropertyGroup();
 }
@@ -126,15 +135,6 @@ void AntiAnti::setupPropertyGroup()
     //m_shadowMapWidth = std::max(maxTextureSize, m_shadowMapWidth);
     globjects::debug() << "GL_MAX_TEXTURE_SIZE: " << std::to_string(maxTextureSize) << std::endl;
 
-    addProperty<float>("transparency", this,
-        &AntiAnti::transparency, &AntiAnti::setTransparency)->setOptions({
-        { "minimum", 0.0f },
-        { "maximum", 1.0f },
-        { "step", 0.1f },
-        { "precision", 1u } });
-
-    addProperty<bool>("backFaceCulling", this,
-        &AntiAnti::backFaceCulling, &AntiAnti::setBackFaceCulling);
 
     addProperty<float>("subPixelShift", this,
         &AntiAnti::subpixelShift, &AntiAnti::setSubpixelShift)->setOptions({
@@ -142,7 +142,6 @@ void AntiAnti::setupPropertyGroup()
             { "step", 0.05f },
             { "precision", 2u },
     });
-
 
     addProperty<bool>("focalPlaneNotPoint",
         [this] () {return m_pointOrPlaneDoF; },
@@ -307,6 +306,52 @@ void AntiAnti::setupPropertyGroup()
             { GLenum::GL_RGBA16, "GL_RGBA16" }
         });
     }
+
+    {
+        auto ppGroup = addGroup("Transparency");
+
+        ppGroup->addProperty<float>("transparency",
+            [this]() { return m_transparency; },
+            [this](float transparency) {
+                m_transparency = transparency;
+                m_frame = 0;
+                setupTransparencyRandomness();
+        })->setOptions({
+                { "minimum", 0.0f },
+                { "maximum", 1.0f },
+                { "step", 0.1f },
+                { "precision", 1u } });
+
+        ppGroup->addProperty<int>("numSamples",
+            [this]() {return m_numTransparencySamples; },
+            [this](int numTransparencySamples) {
+                m_numTransparencySamples = numTransparencySamples;
+                m_frame = 0;
+                setupTransparencyRandomness();
+        });
+
+        ppGroup->addProperty<bool>("ObjectBasedTransparency",
+            [this]() {return m_useObjectBasedTransparency; },
+            [this](bool useObjectBasedTransparency) {
+                m_useObjectBasedTransparency = useObjectBasedTransparency;
+                m_frame = 0;
+                setupTransparencyRandomness();
+        });
+
+        ppGroup->addProperty<bool>("backFaceCulling",
+            [this]() {return m_backFaceCulling; },
+            [this](bool backFaceCulling) {
+                m_backFaceCulling = backFaceCulling;
+                m_frame = 0;
+        });
+
+        ppGroup->addProperty<bool>("backFaceCullingShadows",
+            [this]() {return m_backFaceCullingShadows; },
+            [this](bool backFaceCullingShadows) {
+                m_backFaceCullingShadows = backFaceCullingShadows;
+                m_frame = 0;
+        });
+    }
 }
 
 float AntiAnti::transparency() const
@@ -316,20 +361,9 @@ float AntiAnti::transparency() const
 
 void AntiAnti::setTransparency(float transparency)
 {
- 
     m_transparency = transparency;
     m_frame = 0;
-}
-
-bool AntiAnti::backFaceCulling() const
-{
-    return m_backFaceCulling;
-}
-
-void AntiAnti::setBackFaceCulling(bool backFaceCulling)
-{
-    m_backFaceCulling = backFaceCulling;
-    m_frame = 0;
+    setupTransparencyRandomness();
 }
 
 float AntiAnti::subpixelShift() const
@@ -373,6 +407,7 @@ void AntiAnti::onInitialize()
     setupProgram();
     setupProjection();
     setupFramebuffer();
+    setupTransparencyRandomness();
 
     globjects::NamedString::create("/data/antianti/ssao.glsl", new globjects::File("data/antianti/ssao.glsl"));
 }
@@ -468,12 +503,8 @@ void AntiAnti::onPaint()
     m_grid->setCamera(camera);
     m_grid->draw(aaShift, m_focalDepth, shearingFactor);
     
-
-    if (m_backFaceCulling)
-    {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-    }
+    glSet(GL_CULL_FACE, m_backFaceCulling);
+    glCullFace(GL_BACK);
 
     auto time_now = static_cast<GLuint>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
     
@@ -488,10 +519,10 @@ void AntiAnti::onPaint()
     //m_program->setUniform(m_timeLocation, time_now);
     m_program->setUniform("frame", m_frame);
     m_program->setUniform("viewport", glm::vec2{ m_viewportCapability->width(), m_viewportCapability->height() });
-    m_program->setUniform("transparency", m_transparency);
+    m_program->setUniform("transparency", m_useObjectBasedTransparency ? 0.0f : m_transparency);
     m_program->setUniform("lightSource", m_lightPosition);
 
-    m_program->setUniform("transparencyNoise1DSamples", transparencyNoise1DSamples);
+    m_program->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
     m_program->setUniform("transparencyNoise1D", 1);
     m_program->setUniform("shadowMap", 2);
 
@@ -501,6 +532,8 @@ void AntiAnti::onPaint()
     for (auto i = 0u; i < m_drawables.size(); ++i)
     {
         //m_program->setUniform(m_transparencyLocation, i % 2 == 0 ? m_transparency : 1.0f);
+        if (m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
+            continue;
         m_drawables[i]->draw();
     }
     
@@ -607,9 +640,42 @@ void AntiAnti::setupProjection()
     m_grid->setNearFar(zNear, zFar);
 }
 
+void AntiAnti::setupTransparencyRandomness()
+{
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    //object based
+    std::vector<bool> randomness(m_numTransparencySamples);
+    for (int i = 0; i < m_numTransparencySamples * (1 - m_transparency); i++)
+        randomness[i] = true;
+    
+    m_transparencyRandomness.clear();
+    for (auto& drawable : m_drawables) {
+        std::shuffle(randomness.begin(), randomness.end(), g);
+        randomness[0] = true; // make sure the object is always rendered during camera movement
+        m_transparencyRandomness.push_back(randomness);
+    }
+
+    //pixel based
+    if (!m_transparencyNoise) {
+        m_transparencyNoise = make_ref<Texture>(GL_TEXTURE_1D);
+        m_transparencyNoise->setParameter(gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
+        m_transparencyNoise->setParameter(gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
+        m_transparencyNoise->setParameter(gl::GL_TEXTURE_WRAP_S, gl::GL_MIRRORED_REPEAT);
+    }
+
+    std::vector<float> noise(m_numTransparencySamples);
+    for (GLint i = 0; i < m_numTransparencySamples; ++i)
+        noise[i] = float(i) / float(m_numTransparencySamples);
+
+    std::shuffle(noise.begin(), noise.end(), g);
+    m_transparencyNoise->unbindActive(GL_TEXTURE1);
+    m_transparencyNoise->image1D(0, GL_R32F, static_cast<GLsizei>(m_numTransparencySamples), 0, GL_RED, GL_FLOAT, noise.data());
+}
+
 void AntiAnti::setupDrawable()
 {
-    // Load scene
     const auto scene = m_resourceManager.load<gloperate::Scene>("data/transparency/transparency_scene.obj");
     if (!scene)
     {
@@ -617,29 +683,11 @@ void AntiAnti::setupDrawable()
         return;
     }
 
-    // Create a renderable for each mesh
     for (const auto * geometry : scene->meshes()) {
         m_drawables.push_back(gloperate::make_unique<gloperate::PolygonalDrawable>(*geometry));
     }
 
-    // Release scene
     delete scene;
-
-
-    std::vector<float> noise(transparencyNoise1DSamples);
-    for (GLuint i = 0; i < transparencyNoise1DSamples; ++i)
-        noise[i] = float(i) / float(transparencyNoise1DSamples);
-
-    std::random_device rd;
-    std::mt19937 g(rd());
-
-    std::shuffle(noise.begin(), noise.end(), g);
-
-    m_transparencyNoise = make_ref<Texture>(GL_TEXTURE_1D);
-    m_transparencyNoise->setParameter(gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
-    m_transparencyNoise->setParameter(gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
-    m_transparencyNoise->setParameter(gl::GL_TEXTURE_WRAP_S, gl::GL_MIRRORED_REPEAT);
-    m_transparencyNoise->image1D(0, GL_R32F, static_cast<GLsizei>(transparencyNoise1DSamples), 0, GL_RED, GL_FLOAT, noise.data());
 }
 
 void AntiAnti::setupProgram()
@@ -650,12 +698,13 @@ void AntiAnti::setupProgram()
     const auto vertexShader = shaderPath + shaderName + ".vert";
     const auto fragmentShader = shaderPath + shaderName + ".frag";
     auto depthUtilShader = Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + "depth_util.frag");
+    auto transparencyUtilShader = Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + "transparency_util.frag");
     
     m_program = make_ref<Program>();
     m_program->attach(
         Shader::fromFile(GL_VERTEX_SHADER, vertexShader),
         Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShader),
-        depthUtilShader);
+        depthUtilShader, transparencyUtilShader);
 
     glBindAttribLocation(m_program->id(), 0, "a_vertex");
     glBindAttribLocation(m_program->id(), 1, "a_normal");
@@ -664,7 +713,7 @@ void AntiAnti::setupProgram()
     m_programShadowing->attach(
         Shader::fromFile(GL_VERTEX_SHADER, shaderPath + "shadowMap.vert"),
         Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + "shadowMap.frag"),
-        depthUtilShader);
+        depthUtilShader, transparencyUtilShader);
 }
 
 void AntiAnti::updateFramebuffer()
@@ -689,6 +738,7 @@ void AntiAnti::drawShadowMap()
     }
 
     glEnable(GL_DEPTH_TEST);
+    glSet(GL_CULL_FACE, m_backFaceCullingShadows);
 
     m_fboShadowing->bind(GL_FRAMEBUFFER);
     
@@ -722,6 +772,14 @@ void AntiAnti::drawShadowMap()
     m_programShadowing->setUniform("transform", transform);
     m_programShadowing->setUniform("linearizedShadowMap", m_linearizedShadowMap);
 
+    //needed for transparency
+    m_programShadowing->setUniform("frame", m_frame);
+    m_programShadowing->setUniform("viewport", glm::vec2{ m_shadowMapWidth, m_shadowMapWidth });
+    m_programShadowing->setUniform("transparency", m_useObjectBasedTransparency ? 0.0f : m_transparency);
+    m_programShadowing->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
+    m_programShadowing->setUniform("transparencyNoise1D", 1);
+    m_transparencyNoise->bindActive(GL_TEXTURE1);
+
     // transform depth NDC to texture coordinates for lookup in fragment shader
     auto shadowBias = glm::mat4(
         0.5f, 0.0f, 0.0f, 0.0f
@@ -731,11 +789,17 @@ void AntiAnti::drawShadowMap()
     m_program->setUniform("biasedDepthTransform", shadowBias * transform);
     m_program->setUniform("linearizedShadowMap", m_linearizedShadowMap);
 
-    for (auto i = 0u; i < m_drawables.size(); ++i)
+
+    for (auto i = 0u; i < m_drawables.size(); ++i) {
+        if (m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
+            continue;
         m_drawables[i]->draw();
+    }
+
 
     m_programShadowing->release();
 
+    glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
 
     m_fboShadowing->unbind();
