@@ -127,15 +127,8 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
 
 AntiAnti::~AntiAnti() = default;
 
-
 void AntiAnti::setupPropertyGroup()
 {
-    GLint maxTextureSize;
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
-    //m_shadowMapWidth = std::max(maxTextureSize, m_shadowMapWidth);
-    globjects::debug() << "GL_MAX_TEXTURE_SIZE: " << std::to_string(maxTextureSize) << std::endl;
-
-
     addProperty<float>("subPixelShift", this,
         &AntiAnti::subpixelShift, &AntiAnti::setSubpixelShift)->setOptions({
             { "minimum", 0.0f },
@@ -400,6 +393,11 @@ void AntiAnti::onInitialize()
     debug() << "Using global OS X shader replacement '#version 140' -> '#version 150'" << std::endl;
 #endif
 
+    GLint maxTextureSize = 0;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+    //m_shadowMapWidth = std::max(maxTextureSize, m_shadowMapWidth);
+    globjects::debug() << "GL_MAX_TEXTURE_SIZE: " << std::to_string(maxTextureSize) << std::endl;
+
     m_grid = make_ref<gloperate::AdaptiveGrid>();
     m_grid->setColor({0.6f, 0.6f, 0.6f});
 
@@ -601,9 +599,12 @@ void AntiAnti::setupFramebuffer()
     m_ppfbo->printStatus(true);
 
 
+    auto colorDump = Texture::createDefault(GL_TEXTURE_2D);
+    colorDump->image2D(0, GL_RED, 1, 1, 0, GL_RED, GL_FLOAT, 0);
     m_shadowMap = Texture::createDefault(GL_TEXTURE_2D);
 
     m_fboShadowing = make_ref<Framebuffer>();
+    m_fboShadowing->attachTexture(GL_COLOR_ATTACHMENT0, colorDump);
     m_fboShadowing->attachTexture(GL_DEPTH_ATTACHMENT, m_shadowMap);
 
 
