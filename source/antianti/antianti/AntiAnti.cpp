@@ -105,7 +105,8 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_inputCapability(addCapability(new HackedInputCapability()))
     , m_frame(0)
     , m_maxSubpixelShift(1.0f)
-    , m_pointOrPlaneDoF(true)
+    , m_dofEnabled(false)
+    , m_usePointDoF(false)
     , m_maxDofShift(0.01f)
     , m_focalDepth(3.0f)
     , m_dofAtCursor(false)
@@ -155,12 +156,19 @@ void AntiAnti::setupPropertyGroup()
     {
         auto dofGroup = addGroup("DepthOfField");
 
-        dofGroup->addProperty<bool>("focalPlaneNotPoint",
-            [this]() {return m_pointOrPlaneDoF; },
-            [this](bool doPoint) {
-                m_pointOrPlaneDoF = doPoint;
+        dofGroup->addProperty<bool>("enable",
+            [this]() { return m_dofEnabled; },
+            [this](bool enable) {
+                m_dofEnabled = enable;
                 m_frame = 0;
-        })->setOption("title", "Use Focal Plane (not Focal Point)");
+        });
+
+        dofGroup->addProperty<bool>("focalPointNotPlane",
+            [this]() {return m_usePointDoF; },
+            [this](bool doPoint) {
+                m_usePointDoF = doPoint;
+                m_frame = 0;
+        })->setOption("title", "Use Focal Point (not Focal Plane)");
 
         dofGroup->addProperty<float>("maxDofShift",
             [this]() {return m_maxDofShift; },
@@ -449,19 +457,21 @@ void AntiAnti::onPaint()
     glm::vec3 dofShiftedEye = inputEye;
     glm::vec3 viewVec = glm::normalize(m_cameraCapability->center() - inputEye) * m_focalDepth;
     glm::vec3 focalPoint = m_cameraCapability->eye() + viewVec;
+    glm::vec2 shearingFactor = glm::vec2();
 
-    if (!m_pointOrPlaneDoF)
+    if (m_dofEnabled && !cameraHasChanged)
     {
-        // rotation around focal point
-        if (!cameraHasChanged)
+        if (m_usePointDoF)
         {
             glm::vec3 dofShift{ glm::diskRand(m_maxDofShift), 0.0f };
             glm::vec3 dofShiftWorld = glm::mat3(m_cameraCapability->view()) * dofShift;
             dofShiftedEye = inputEye + dofShiftWorld;
         }
+        else
+        {
+            shearingFactor = glm::diskRand(m_maxDofShift);
+        }
     }
-
-    glm::vec2 shearingFactor = m_pointOrPlaneDoF ? glm::diskRand(m_maxDofShift) : glm::vec2();
 
 
     auto camera = make_ref<gloperate::Camera>(

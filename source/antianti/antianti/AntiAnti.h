@@ -107,7 +107,8 @@ protected:
     bool m_useObjectBasedTransparency;
     int m_numTransparencySamples;
 
-    bool m_pointOrPlaneDoF;
+    bool m_dofEnabled;
+    bool m_usePointDoF;
     float m_maxDofShift;
     float m_focalDepth;
     bool m_dofAtCursor;
