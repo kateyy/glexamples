@@ -7,6 +7,7 @@ out vec4 fragColor;
 out vec4 fragNormal;
 
 uniform uint time;
+uniform bool shadowsEnabled;
 uniform sampler2D shadowMap;
 uniform bool linearizedShadowMap;
 
@@ -22,17 +23,20 @@ void main()
     if (transparency_discard())
         discard;
 
-    vec3 shadowCoord = v_shadowCoord.xyz / v_shadowCoord.w;
-    if (linearizedShadowMap)
-        shadowCoord.z = linearize(shadowCoord.z);
-    shadowCoord.z -= 0.0001;
-    float shadowDist = texture(shadowMap, shadowCoord.xy).x;
-    
-    float shadow = step(0.0, sign(v_shadowCoord.w)) * step(shadowCoord.z, shadowDist);
-    
-	// vec3 color = vec3(shadow);
+    vec3 color = vec3(v_normal * 0.5 + 0.5);
 
-    vec3 color = shadow * vec3(v_normal * 0.5 + 0.5);
+    if (shadowsEnabled) {
+        vec3 shadowCoord = v_shadowCoord.xyz / v_shadowCoord.w;
+        if (linearizedShadowMap)
+            shadowCoord.z = linearize(shadowCoord.z);
+        shadowCoord.z -= 0.0001;
+        float shadowDist = texture(shadowMap, shadowCoord.xy).x;
+        
+        float shadow = step(0.0, sign(v_shadowCoord.w)) * step(shadowCoord.z, shadowDist);
+
+        color *= shadow;
+    }
+    
     fragColor = vec4(color, 1.0);
     fragNormal = vec4(v_normal, 1.0);
 }

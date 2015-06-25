@@ -104,12 +104,18 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
     , m_inputCapability(addCapability(new HackedInputCapability()))
     , m_frame(0)
+    // misc
+    , m_numFrames(10000)
     , m_maxSubpixelShift(1.0f)
+    , m_accTextureFormat(GL_RGBA32F)
+    // dof
     , m_dofEnabled(false)
     , m_usePointDoF(false)
     , m_maxDofShift(0.01f)
     , m_focalDepth(3.0f)
     , m_dofAtCursor(false)
+    // shadows
+    , m_shadowsEnabled(true)
     , m_lightPosition({0, 5, 0})
     , m_lightFocus()
     , m_maxLightSourceShift(0.1f)
@@ -117,13 +123,12 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_shadowMapParamsChanged(true)
     , m_shadowDepthFormat(GL_DEPTH_COMPONENT32F)
     , m_shadowMapWidth(4096)
-    , m_accTextureFormat(GL_RGBA32F)
+    // transparency
     , m_backFaceCulling(false)
     , m_backFaceCullingShadows(false)
     , m_useObjectBasedTransparency(true)
     , m_transparency(0.5f)
     , m_numTransparencySamples(1024)
-    , m_numFrames(10000)
 {    
     setupPropertyGroup();
 }
@@ -234,6 +239,13 @@ void AntiAnti::setupPropertyGroup()
 
     {
         auto shadows = addGroup("Shadows");
+
+        shadows->addProperty<bool>("enable",
+            [this]() { return m_shadowsEnabled; },
+            [this](bool enable) {
+                m_shadowsEnabled = enable;
+                m_frame = 0;
+        });
 
         shadows->addProperty<vec3>("LightPosition",
             [this] () { return m_lightPosition; },
@@ -408,7 +420,8 @@ void AntiAnti::onInitialize()
 
 void AntiAnti::onPaint()
 {
-    drawShadowMap();
+    if (m_shadowsEnabled)
+        drawShadowMap();
 
     if (m_viewportCapability->hasChanged())
     {
@@ -516,6 +529,7 @@ void AntiAnti::onPaint()
     m_program->setUniform("frame", m_frame);
     m_program->setUniform("viewport", glm::vec2{ m_viewportCapability->width(), m_viewportCapability->height() });
     m_program->setUniform("transparency", m_useObjectBasedTransparency ? 0.0f : m_transparency);
+    m_program->setUniform("shadowsEnabled", m_shadowsEnabled);
     m_program->setUniform("lightSource", m_lightPosition);
 
     m_program->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);

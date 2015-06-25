@@ -115,6 +115,7 @@ protected:
 
     int m_numFrames;
     
+    bool m_shadowsEnabled;
     glm::vec3 m_lightPosition;
     glm::vec3 m_lightFocus;
     glm::vec2 m_lightZRange;
