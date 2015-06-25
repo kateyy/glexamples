@@ -132,90 +132,97 @@ AntiAnti::~AntiAnti() = default;
 
 void AntiAnti::setupPropertyGroup()
 {
-    GLint maxTextureSize;
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
-    //m_shadowMapWidth = std::max(maxTextureSize, m_shadowMapWidth);
-    globjects::debug() << "GL_MAX_TEXTURE_SIZE: " << std::to_string(maxTextureSize) << std::endl;
+    addProperty<int>("numFrames",
+        [this]() {return m_numFrames; },
+        [this](int numFrames) {
+            if (numFrames < m_numFrames)
+                m_frame = 0;
+            m_numFrames = numFrames;
+    });
 
-
-    addProperty<float>("subPixelShift", this,
-        &AntiAnti::subpixelShift, &AntiAnti::setSubpixelShift)->setOptions({
+    addProperty<float>("subPixelShift",
+        [this]() {return m_maxSubpixelShift; },
+            [this](float maxShift) {
+                m_maxSubpixelShift = maxShift;
+                m_frame = 0;
+        })->setOptions({
             { "minimum", 0.0f },
             { "step", 0.05f },
             { "precision", 2u },
     });
 
-    addProperty<bool>("focalPlaneNotPoint",
-        [this] () {return m_pointOrPlaneDoF; },
-        [this] (bool doPoint) {
-        m_pointOrPlaneDoF = doPoint;
-        m_frame = 0;
-    })->setOption("title", "Use Focal Plane (not Focal Point)");
 
-    addProperty<float>("maxDofShift",
-        [this] (){return m_maxDofShift; },
-        [this] (float shift) {
-        m_maxDofShift = shift;
-        m_frame = 0;
-    })->setOptions({
+    {
+        auto dofGroup = addGroup("DepthOfField");
+
+        dofGroup->addProperty<bool>("focalPlaneNotPoint",
+            [this]() {return m_pointOrPlaneDoF; },
+            [this](bool doPoint) {
+                m_pointOrPlaneDoF = doPoint;
+                m_frame = 0;
+        })->setOption("title", "Use Focal Plane (not Focal Point)");
+
+        dofGroup->addProperty<float>("maxDofShift",
+            [this]() {return m_maxDofShift; },
+            [this](float shift) {
+                m_maxDofShift = shift;
+                m_frame = 0;
+        })->setOptions({
             { "minimum", 0.0f },
             { "step", 0.001f },
             { "precision", 3u },
-    });
+        });
 
-    addProperty<float>("focalDepth",
-        [this] (){return m_focalDepth; },
-        [this] (float d) {
-        m_focalDepth = d;
-        m_frame = 0;
-    })->setOptions({
-        { "minimum", 0.0f },
-        { "step", 0.05f },
-        { "precision", 2u },
-    });
+        dofGroup->addProperty<float>("focalDepth",
+            [this]() {return m_focalDepth; },
+            [this](float d) {
+                m_focalDepth = d;
+                m_frame = 0;
+        })->setOptions({
+            { "minimum", 0.0f },
+            { "step", 0.05f },
+            { "precision", 2u },
+        });
 
-    addProperty<bool>("doofAtCursor",
-        [this] () {return m_dofAtCursor; },
-        [this] (bool atCursor) {
-        m_dofAtCursor = atCursor;
-    });
+        dofGroup->addProperty<bool>("doofAtCursor",
+            [this]() {return m_dofAtCursor; },
+            [this](bool atCursor) {
+                m_dofAtCursor = atCursor;
+        });
+    }
 
-    addProperty<int>("numFrames",
-        [this]() {return m_numFrames; },
-        [this](int numFrames) {
-        if (numFrames < m_numFrames)
-            m_frame = 0;
-        m_numFrames = numFrames;
-    });
+    {
+        auto ssaoGroup = addGroup("SSAO");
 
-    addProperty<bool>("useSSAO",
-        [this]() {return m_postProcessing.useSSAO; },
-        [this](bool useSSAO) {
-        m_postProcessing.useSSAO = useSSAO;
-        m_frame = 0;
-    });
+        ssaoGroup->addProperty<bool>("useSSAO",
+            [this]() {return m_postProcessing.useSSAO; },
+            [this](bool useSSAO) {
+                m_postProcessing.useSSAO = useSSAO;
+                m_frame = 0;
+        });
 
-    addProperty<float>("SSAORadius",
-        [this]() {return m_postProcessing.ssaoRadius; },
-        [this](float ssaoRadius) {
-        m_postProcessing.ssaoRadius = ssaoRadius;
-        m_frame = 0;
-    })->setOptions({
-        { "minimum", 0.0f },
-        { "step", 0.005f },
-        { "precision", 3u },
-    });
+        ssaoGroup->addProperty<float>("SSAORadius",
+            [this]() {return m_postProcessing.ssaoRadius; },
+            [this](float ssaoRadius) {
+                m_postProcessing.ssaoRadius = ssaoRadius;
+                m_frame = 0;
+        })->setOptions({
+            { "minimum", 0.0f },
+            { "step", 0.005f },
+            { "precision", 3u },
+        });
 
-    addProperty<float>("SSAOIntensity",
-        [this]() {return m_postProcessing.ssaoIntensity; },
-        [this](float ssaoIntensity) {
-        m_postProcessing.ssaoIntensity = ssaoIntensity;
-        m_frame = 0;
-    })->setOptions({
-        { "minimum", 0.0f },
-        { "step", 0.05f },
-        { "precision", 2u },
-    });
+        ssaoGroup->addProperty<float>("SSAOIntensity",
+            [this]() {return m_postProcessing.ssaoIntensity; },
+            [this](float ssaoIntensity) {
+                m_postProcessing.ssaoIntensity = ssaoIntensity;
+                m_frame = 0;
+        })->setOptions({
+            { "minimum", 0.0f },
+            { "step", 0.05f },
+            { "precision", 2u },
+        });
+    }
 
     {
         auto shadows = addGroup("Shadows");
@@ -223,19 +230,22 @@ void AntiAnti::setupPropertyGroup()
         shadows->addProperty<vec3>("LightPosition",
             [this] () { return m_lightPosition; },
             [this] (const vec3 & pos) {
-            m_lightPosition = pos;
-            m_frame = 0;
+                m_lightPosition = pos;
+                m_frame = 0;
         });
         shadows->addProperty<vec3>("LightFocus",
             [this] () { return m_lightFocus; },
             [this] (const vec3 & pos) {
-            m_lightFocus = pos;
-            m_frame = 0;
+                m_lightFocus = pos;
+                m_frame = 0;
         });
 
-        shadows->addProperty<float>("LightSourceRadius", this,
-            &AntiAnti::maxLightSourceShift,
-            &AntiAnti::setMaxLightSourceShift)->setOptions({
+        shadows->addProperty<float>("LightSourceRadius",
+            [this]() {return m_maxLightSourceShift; },
+            [this](float lightSourceShift) {
+                m_maxLightSourceShift = lightSourceShift;
+                m_frame = 0;
+        })->setOptions({
             { "minimum", 0.0f },
             { "step", 0.05f },
             { "precision", 2u },
@@ -245,16 +255,16 @@ void AntiAnti::setupPropertyGroup()
         shadows->addProperty<bool>("linearizedShadowMap",
             [this] () { return m_linearizedShadowMap; },
             [this] (bool l) {
-            m_linearizedShadowMap = l;
-            m_frame = 0;
+                m_linearizedShadowMap = l;
+                m_frame = 0;
         });
 
         shadows->addProperty<GLenum>("depthFormat",
             [this] () {return m_shadowDepthFormat; },
             [this] (GLenum depthFormat) {
-            m_shadowDepthFormat = depthFormat;
-            m_shadowMapParamsChanged = true;
-            m_frame = 0;
+                m_shadowDepthFormat = depthFormat;
+                m_shadowMapParamsChanged = true;
+                m_frame = 0;
         })->setStrings({
             { GLenum::GL_DEPTH_COMPONENT16, "GL_DEPTH_COMPONENT16" },
             { GLenum::GL_DEPTH_COMPONENT24, "GL_DEPTH_COMPONENT24" },
@@ -265,9 +275,9 @@ void AntiAnti::setupPropertyGroup()
         shadows->addProperty<GLint>("shadowMapWidth",
             [this] () { return m_shadowMapWidth; },
             [this] (GLint width) {
-            m_shadowMapWidth = width;
-            m_shadowMapParamsChanged = true;
-            m_frame = 0;
+                m_shadowMapWidth = width;
+                m_shadowMapParamsChanged = true;
+                m_frame = 0;
         })->setOptions({
             {"minimum", 1},
             {"maximum", std::numeric_limits<GLint>::max() } });
@@ -276,15 +286,15 @@ void AntiAnti::setupPropertyGroup()
         shadows->addProperty<float>("zNear",
             [this] () { return m_lightZRange.x; },
             [this] (float zNear) {
-            m_lightZRange.x = zNear;
-            m_frame = 0;
+                m_lightZRange.x = zNear;
+                m_frame = 0;
         })->setOptions({ { "step", 0.1f } });
 
         shadows->addProperty<float>("zFar",
             [this] () { return m_lightZRange.y; },
             [this] (float zFar) {
-            m_lightZRange.y = zFar;
-            m_frame = 0;
+                m_lightZRange.y = zFar;
+                m_frame = 0;
         })->setOptions({ { "step", 1.0f } });
     }
     
@@ -294,7 +304,7 @@ void AntiAnti::setupPropertyGroup()
         ppGroup->addProperty<PostProcessing::Output>("Output",
             [this] () {return m_postProcessing.output; },
             [this] (PostProcessing::Output o) {
-            m_postProcessing.output = o; })
+                m_postProcessing.output = o; })
             ->setStrings({
                 {PostProcessing::Output::Source_Final, "Final" },
                 {PostProcessing::Output::Source_Color, "Color" },
@@ -307,9 +317,9 @@ void AntiAnti::setupPropertyGroup()
         ppGroup->addProperty<GLenum>("textureFormat",
             [this] () {return m_accTextureFormat; },
             [this] (GLenum accTextureFormat) {
-            m_accTextureFormat = accTextureFormat;
-            updateFramebuffer();
-            m_frame = 0;
+                m_accTextureFormat = accTextureFormat;
+                updateFramebuffer();
+                m_frame = 0;
         })->setStrings({
             { GLenum::GL_RGBA8, "GL_RGBA8" },
             { GLenum::GL_RGBA32F, "GL_RGBA32F" },
@@ -362,40 +372,6 @@ void AntiAnti::setupPropertyGroup()
                 m_frame = 0;
         });
     }
-}
-
-float AntiAnti::transparency() const
-{
-    return m_transparency;
-}
-
-void AntiAnti::setTransparency(float transparency)
-{
-    m_transparency = transparency;
-    m_frame = 0;
-    setupTransparencyRandomness();
-}
-
-float AntiAnti::subpixelShift() const
-{
-    return m_maxSubpixelShift;
-}
-
-void AntiAnti::setSubpixelShift(float shift)
-{
-    m_maxSubpixelShift = shift;
-    m_frame = 0;
-}
-
-float AntiAnti::maxLightSourceShift() const
-{
-    return m_maxLightSourceShift;
-}
-
-void AntiAnti::setMaxLightSourceShift(float shift)
-{
-    m_maxLightSourceShift = shift;
-    m_frame = 0;
 }
 
 void AntiAnti::onInitialize()

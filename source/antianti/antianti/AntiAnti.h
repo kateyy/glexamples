@@ -47,18 +47,6 @@ public:
 public:
     void setupPropertyGroup();
     
-    float transparency() const;
-    void setTransparency(float transparency);
-
-    bool backFaceCulling() const;
-    void setBackFaceCulling(bool backFaceCulling);
-
-    float subpixelShift() const;
-    void setSubpixelShift(float shift);
-
-    float maxLightSourceShift() const;
-    void setMaxLightSourceShift(float shift);
-    
 protected:
     virtual void onInitialize() override;
     virtual void onPaint() override;
