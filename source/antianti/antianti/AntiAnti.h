@@ -19,6 +19,7 @@ namespace globjects
 {
     class Framebuffer;
     class Program;
+    class Renderbuffer;
     class Texture;
 }
 
@@ -93,6 +94,7 @@ protected:
 
     globjects::ref_ptr<globjects::Framebuffer> m_fboShadowing;
     globjects::ref_ptr<globjects::Texture> m_shadowMap;
+    globjects::ref_ptr<globjects::Renderbuffer> m_shadowMapRenderbuffer;
     globjects::ref_ptr<globjects::Program> m_programShadowing;
 
     globjects::ref_ptr<globjects::Framebuffer> m_ppfbo;
@@ -130,7 +132,7 @@ protected:
     float m_maxLightSourceShift;
     bool m_linearizedShadowMap;
     bool m_shadowMapParamsChanged;
-    gl::GLenum m_shadowDepthFormat;
+    gl::GLenum m_shadowMapFormat;
     gl::GLint m_shadowMapWidth;
 
     PostProcessing m_postProcessing;

@@ -21,6 +21,7 @@
 #include <globjects/Program.h>
 #include <globjects/Texture.h>
 #include <globjects/NamedString.h>
+#include <globjects/Renderbuffer.h>
 #include <globjects/base/File.h>
 
 #include <gloperate/base/RenderTargetType.h>
@@ -113,7 +114,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_maxLightSourceShift(0.1f)
     , m_linearizedShadowMap(false)
     , m_shadowMapParamsChanged(true)
-    , m_shadowDepthFormat(GL_DEPTH_COMPONENT32F)
+    , m_shadowMapFormat(GL_R32F)
     , m_shadowMapWidth(4096)
     , m_accTextureFormat(GL_RGBA32F)
     , m_backFaceCulling(false)
@@ -232,17 +233,16 @@ void AntiAnti::setupPropertyGroup()
             m_frame = 0;
         });
 
-        shadows->addProperty<GLenum>("depthFormat",
-            [this] () {return m_shadowDepthFormat; },
+        shadows->addProperty<GLenum>("mapFormat",
+            [this] () {return m_shadowMapFormat; },
             [this] (GLenum depthFormat) {
-            m_shadowDepthFormat = depthFormat;
+            m_shadowMapFormat = depthFormat;
             m_shadowMapParamsChanged = true;
             m_frame = 0;
         })->setStrings({
-            { GLenum::GL_DEPTH_COMPONENT16, "GL_DEPTH_COMPONENT16" },
-            { GLenum::GL_DEPTH_COMPONENT24, "GL_DEPTH_COMPONENT24" },
-            { GLenum::GL_DEPTH_COMPONENT32, "GL_DEPTH_COMPONENT32" },
-            { GLenum::GL_DEPTH_COMPONENT32F, "GL_DEPTH_COMPONENT32F" }
+            { GLenum::GL_R8, "GL_R8" },
+            { GLenum::GL_R16, "GL_R16" },
+            { GLenum::GL_R32F, "GL_R32F" }
         });
 
         shadows->addProperty<GLint>("shadowMapWidth",
@@ -599,13 +599,11 @@ void AntiAnti::setupFramebuffer()
     m_ppfbo->printStatus(true);
 
 
-    auto colorDump = Texture::createDefault(GL_TEXTURE_2D);
-    colorDump->image2D(0, GL_RED, 1, 1, 0, GL_RED, GL_FLOAT, 0);
     m_shadowMap = Texture::createDefault(GL_TEXTURE_2D);
 
+    // trying to work around Intel HD 3000 bugs (always requires a color attachment)
     m_fboShadowing = make_ref<Framebuffer>();
-    m_fboShadowing->attachTexture(GL_COLOR_ATTACHMENT0, colorDump);
-    m_fboShadowing->attachTexture(GL_DEPTH_ATTACHMENT, m_shadowMap);
+    m_fboShadowing->attachTexture(GL_COLOR_ATTACHMENT0, m_shadowMap);
 
 
     m_renderTargetCapability->setRenderTarget(
@@ -733,7 +731,12 @@ void AntiAnti::drawShadowMap()
 {
     if (m_shadowMapParamsChanged)
     {
-        m_shadowMap->image2D(0, m_shadowDepthFormat, m_shadowMapWidth, m_shadowMapWidth, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        m_shadowMap->image2D(0, m_shadowMapFormat, m_shadowMapWidth, m_shadowMapWidth, 0, GL_RED, GL_FLOAT, 0);
+
+        m_shadowMapRenderbuffer = make_ref<Renderbuffer>();
+        m_shadowMapRenderbuffer->storage(GL_DEPTH_COMPONENT24, m_shadowMapWidth, m_shadowMapWidth);
+        m_fboShadowing->attachRenderBuffer(GL_DEPTH_ATTACHMENT, m_shadowMapRenderbuffer);
+
         m_fboShadowing->printStatus(true);
         m_shadowMapParamsChanged = false;
     }
@@ -745,10 +748,9 @@ void AntiAnti::drawShadowMap()
     
     glViewport(0, 0, m_shadowMapWidth, m_shadowMapWidth);
 
-    glClearDepth(1.f);
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-    m_programShadowing->use();
+    
+    m_fboShadowing->clearBuffer(GL_COLOR, 0, vec4(1));
+    m_fboShadowing->clearBuffer(GL_DEPTH, 0, vec4(1));
 
     auto lightViewDir = glm::normalize(m_lightFocus - m_lightPosition);
 
@@ -779,17 +781,10 @@ void AntiAnti::drawShadowMap()
     m_programShadowing->setUniform("transparency", m_useObjectBasedTransparency ? 0.0f : m_transparency);
     m_programShadowing->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
     m_programShadowing->setUniform("transparencyNoise1D", 1);
+
+    m_programShadowing->use();
+
     m_transparencyNoise->bindActive(GL_TEXTURE1);
-
-    // transform depth NDC to texture coordinates for lookup in fragment shader
-    auto shadowBias = glm::mat4(
-        0.5f, 0.0f, 0.0f, 0.0f
-        , 0.0f, 0.5f, 0.0f, 0.0f
-        , 0.0f, 0.0f, 0.5f, 0.0f
-        , 0.5f, 0.5f, 0.5f, 1.0f);
-    m_program->setUniform("biasedDepthTransform", shadowBias * transform);
-    m_program->setUniform("linearizedShadowMap", m_linearizedShadowMap);
-
 
     for (auto i = 0u; i < m_drawables.size(); ++i) {
         if (m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
@@ -804,4 +799,13 @@ void AntiAnti::drawShadowMap()
     glDisable(GL_DEPTH_TEST);
 
     m_fboShadowing->unbind();
+
+    // transform depth NDC to texture coordinates for lookup in fragment shader
+    auto shadowBias = glm::mat4(
+        0.5f, 0.0f, 0.0f, 0.0f
+        , 0.0f, 0.5f, 0.0f, 0.0f
+        , 0.0f, 0.0f, 0.5f, 0.0f
+        , 0.5f, 0.5f, 0.5f, 1.0f);
+    m_program->setUniform("biasedDepthTransform", shadowBias * transform);
+    m_program->setUniform("linearizedShadowMap", m_linearizedShadowMap);
 }
