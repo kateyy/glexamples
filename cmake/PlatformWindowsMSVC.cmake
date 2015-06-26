@@ -45,6 +45,8 @@ set(WIN32_COMPILE_FLAGS
 
     # /MD           # -> runtime library: multithreaded dll
     # /MDd          # -> Runtime Library: Multithreaded Debug DLL
+    
+      /bigobj
 )
 
 # http://support.microsoft.com/kb/154419
