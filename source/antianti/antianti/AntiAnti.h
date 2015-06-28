@@ -130,4 +130,11 @@ protected:
     PostProcessing m_postProcessing;
 
     gl::GLenum m_accTextureFormat;
+
+
+
+    globjects::ref_ptr<globjects::Texture> m_diff;
+    globjects::ref_ptr<globjects::Texture> m_norm;
+    globjects::ref_ptr<globjects::Texture> m_spec;
+    globjects::ref_ptr<globjects::Texture> m_emis;
 };

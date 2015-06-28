@@ -28,6 +28,7 @@
 #include <gloperate/base/RenderTargetType.h>
 #include <gloperate/base/make_unique.hpp>
 #include <gloperate/resources/ResourceManager.h>
+#include <gloperate/resources/RawFile.h>
 #include <gloperate/painter/TargetFramebufferCapability.h>
 #include <gloperate/painter/TypedRenderTargetCapability.h>
 #include <gloperate/painter/ViewportCapability.h>
@@ -117,13 +118,14 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_dofAtCursor(false)
     // shadows
     , m_shadowsEnabled(true)
-    , m_lightPosition({0, 5, 0})
-    , m_lightFocus()
+    , m_lightPosition({0, 54, 0})
+    , m_lightFocus({ 0, 24, 0 })
     , m_maxLightSourceShift(0.1f)
     , m_linearizedShadowMap(false)
     , m_shadowMapParamsChanged(true)
     , m_shadowMapFormat(GL_R32F)
     , m_shadowMapWidth(4096)
+    , m_lightZRange({0.300, 50.00})
     // transparency
     , m_backFaceCulling(false)
     , m_backFaceCullingShadows(false)
@@ -419,6 +421,13 @@ void AntiAnti::onInitialize()
     setupTransparencyRandomness();
 
     globjects::NamedString::create("/data/antianti/ssao.glsl", new globjects::File("data/antianti/ssao.glsl"));
+
+
+    m_projectionCapability->setZNear(4.f);
+    m_projectionCapability->setZFar(128.f);
+
+    m_cameraCapability->setEye({ 0.f, 28.f, 16.f });
+    m_cameraCapability->setCenter({ 0.f, 24.0f, 0.f });
 }
 
 void AntiAnti::onPaint()
@@ -533,14 +542,25 @@ void AntiAnti::onPaint()
     m_program->setUniform("viewport", glm::vec2{ m_viewportCapability->width(), m_viewportCapability->height() });
     m_program->setUniform("transparency", m_useObjectBasedTransparency ? 0.0f : m_transparency);
     m_program->setUniform("shadowsEnabled", m_shadowsEnabled);
-    m_program->setUniform("lightSource", m_lightPosition);
+    m_program->setUniform("light", m_lightPosition); // TODO let there be area lights
+    m_program->setUniform("camera", camera->eye());
 
     m_program->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
     m_program->setUniform("transparencyNoise1D", 1);
-    m_program->setUniform("shadowMap", 2);
+    m_program->setUniform("smap", 2);
+    m_program->setUniform("diff", 3);
+    m_program->setUniform("norm", 4);
+    m_program->setUniform("spec", 5);
+    m_program->setUniform("emis", 6);
 
     m_transparencyNoise->bindActive(GL_TEXTURE1);
     m_shadowMap->bindActive(GL_TEXTURE2);
+
+    m_diff->bindActive(GL_TEXTURE3);
+    m_norm->bindActive(GL_TEXTURE4);
+    m_spec->bindActive(GL_TEXTURE5);
+    m_emis->bindActive(GL_TEXTURE6);
+
 
     for (auto i = 0u; i < m_drawables.size(); ++i)
     {
@@ -652,7 +672,6 @@ void AntiAnti::setupProjection()
     m_projectionCapability->setZNear(zNear);
     m_projectionCapability->setZFar(zFar);
     m_projectionCapability->setFovy(radians(fovy));
-    m_lightZRange = { m_projectionCapability->zNear(), m_projectionCapability->zFar() };
 
     m_grid->setNearFar(zNear, zFar);
 }
@@ -693,7 +712,8 @@ void AntiAnti::setupTransparencyRandomness()
 
 void AntiAnti::setupDrawable()
 {
-    const auto scene = m_resourceManager.load<gloperate::Scene>("data/transparency/transparency_scene.obj");
+    //const auto scene = m_resourceManager.load<gloperate::Scene>("data/transparency/transparency_scene.obj");
+    const auto scene = m_resourceManager.load<gloperate::Scene>("data/multiframesampling/models/Imrod.obj");
     if (!scene)
     {
         std::cout << "Could not load file" << std::endl;
@@ -705,6 +725,61 @@ void AntiAnti::setupDrawable()
     }
 
     delete scene;
+
+
+
+    gloperate::RawFile diff("data/multiframesampling/models/Imrod_diffuse.2048.2048.rgb.ub.raw");
+    if (!diff.isValid())
+        return;
+
+    m_diff = Texture::createDefault(GL_TEXTURE_2D);
+    m_diff->setParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
+    m_diff->setParameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
+    m_diff->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    m_diff->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    m_diff->image2D(0, GL_RGB8, glm::ivec2(2048, 2048), 0, GL_RGB, GL_UNSIGNED_BYTE, diff.data());
+    m_diff->generateMipmap();
+
+    gloperate::RawFile norm("data/multiframesampling/models/Imrod_normals.2048.2048.rgb.ub.raw");
+
+    if (!norm.isValid())
+        return;
+
+    m_norm = Texture::createDefault(GL_TEXTURE_2D);
+    m_norm->setParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
+    m_norm->setParameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
+    m_norm->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    m_norm->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    m_norm->image2D(0, GL_RGB8, glm::ivec2(2048, 2048), 0, GL_RGB, GL_UNSIGNED_BYTE, norm.data());
+    m_norm->generateMipmap();
+
+    gloperate::RawFile spec("data/multiframesampling/models/Imrod_specular.2048.2048.rgb.ub.raw");
+    if (!spec.isValid())
+        return;
+
+    m_spec = Texture::createDefault(GL_TEXTURE_2D);
+    m_spec->setParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
+    m_spec->setParameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
+    m_spec->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    m_spec->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    m_spec->image2D(0, GL_RGB8, glm::ivec2(2048, 2048), 0, GL_RGB, GL_UNSIGNED_BYTE, spec.data());
+    m_spec->generateMipmap();
+
+    gloperate::RawFile emis("data/multiframesampling/models/Imrod_emission.2048.2048.rgb.ub.raw");
+    if (!emis.isValid())
+        return;
+
+    m_emis = Texture::createDefault(GL_TEXTURE_2D);
+    m_emis->setParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
+    m_emis->setParameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
+    m_emis->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    m_emis->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    m_emis->image2D(0, GL_RGB8, glm::ivec2(2048, 2048), 0, GL_RGB, GL_UNSIGNED_BYTE, emis.data());
+    m_emis->generateMipmap();
 }
 
 void AntiAnti::setupProgram()
