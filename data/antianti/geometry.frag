@@ -15,6 +15,7 @@ out vec4 fragNormal;
 uniform uint time;
 uniform bool shadowsEnabled;
 uniform bool linearizedShadowMap;
+uniform vec2 lightZRange;
 
 uniform sampler2D diff;
 uniform sampler2D norm;
@@ -33,7 +34,7 @@ bool transparency_discard();
 float calculateAlpha(uint mask);
 
 // depth_util.frag
-float linearize(float depth);
+float linearize(float depth, vec2 zRange);
 
 float lambert(vec3 n, vec3 l)
 {
@@ -103,7 +104,7 @@ void main()
     if (shadowsEnabled) {
         vec4 scoord = v_S / v_S.w;
             if (linearizedShadowMap)
-                scoord.z = linearize(scoord.z);
+                scoord.z = linearize(scoord.z, lightZRange);
         scoord.z -= 0.0001;
         //scoord.y = 1.0 - scoord.y;
 

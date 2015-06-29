@@ -2,10 +2,12 @@
 
 uniform bool linearizedShadowMap;
 
+uniform vec2 lightZRange;
+
 out vec4 depth;
 
 bool transparency_discard();
-float linearize(float depth);
+float linearize(float depth, vec2 zRange);
 
 void main()
 {
@@ -13,7 +15,7 @@ void main()
         discard;
         
     if (linearizedShadowMap)
-        depth = vec4(linearize(gl_FragCoord.z));
+        depth = vec4(linearize(gl_FragCoord.z, lightZRange));
     else
         depth = vec4(gl_FragCoord.z);
 }

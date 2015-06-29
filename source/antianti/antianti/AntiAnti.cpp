@@ -469,12 +469,6 @@ void AntiAnti::onPaint()
     if (cameraHasChanged)
     {
         m_lastTransform = inputTransform;
-
-        auto zRange = glm::vec2(
-            m_projectionCapability->zNear(),
-            m_projectionCapability->zFar());
-        m_program->setUniform("zRange", zRange);
-
         m_frame = 0;
     }
 
@@ -544,6 +538,7 @@ void AntiAnti::onPaint()
     m_program->setUniform("shadowsEnabled", m_shadowsEnabled);
     m_program->setUniform("light", m_lightPosition); // TODO let there be area lights
     m_program->setUniform("camera", camera->eye());
+    m_program->setUniform("lightZRange", m_lightZRange);
 
     m_program->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
     m_program->setUniform("transparencyNoise1D", 1);
@@ -864,7 +859,7 @@ void AntiAnti::drawShadowMap()
             1.0f, m_lightZRange.x, m_lightZRange.y)
         * glm::lookAt(shiftedLightEye, shiftedLightCenter, lightUp);
 
-    m_programShadowing->setUniform("zRange", m_lightZRange);
+    m_programShadowing->setUniform("lightZRange", m_lightZRange);
     m_programShadowing->setUniform("transform", transform);
     m_programShadowing->setUniform("linearizedShadowMap", m_linearizedShadowMap);
 
