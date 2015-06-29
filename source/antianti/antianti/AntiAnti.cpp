@@ -459,7 +459,7 @@ void AntiAnti::onPaint()
             float clickZDistance = -(m_cameraCapability->view() * glm::vec4(mouseWorldPos, 1.0)).z;
 
             if (glm::distance(clickZDistance, m_focalDepth) > 0.01f)
-                property<float>("focalDepth")->setValue(clickZDistance);
+                property<float>("DepthOfField/focalDepth")->setValue(clickZDistance);
         }
     }
 
