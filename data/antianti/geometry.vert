@@ -4,7 +4,7 @@ in vec3 a_vertex;
 in vec3 a_normal;
 in vec2 a_texCoord;
 
-flat out int v_rand;
+flat out int v_vertexID;
 
 uniform mat4 viewMatrix;
 uniform mat4 projection;
@@ -34,7 +34,7 @@ void main()
     pos.xy *= pos.w;
     
 	gl_Position = pos;
-    v_rand = gl_VertexID;
+    v_vertexID = gl_VertexID;
 
     vec4 lightPos = vec4(light, 1.0);
     v_N = a_normal;

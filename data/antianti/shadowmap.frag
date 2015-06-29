@@ -4,14 +4,15 @@ uniform bool linearizedShadowMap;
 
 uniform vec2 lightZRange;
 
+flat in int v_vertexID;
 out vec4 depth;
 
-bool transparency_discard();
+bool transparency_discard(int vertexID);
 float linearize(float depth, vec2 zRange);
 
 void main()
 {
-    if (transparency_discard())
+    if (transparency_discard(v_vertexID))
         discard;
         
     if (linearizedShadowMap)

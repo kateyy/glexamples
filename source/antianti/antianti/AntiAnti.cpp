@@ -783,6 +783,7 @@ void AntiAnti::setupProgram()
     const auto shaderName = "geometry";
     
     const auto vertexShader = shaderPath + shaderName + ".vert";
+    const auto geometryShader = shaderPath + shaderName + ".geom";
     const auto fragmentShader = shaderPath + shaderName + ".frag";
     auto depthUtilShader = Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + "depth_util.frag");
     auto transparencyUtilShader = Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + "transparency_util.frag");
@@ -790,6 +791,7 @@ void AntiAnti::setupProgram()
     m_program = make_ref<Program>();
     m_program->attach(
         Shader::fromFile(GL_VERTEX_SHADER, vertexShader),
+        Shader::fromFile(GL_GEOMETRY_SHADER, geometryShader),
         Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShader),
         depthUtilShader, transparencyUtilShader);
 

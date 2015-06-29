@@ -2,13 +2,15 @@
 
 uniform vec3 camera;
 
-in vec3 v_worldPos;
-in vec3 v_N;
-in vec3 v_L;
-in vec3 v_E;
-in vec2 v_T;
+flat in int g_vertexID;
+in vec3 g_worldPos;
+in vec3 g_N;
+in vec3 g_N_face;
+in vec3 g_L;
+in vec3 g_E;
+in vec2 g_T;
 
-in vec4 v_S;
+in vec4 g_S;
 
 out vec4 fragColor;
 out vec4 fragNormal;
@@ -31,7 +33,7 @@ const float specularFactor = 4.0;
 const float emissionFactor = 0.33;
 
 
-bool transparency_discard();
+bool transparency_discard(int vertexID);
 float calculateAlpha(uint mask);
 
 // depth_util.frag
@@ -44,19 +46,19 @@ float lambert(vec3 n, vec3 l)
 
 void main()
 {
-    if (transparency_discard())
+    if (transparency_discard(g_vertexID))
         discard;
 
-    vec2 uv = v_T;
+    vec2 uv = g_T;
     uv.y = uv.y;
 
-    vec3 l = normalize(v_L);
-    vec3 n_world = normalize(v_N);
+    vec3 l = normalize(g_L);
+    vec3 n_world = normalize(g_N);
     vec3 n_tangent = normalize(texture(norm, uv).xyz * 2.0 - 1.0);
 
      // get edge vectors of the pixel triangle
-    vec3 dp1  = dFdx(v_worldPos);
-    vec3 dp2  = dFdy(v_worldPos);
+    vec3 dp1  = dFdx(g_worldPos);
+    vec3 dp2  = dFdy(g_worldPos);
     vec2 duv1 = dFdx(uv);
     vec2 duv2 = dFdy(uv);
 
@@ -85,7 +87,7 @@ void main()
 
     // specular 
 
-    vec3 c = normalize(v_E - camera);
+    vec3 c = normalize(g_E - camera);
     vec3 r_tangent = reflect(c * tbn, n_tangent);
     vec3 l_tangent = l * tbn;
 
@@ -102,7 +104,7 @@ void main()
     float shadow = 1.0;
 
     if (shadowsEnabled) {
-        vec4 scoord = v_S / v_S.w;
+        vec4 scoord = g_S / g_S.w;
             if (linearizedShadowMap)
                 scoord.z = linearize(scoord.z, lightZRange);
         scoord.z -= 0.0001;
@@ -110,11 +112,11 @@ void main()
 
         float sdist = texture(smap, scoord.xy).r;
         
-        shadow = step(0.0, sign(v_S.w)) * step(scoord.z, sdist);
+        shadow = step(0.0, sign(g_S.w)) * step(scoord.z, sdist);
     }
 
     vec3 color = shadow * (ambient + diffuse + diffuse * specular) + emission;
 
     fragColor = vec4(  vec3(color) , 1.0);
-    fragNormal = vec4(v_N, 1.0);
+    fragNormal = vec4(g_N, 1.0);
 }
