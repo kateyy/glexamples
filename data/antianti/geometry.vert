@@ -15,6 +15,7 @@ uniform mat4 biasedDepthTransform;
 
 uniform vec3 light;
 
+out vec3 v_worldPos;
 out vec3 v_N;
 out vec3 v_L;
 out vec3 v_E;
@@ -41,5 +42,6 @@ void main()
     v_E = -posView.xyz;
     v_T = a_texCoord;
 
+    v_worldPos = a_vertex;
     v_S = biasedDepthTransform * vec4(a_vertex, 1.0);
 }

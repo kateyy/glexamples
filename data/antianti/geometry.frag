@@ -2,6 +2,7 @@
 
 uniform vec3 camera;
 
+in vec3 v_worldPos;
 in vec3 v_N;
 in vec3 v_L;
 in vec3 v_E;
@@ -49,14 +50,13 @@ void main()
     vec2 uv = v_T;
     uv.y = uv.y;
 
-    vec3 e = normalize(v_E);
     vec3 l = normalize(v_L);
     vec3 n_world = normalize(v_N);
     vec3 n_tangent = normalize(texture(norm, uv).xyz * 2.0 - 1.0);
 
      // get edge vectors of the pixel triangle
-    vec3 dp1  = dFdx(v_E);
-    vec3 dp2  = dFdy(v_E);
+    vec3 dp1  = dFdx(v_worldPos);
+    vec3 dp2  = dFdy(v_worldPos);
     vec2 duv1 = dFdx(uv);
     vec2 duv2 = dFdy(uv);
 
@@ -68,7 +68,7 @@ void main()
 
     float invmax = inversesqrt( max( dot(t,t), dot(b,b) ) );
         
-    mat3 tbn = mat3(-t * invmax, b * invmax, n_world);
+    mat3 tbn = mat3(t * invmax, b * invmax, n_world);
     
     // ambient
     
