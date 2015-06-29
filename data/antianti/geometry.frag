@@ -97,7 +97,6 @@ void main()
     // emission 
     vec3 emission = emissionFactor * texture(emis, uv).xyz;
     
-    vec3 color = ambient + diffuse + diffuse * specular + emission;
 
     float shadow = 1.0;
 
@@ -113,7 +112,8 @@ void main()
         shadow = step(0.0, sign(v_S.w)) * step(scoord.z, sdist);
     }
 
+    vec3 color = shadow * (ambient + diffuse + diffuse * specular) + emission;
 
-    fragColor = vec4(  vec3(color * shadow) , 1.0);
+    fragColor = vec4(  vec3(color) , 1.0);
     fragNormal = vec4(v_N, 1.0);
 }
