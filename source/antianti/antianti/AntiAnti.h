@@ -13,6 +13,7 @@
 #include <gloperate/painter/Painter.h>
 
 #include "PostProcessing.h"
+#include "SceneLoader.h"
 
 
 namespace globjects
@@ -92,7 +93,6 @@ protected:
     
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<globjects::Program> m_program;
-    std::vector<std::unique_ptr<gloperate::PolygonalDrawable>> m_drawables;
     std::vector<std::vector<bool>> m_transparencyRandomness;
 
     std::unique_ptr<gloperate::CoordinateProvider> m_coordProvider;
@@ -131,10 +131,5 @@ protected:
 
     gl::GLenum m_accTextureFormat;
 
-
-
-    globjects::ref_ptr<globjects::Texture> m_diff;
-    globjects::ref_ptr<globjects::Texture> m_norm;
-    globjects::ref_ptr<globjects::Texture> m_spec;
-    globjects::ref_ptr<globjects::Texture> m_emis;
+    SceneLoader m_sceneLoader;
 };

@@ -49,6 +49,10 @@
 
 #include <widgetzeug/make_unique.hpp>
 
+#include <assimp/material.h>
+
+#include "SceneLoader.h"
+
 
 using namespace gl;
 using namespace glm;
@@ -551,18 +555,22 @@ void AntiAnti::onPaint()
     m_transparencyNoise->bindActive(GL_TEXTURE1);
     m_shadowMap->bindActive(GL_TEXTURE2);
 
-    m_diff->bindActive(GL_TEXTURE3);
-    m_norm->bindActive(GL_TEXTURE4);
-    m_spec->bindActive(GL_TEXTURE5);
-    m_emis->bindActive(GL_TEXTURE6);
-
-
-    for (auto i = 0u; i < m_drawables.size(); ++i)
+    for (auto i = 0u; i < m_sceneLoader.m_drawables.size(); ++i)
     {
+        if (m_sceneLoader.getTexture(i, aiTextureType_DIFFUSE))
+            m_sceneLoader.getTexture(i, aiTextureType_DIFFUSE)->bindActive(GL_TEXTURE3);
+        if (m_sceneLoader.getTexture(i, aiTextureType_NORMALS))
+            m_sceneLoader.getTexture(i, aiTextureType_NORMALS)->bindActive(GL_TEXTURE4);
+        if (m_sceneLoader.getTexture(i, aiTextureType_HEIGHT))
+            m_sceneLoader.getTexture(i, aiTextureType_HEIGHT)->bindActive(GL_TEXTURE4);
+        if (m_sceneLoader.getTexture(i, aiTextureType_SPECULAR))
+            m_sceneLoader.getTexture(i, aiTextureType_SPECULAR)->bindActive(GL_TEXTURE5);
+        if (m_sceneLoader.getTexture(i, aiTextureType_EMISSIVE))
+            m_sceneLoader.getTexture(i, aiTextureType_EMISSIVE)->bindActive(GL_TEXTURE6);
         //m_program->setUniform(m_transparencyLocation, i % 2 == 0 ? m_transparency : 1.0f);
         if (m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
             continue;
-        m_drawables[i]->draw();
+        m_sceneLoader.m_drawables[i]->draw();
     }
     
     m_program->release();
@@ -682,7 +690,7 @@ void AntiAnti::setupTransparencyRandomness()
         randomness[i] = true;
     
     m_transparencyRandomness.clear();
-    for (auto& drawable : m_drawables) {
+    for (auto& drawable : m_sceneLoader.m_drawables) {
         std::shuffle(randomness.begin(), randomness.end(), g);
         randomness[0] = true; // make sure the object is always rendered during camera movement
         m_transparencyRandomness.push_back(randomness);
@@ -707,74 +715,7 @@ void AntiAnti::setupTransparencyRandomness()
 
 void AntiAnti::setupDrawable()
 {
-    //const auto scene = m_resourceManager.load<gloperate::Scene>("data/transparency/transparency_scene.obj");
-    const auto scene = m_resourceManager.load<gloperate::Scene>("data/multiframesampling/models/Imrod.obj");
-    if (!scene)
-    {
-        std::cout << "Could not load file" << std::endl;
-        return;
-    }
-
-    for (const auto * geometry : scene->meshes()) {
-        m_drawables.push_back(gloperate::make_unique<gloperate::PolygonalDrawable>(*geometry));
-    }
-
-    delete scene;
-
-
-
-    gloperate::RawFile diff("data/multiframesampling/models/Imrod_diffuse.2048.2048.rgb.ub.raw");
-    if (!diff.isValid())
-        return;
-
-    m_diff = Texture::createDefault(GL_TEXTURE_2D);
-    m_diff->setParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
-    m_diff->setParameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
-    m_diff->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    m_diff->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    m_diff->image2D(0, GL_RGB8, glm::ivec2(2048, 2048), 0, GL_RGB, GL_UNSIGNED_BYTE, diff.data());
-    m_diff->generateMipmap();
-
-    gloperate::RawFile norm("data/multiframesampling/models/Imrod_normals.2048.2048.rgb.ub.raw");
-
-    if (!norm.isValid())
-        return;
-
-    m_norm = Texture::createDefault(GL_TEXTURE_2D);
-    m_norm->setParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
-    m_norm->setParameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
-    m_norm->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    m_norm->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    m_norm->image2D(0, GL_RGB8, glm::ivec2(2048, 2048), 0, GL_RGB, GL_UNSIGNED_BYTE, norm.data());
-    m_norm->generateMipmap();
-
-    gloperate::RawFile spec("data/multiframesampling/models/Imrod_specular.2048.2048.rgb.ub.raw");
-    if (!spec.isValid())
-        return;
-
-    m_spec = Texture::createDefault(GL_TEXTURE_2D);
-    m_spec->setParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
-    m_spec->setParameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
-    m_spec->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    m_spec->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    m_spec->image2D(0, GL_RGB8, glm::ivec2(2048, 2048), 0, GL_RGB, GL_UNSIGNED_BYTE, spec.data());
-    m_spec->generateMipmap();
-
-    gloperate::RawFile emis("data/multiframesampling/models/Imrod_emission.2048.2048.rgb.ub.raw");
-    if (!emis.isValid())
-        return;
-
-    m_emis = Texture::createDefault(GL_TEXTURE_2D);
-    m_emis->setParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
-    m_emis->setParameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
-    m_emis->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    m_emis->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    m_emis->image2D(0, GL_RGB8, glm::ivec2(2048, 2048), 0, GL_RGB, GL_UNSIGNED_BYTE, emis.data());
-    m_emis->generateMipmap();
+    m_sceneLoader.load(SceneLoader::D_SPONZA);
 }
 
 void AntiAnti::setupProgram()
@@ -876,10 +817,10 @@ void AntiAnti::drawShadowMap()
 
     m_transparencyNoise->bindActive(GL_TEXTURE1);
 
-    for (auto i = 0u; i < m_drawables.size(); ++i) {
+    for (auto i = 0u; i < m_sceneLoader.m_drawables.size(); ++i) {
         if (m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
             continue;
-        m_drawables[i]->draw();
+        m_sceneLoader.m_drawables[i]->draw();
     }
 
 
