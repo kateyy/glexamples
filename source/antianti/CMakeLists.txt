@@ -7,12 +7,14 @@ message(STATUS "Example ${target}")
 # External libraries
 
 # ...
+find_package(assimp REQUIRED)
 
 
 # Includes
 
 include_directories(
     BEFORE
+    ${ASSIMP_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -21,6 +23,7 @@ include_directories(
 
 set(libs
     ${GLEXAMPLES_DEPENDENCY_LIBRARIES}
+    ${ASSIMP_LIBRARIES}
 )
 
 
@@ -38,12 +41,16 @@ set(source_path "${CMAKE_CURRENT_SOURCE_DIR}/")
 set(sources
     ${source_path}/plugin.cpp
     ${source_path}/antianti/AntiAnti.cpp
+    ${source_path}/antianti/ImageLoader.cpp
     ${source_path}/antianti/PostProcessing.cpp
+    ${source_path}/antianti/SceneLoader.cpp
 )
 
 set(api_includes
     ${include_path}/antianti/AntiAnti.h
+    ${include_path}/antianti/ImageLoader.h
     ${include_path}/antianti/PostProcessing.h
+    ${include_path}/antianti/SceneLoader.h
 )
 
 # Group source files
