@@ -25,13 +25,17 @@ public:
 
 public:
     enum Scene {
+        UNINITIALIZED = -1,
         TRANSPARENCY_TEST,
         IMROD,
         D_SPONZA,
         C_SPONZA
     };
 
-    void load(Scene scene);
+    Scene m_desiredScene;
+    Scene m_currentScene;
+
+    bool update();
 
     // a texture of type someType for drawable m_drawables[i] can be retrieved with 
     // getTexture(i, someType). returned texture is null if the drawable has no texture of that type.
@@ -40,6 +44,7 @@ public:
 
 protected:
     void load(std::string path);
+    void load(Scene scene);
 
     std::vector<std::vector<globjects::ref_ptr<globjects::Texture>>> m_textures;
     const aiScene* m_aiScene;
