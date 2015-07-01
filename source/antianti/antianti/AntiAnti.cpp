@@ -427,11 +427,16 @@ void AntiAnti::onInitialize()
     globjects::NamedString::create("/data/antianti/ssao.glsl", new globjects::File("data/antianti/ssao.glsl"));
 
 
-    m_projectionCapability->setZNear(4.f);
-    m_projectionCapability->setZFar(128.f);
+}
 
-    m_cameraCapability->setEye({ 0.f, 28.f, 16.f });
-    m_cameraCapability->setCenter({ 0.f, 24.0f, 0.f });
+void AntiAnti::checkAndBindTexture(int meshID, aiTextureType type, std::string uniformName, GLenum target)
+{
+    auto texture = m_sceneLoader.getTexture(meshID, type);
+    bool uiae = texture.get() != nullptr;
+    if (uniformName != "")
+        m_program->setUniform(uniformName, uiae);
+    if (texture)
+        texture->bindActive(target);
 }
 
 void AntiAnti::onPaint()
@@ -557,19 +562,15 @@ void AntiAnti::onPaint()
 
     for (auto i = 0u; i < m_sceneLoader.m_drawables.size(); ++i)
     {
-        if (m_sceneLoader.getTexture(i, aiTextureType_DIFFUSE))
-            m_sceneLoader.getTexture(i, aiTextureType_DIFFUSE)->bindActive(GL_TEXTURE3);
-        if (m_sceneLoader.getTexture(i, aiTextureType_NORMALS))
-            m_sceneLoader.getTexture(i, aiTextureType_NORMALS)->bindActive(GL_TEXTURE4);
-        if (m_sceneLoader.getTexture(i, aiTextureType_HEIGHT))
-            m_sceneLoader.getTexture(i, aiTextureType_HEIGHT)->bindActive(GL_TEXTURE4);
-        if (m_sceneLoader.getTexture(i, aiTextureType_SPECULAR))
-            m_sceneLoader.getTexture(i, aiTextureType_SPECULAR)->bindActive(GL_TEXTURE5);
-        if (m_sceneLoader.getTexture(i, aiTextureType_EMISSIVE))
-            m_sceneLoader.getTexture(i, aiTextureType_EMISSIVE)->bindActive(GL_TEXTURE6);
-        //m_program->setUniform(m_transparencyLocation, i % 2 == 0 ? m_transparency : 1.0f);
         if (m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
             continue;
+
+        checkAndBindTexture(i, aiTextureType_DIFFUSE, "hasDiff", GL_TEXTURE3);
+        checkAndBindTexture(i, aiTextureType_NORMALS, "hasNorm", GL_TEXTURE4);
+        checkAndBindTexture(i, aiTextureType_HEIGHT, "", GL_TEXTURE4);
+        checkAndBindTexture(i, aiTextureType_SPECULAR, "hasSpec", GL_TEXTURE5);
+        checkAndBindTexture(i, aiTextureType_EMISSIVE, "hasEmis", GL_TEXTURE6);
+
         m_sceneLoader.m_drawables[i]->draw();
     }
     
@@ -715,7 +716,7 @@ void AntiAnti::setupTransparencyRandomness()
 
 void AntiAnti::setupDrawable()
 {
-    m_sceneLoader.load(SceneLoader::D_SPONZA);
+    m_sceneLoader.load(SceneLoader::TRANSPARENCY_TEST);
 }
 
 void AntiAnti::setupProgram()

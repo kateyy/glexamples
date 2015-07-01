@@ -51,6 +51,7 @@ public:
     
 protected:
     virtual void onInitialize() override;
+    void checkAndBindTexture(int meshID, aiTextureType type, std::string uniformName, gl::GLenum target);
     virtual void onPaint() override;
 
 private:

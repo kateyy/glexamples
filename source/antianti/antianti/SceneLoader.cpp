@@ -31,12 +31,14 @@ namespace
 {
     std::string base_dir = "data/antianti/meshes/";
     std::unordered_map<SceneLoader::Scene, std::string> directories = {
+        { SceneLoader::TRANSPARENCY_TEST, "" },
         { SceneLoader::IMROD, "Imrod/" },
         { SceneLoader::D_SPONZA, "dabrovic-sponza/" },
         {SceneLoader::C_SPONZA, "crytek-sponza/"},
         {SceneLoader::MITSUBA, "mitsuba/"},
     };
     std::unordered_map<SceneLoader::Scene, std::string> filenames = { 
+        { SceneLoader::TRANSPARENCY_TEST, "transparency_scene.obj" },
         { SceneLoader::IMROD, "Imrod.obj" },
         { SceneLoader::D_SPONZA, "sponza.obj" },
         {SceneLoader::C_SPONZA, "sponza.obj"},
@@ -90,7 +92,11 @@ void SceneLoader::load(Scene scene)
         std::cout << aiGetErrorString();
 
     m_textures.resize(m_aiScene->mNumMaterials);
-    if (scene == IMROD)
+    if (scene == TRANSPARENCY_TEST)
+    {
+        m_textures[0].resize(aiTextureType_UNKNOWN + 1);
+    }
+    else if (scene == IMROD)
     {
         m_textures[0].resize(aiTextureType_UNKNOWN + 1);
         std::string dir = base_dir + directories[scene];

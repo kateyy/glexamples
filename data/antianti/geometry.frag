@@ -20,6 +20,11 @@ uniform bool shadowsEnabled;
 uniform bool linearizedShadowMap;
 uniform vec2 lightZRange;
 
+uniform bool hasDiff;
+uniform bool hasNorm;
+uniform bool hasSpec;
+uniform bool hasEmis;
+
 uniform sampler2D diff;
 uniform sampler2D norm;
 uniform sampler2D spec;
@@ -75,7 +80,8 @@ void main()
 
     vec3 l = normalize(g_L);
     vec3 n_world = normalize(g_N);
-    vec3 n_tangent = normalize(texture(norm, uv).xyz * 2.0 - 1.0);
+    vec3 normSample = (hasNorm) ? texture(norm, uv).xyz : vec3(0.5, 0.5, 1.0);
+    vec3 n_tangent = normalize(normSample * 2.0 - 1.0);
 
     mat3 tbn = cotangent_frame(n_world, g_worldPos, uv);
     
@@ -90,7 +96,8 @@ void main()
 
     float l_both = mix(l_face, l_frag, 1.0); // fakie fakie...
 
-    vec3 diffuse = diffuseFactor * texture(diff, uv).xyz * l_both;
+    vec3 diffSample = (hasDiff) ? texture(diff, uv).xyz : vec3(g_N * 0.5 + 0.5);
+    vec3 diffuse = diffuseFactor * diffSample * l_both;
 
     // specular 
 
@@ -102,10 +109,10 @@ void main()
     float rdotn = max(dot(r_tangent, l_tangent), 0.0);
 
     float shininess = 2.0;
-    vec3 specular = specularFactor * texture(spec, uv).xyz * clamp(pow(rdotn, shininess), 0.0, 1.0);
+    vec3 specular = float(hasSpec) * specularFactor * texture(spec, uv).xyz * clamp(pow(rdotn, shininess), 0.0, 1.0);
 
     // emission 
-    vec3 emission = emissionFactor * texture(emis, uv).xyz;
+    vec3 emission = float(hasEmis) * emissionFactor * texture(emis, uv).xyz;
     
 
     float shadow = 1.0;
