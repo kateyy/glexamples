@@ -136,7 +136,8 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_useObjectBasedTransparency(true)
     , m_transparency(0.5f)
     , m_numTransparencySamples(1024)
-{    
+{
+    m_sceneLoader.m_desiredScene = SceneLoader::IMROD;
     setupPropertyGroup();
 }
 
@@ -160,6 +161,17 @@ void AntiAnti::setupPropertyGroup()
             { "minimum", 0.0f },
             { "step", 0.05f },
             { "precision", 2u },
+    });
+
+    addProperty<SceneLoader::Scene>("scene",
+        [this]() {return m_sceneLoader.m_desiredScene; },
+        [this](SceneLoader::Scene scene) {
+            m_sceneLoader.m_desiredScene = scene;
+    })->setStrings({
+        { SceneLoader::Scene::TRANSPARENCY_TEST, "Transparency Test" },
+        { SceneLoader::Scene::IMROD, "Imrod" },
+        { SceneLoader::Scene::D_SPONZA, "Dabrovic Sponza" },
+        { SceneLoader::Scene::C_SPONZA, "Crytek Sponza" }
     });
 
 
@@ -418,7 +430,7 @@ void AntiAnti::onInitialize()
     m_grid = make_ref<gloperate::AdaptiveGrid>();
     m_grid->setColor({0.6f, 0.6f, 0.6f});
 
-    setupDrawable();
+    m_sceneLoader.update();
     setupProgram();
     setupProjection();
     setupFramebuffer();
@@ -439,8 +451,22 @@ void AntiAnti::checkAndBindTexture(int meshID, aiTextureType type, std::string u
         texture->bindActive(target);
 }
 
+void AntiAnti::checkAndUnbindTexture(int meshID, aiTextureType type, GLenum target)
+{
+    auto texture = m_sceneLoader.getTexture(meshID, type);
+    if (texture)
+        texture->bindActive(target);
+}
+
 void AntiAnti::onPaint()
 {
+    bool sceneChanged = m_sceneLoader.update();
+    if (sceneChanged)
+    {
+        setupTransparencyRandomness();
+        m_frame = 0;
+    }
+
     if (m_shadowsEnabled)
         drawShadowMap();
 
@@ -712,11 +738,6 @@ void AntiAnti::setupTransparencyRandomness()
     std::shuffle(noise.begin(), noise.end(), g);
     m_transparencyNoise->unbindActive(GL_TEXTURE1);
     m_transparencyNoise->image1D(0, GL_R32F, static_cast<GLsizei>(m_numTransparencySamples), 0, GL_RED, GL_FLOAT, noise.data());
-}
-
-void AntiAnti::setupDrawable()
-{
-    m_sceneLoader.load(SceneLoader::TRANSPARENCY_TEST);
 }
 
 void AntiAnti::setupProgram()

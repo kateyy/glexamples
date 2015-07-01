@@ -50,7 +50,9 @@ namespace
 
 
 SceneLoader::SceneLoader()
-: m_aiScene(nullptr)
+    : m_aiScene(nullptr)
+    , m_currentScene(UNINITIALIZED)
+    , m_desiredScene(UNINITIALIZED)
 {
 }
 
@@ -58,6 +60,16 @@ ref_ptr<Texture> SceneLoader::getTexture(int meshIndex, aiTextureType type)
 {
     unsigned int matIndex = m_aiScene->mMeshes[meshIndex]->mMaterialIndex;
     return m_textures[matIndex][type];
+}
+
+bool SceneLoader::update()
+{
+    if (m_currentScene != m_desiredScene)
+    {
+        load(m_desiredScene);
+        return true;
+    }
+    return false;
 }
 
 ref_ptr<Texture> loadTexture(std::string filepath, aiTextureType type)
@@ -80,7 +92,7 @@ void SceneLoader::load(Scene scene)
     std::string directory = base_dir + directories[scene];
     std::string path = directory + filenames[scene];
 
-    delete m_aiScene;
+    aiReleaseImport(m_aiScene);
     m_aiScene = aiImportFile(
         path.c_str(),
         aiProcess_Triangulate |
@@ -91,6 +103,7 @@ void SceneLoader::load(Scene scene)
     if (!m_aiScene)
         std::cout << aiGetErrorString();
 
+    m_textures.clear();
     m_textures.resize(m_aiScene->mNumMaterials);
     if (scene == TRANSPARENCY_TEST)
     {
@@ -132,8 +145,11 @@ void SceneLoader::load(Scene scene)
 
     const auto gloperatescene = gloperate_assimp::AssimpSceneLoader().convertScene(m_aiScene);
 
+    m_drawables.clear();
     for (const auto * geometry : gloperatescene->meshes())
         m_drawables.push_back(widgetzeug::make_unique<gloperate::PolygonalDrawable>(*geometry));
 
     delete gloperatescene;
+
+    m_currentScene = scene;
 }

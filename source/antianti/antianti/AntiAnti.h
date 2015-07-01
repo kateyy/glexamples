@@ -52,13 +52,13 @@ public:
 protected:
     virtual void onInitialize() override;
     void checkAndBindTexture(int meshID, aiTextureType type, std::string uniformName, gl::GLenum target);
+    void checkAndUnbindTexture(int meshID, aiTextureType type, gl::GLenum target);
     virtual void onPaint() override;
 
 private:
     void setupFramebuffer();
     void setupProjection();
     void setupTransparencyRandomness();
-    void setupDrawable();
     void setupProgram();
     void updateFramebuffer();
 
