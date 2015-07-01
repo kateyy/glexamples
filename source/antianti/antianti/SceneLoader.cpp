@@ -44,6 +44,15 @@ namespace
     };
 
     std::vector<aiTextureType> texTypesToLoad = { aiTextureType_DIFFUSE, aiTextureType_EMISSIVE, aiTextureType_HEIGHT, aiTextureType_NORMALS, aiTextureType_SPECULAR };
+
+    //                                    TRANSPARENCY_TEST  IMROD              D_SPONZA           C_SPONZA
+    std::vector<glm::vec2> nearFars =     {{0.3, 30.0},      {0.3, 70.0},       {0.3, 50.0},       {5.0, 3000.0}};
+    std::vector<glm::vec3> camPositions = {{0.2, 1.5, -2.8}, {-4.5, 32.0, 8.7}, {15.5, 3.9, 0.1},  {-1300, 250, -23}};
+    std::vector<glm::vec3> camViews =     {{0.0, -1.5, 2.6}, {0.9, -1.9, -2.1}, {-3.0, -0.9, 0.0}, {3.0, -0.5, 0.0}};
+    std::vector<bool> enableGrid =        {true,             true,              false,             false};
+    std::vector<glm::vec2> ssaoSettings = {{0.05, 1.0},      {0.8, 1.5},        {0.5, 1.5},        {15.0, 1.5}};
+    std::vector<glm::vec3> lightPositions = {{0, 54, 0},     {0, 54, 0},        {0, 18, 0},        {0, 2000, 0}};
+    std::vector<float> lightMaxShifts =   {0.1f,             1.0f,              1.0f,              15.0f};
 }
 
 
@@ -53,6 +62,43 @@ SceneLoader::SceneLoader()
     , m_desiredScene(UNINITIALIZED)
 {
 }
+
+glm::vec2 SceneLoader::getNearFar()
+{
+    return nearFars[m_currentScene];
+}
+
+
+glm::vec3 SceneLoader::getCameraPos()
+{
+    return camPositions[m_currentScene];
+}
+
+glm::vec3 SceneLoader::getCameraCenter()
+{
+    return camPositions[m_currentScene] + camViews[m_currentScene];
+}
+
+bool SceneLoader::getEnableGrid()
+{
+    return enableGrid[m_currentScene];
+}
+
+glm::vec2 SceneLoader::getSsaoSettings()
+{
+    return ssaoSettings[m_currentScene];
+}
+
+glm::vec3 SceneLoader::getLightPos()
+{
+    return lightPositions[m_currentScene];
+}
+
+float SceneLoader::getLightMaxShift()
+{
+    return lightMaxShifts[m_currentScene];
+}
+
 
 ref_ptr<Texture> SceneLoader::getTexture(int meshIndex, aiTextureType type)
 {

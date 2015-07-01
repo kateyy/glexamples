@@ -3,6 +3,8 @@
 #include <vector>
 #include <memory>
 
+#include <glm/glm.hpp>
+
 #include <globjects/base/ref_ptr.h>
 #include <gloperate/primitives/PolygonalDrawable.h>
 
@@ -36,6 +38,14 @@ public:
     Scene m_currentScene;
 
     bool update();
+
+    glm::vec2 getNearFar();
+    glm::vec3 getCameraPos();
+    glm::vec3 getCameraCenter();
+    bool getEnableGrid();
+    glm::vec2 getSsaoSettings();
+    glm::vec3 getLightPos();
+    float getLightMaxShift();
 
     // a texture of type someType for drawable m_drawables[i] can be retrieved with 
     // getTexture(i, someType). returned texture is null if the drawable has no texture of that type.
