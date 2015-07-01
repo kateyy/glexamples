@@ -80,7 +80,21 @@ void main()
 
     vec3 l = normalize(g_L);
     vec3 n_world = normalize(g_N);
-    vec3 normSample = (hasNorm) ? texture(norm, uv).xyz : vec3(0.5, 0.5, 1.0);
+
+    //vec3 normSample;
+    //vec3 test;
+    //if (hasNorm) {
+    //    normSample = texture(norm, uv).xyz;
+    //    test = vec3(1.0, 0.0, 0.0);
+    //}
+    //else {
+    //    normSample = vec3(0.5, 0.5, 1.0);
+    //    test = vec3(0.0, 1.0, 0.0);
+    //}
+
+    vec3 normSample = mix(vec3(0.5, 0.5, 1.0), texture(norm, uv).xyz, hasNorm);
+
+    //normSample = vec3(0.5, 0.500000, 1.0);
     vec3 n_tangent = normalize(normSample * 2.0 - 1.0);
 
     mat3 tbn = cotangent_frame(n_world, g_worldPos, uv);
@@ -96,7 +110,7 @@ void main()
 
     float l_both = mix(l_face, l_frag, 1.0) * 0.5 + 0.5; // fakie fakie...
 
-    vec3 diffSample = (hasDiff) ? texture(diff, uv).xyz : vec3(g_N * 0.5 + 0.5);
+    vec3 diffSample = mix(vec3(g_N * 0.5 + 0.5), texture(diff, uv).xyz, hasDiff);
     vec3 diffuse = diffuseFactor * diffSample * l_both;
 
     // specular 
