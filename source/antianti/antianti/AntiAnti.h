@@ -57,7 +57,6 @@ protected:
 
 private:
     void setupFramebuffer();
-    void setupProjection();
     void setupTransparencyRandomness();
     void setupProgram();
     void updateFramebuffer();

@@ -123,7 +123,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     // shadows
     , m_shadowsEnabled(true)
     , m_lightPosition({0, 54, 0})
-    , m_lightFocus({ 0, 24, 0 })
+    , m_lightFocus({ 0, 0, 0 })
     , m_maxLightSourceShift(0.1f)
     , m_linearizedShadowMap(false)
     , m_shadowMapParamsChanged(true)
@@ -134,7 +134,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_backFaceCulling(false)
     , m_backFaceCullingShadows(false)
     , m_useObjectBasedTransparency(true)
-    , m_transparency(0.5f)
+    , m_transparency(0.0f)
     , m_numTransparencySamples(1024)
 {
     m_sceneLoader.m_desiredScene = SceneLoader::IMROD;
@@ -171,7 +171,8 @@ void AntiAnti::setupPropertyGroup()
         { SceneLoader::Scene::TRANSPARENCY_TEST, "Transparency Test" },
         { SceneLoader::Scene::IMROD, "Imrod" },
         { SceneLoader::Scene::D_SPONZA, "Dabrovic Sponza" },
-        { SceneLoader::Scene::C_SPONZA, "Crytek Sponza" }
+        { SceneLoader::Scene::C_SPONZA, "Crytek Sponza" },
+        { SceneLoader::Scene::MITSUBA, "Mitsuba" },
     });
 
 
@@ -430,11 +431,8 @@ void AntiAnti::onInitialize()
     m_grid = make_ref<gloperate::AdaptiveGrid>();
     m_grid->setColor({0.6f, 0.6f, 0.6f});
 
-    m_sceneLoader.update();
     setupProgram();
-    setupProjection();
     setupFramebuffer();
-    setupTransparencyRandomness();
 
     globjects::NamedString::create("/data/antianti/ssao.glsl", new globjects::File("data/antianti/ssao.glsl"));
 
@@ -464,6 +462,21 @@ void AntiAnti::onPaint()
     if (sceneChanged)
     {
         setupTransparencyRandomness();
+
+        vec2 nearFar = m_sceneLoader.getNearFar();
+        float fovy = 50.0f;
+        m_projectionCapability->setZNear(nearFar.x);
+        m_projectionCapability->setZFar(nearFar.y);
+        m_projectionCapability->setFovy(radians(fovy));
+
+        m_lightZRange = nearFar;
+        m_lightPosition = m_sceneLoader.getLightPos();
+        m_maxLightSourceShift = m_sceneLoader.getLightMaxShift();
+
+        m_cameraCapability->setEye(m_sceneLoader.getCameraPos());
+        m_cameraCapability->setCenter(m_sceneLoader.getCameraCenter());
+        m_postProcessing.ssaoRadius = m_sceneLoader.getSsaoSettings().x;
+        m_postProcessing.ssaoIntensity = m_sceneLoader.getSsaoSettings().y;
         m_frame = 0;
     }
 
@@ -550,9 +563,12 @@ void AntiAnti::onPaint()
         glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f))
         / glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
 
-    m_grid->setCamera(camera);
-    m_grid->draw(aaShift, m_focalDepth, shearingFactor);
+    if (m_sceneLoader.getEnableGrid()) {
+        m_grid->setCamera(camera);
+        m_grid->draw(aaShift, m_focalDepth, shearingFactor);
+    }
     
+    gl::glEnable(gl::GL_DEPTH_TEST);
     glSet(GL_CULL_FACE, m_backFaceCulling);
     glCullFace(GL_BACK);
 
@@ -693,17 +709,6 @@ void AntiAnti::setupFramebuffer()
     m_postProcessing.colorTexture = m_colorAttachment;
     m_postProcessing.shadowMap = m_shadowMap;
     m_postProcessing.initialize();
-}
-
-void AntiAnti::setupProjection()
-{
-    static const auto zNear = 0.3f, zFar = 30.f, fovy = 50.f;
-
-    m_projectionCapability->setZNear(zNear);
-    m_projectionCapability->setZFar(zFar);
-    m_projectionCapability->setFovy(radians(fovy));
-
-    m_grid->setNearFar(zNear, zFar);
 }
 
 void AntiAnti::setupTransparencyRandomness()
