@@ -38,7 +38,7 @@ void main()
 
     vec4 lightPos = vec4(light, 1.0);
     v_N = a_normal;
-    v_L = lightPos.xyz - posView.xyz;
+    v_L = lightPos.xyz - a_vertex.xyz;
     v_E = -posView.xyz;
     v_T = a_texCoord;
 
