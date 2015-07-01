@@ -25,6 +25,7 @@ public:
 
 public:
     enum Scene {
+        TRANSPARENCY_TEST,
         IMROD,
         D_SPONZA,
         C_SPONZA
