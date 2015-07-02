@@ -38,8 +38,9 @@ namespace gloperate
     class AbstractInputCapability;
     class PolygonalDrawable;
     class ScreenAlignedQuad;
-    class GenericPathTracingStage;
 }
+
+class DrawablePathTracingStage;
 
 
 class AntiAnti : public gloperate::Painter
@@ -101,7 +102,9 @@ protected:
     std::unique_ptr<gloperate::CoordinateProvider> m_coordProvider;
 
     std::unique_ptr<gloperate::AbstractPipeline> m_pipeline;
-    gloperate::GenericPathTracingStage * m_pathTracingStage;
+    DrawablePathTracingStage * m_pathTracingStage;
+    gloperate::Data<unsigned int> m_coarseSamplingWindowSize;
+    gloperate::Data<gl::GLuint> m_maxRayDepth;
 
 protected:
 

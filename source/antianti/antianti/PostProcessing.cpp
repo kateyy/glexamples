@@ -112,7 +112,7 @@ const unsigned int noiseSize = 128;
 PostProcessing::PostProcessing()
 : frame(0)
 , pathTracingEnabled(true)
-, useSSAO(true)
+, useSSAO(false)
 , ssaoIntensity(1.0f)
 , ssaoRadius(0.05f)
 , output(Output::Source_Final)

@@ -43,10 +43,11 @@
 #include <gloperate/primitives/ScreenAlignedQuad.h>
 #include <gloperate/tools/CoordinateProvider.h>
 #include <gloperate/tools/DepthExtractor.h>
-#include <gloperate/rendering/GenericPathTracingStage.h>
 
 #include <reflectionzeug/PropertyGroup.h>
 #include <reflectionzeug/extensions/GlmProperties.hpp>
+
+#include "DrawablePathTracingStage.h"
 
 
 
@@ -115,7 +116,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_focalDepth(3.0f)
     , m_dofAtCursor(false)
     // shadows
-    , m_shadowsEnabled(true)
+    , m_shadowsEnabled(false)
     , m_lightPosition({0, 5, 0})
     , m_lightFocus()
     , m_maxLightSourceShift(0.1f)
@@ -127,9 +128,19 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_backFaceCulling(false)
     , m_backFaceCullingShadows(false)
     , m_useObjectBasedTransparency(true)
-    , m_transparency(0.5f)
+    , m_transparency(0.0f)
     , m_numTransparencySamples(1024)
-{    
+{
+    m_pathTracingStage = new DrawablePathTracingStage();
+    m_pathTracingStage->setShaderFilesRootDir("C:/Libraries/Sources/gloperate/data");
+    m_pathTracingStage->camera = m_cameraCapability;
+    m_pathTracingStage->viewport = m_viewportCapability;
+    m_pathTracingStage->projection = m_projectionCapability;
+    m_coarseSamplingWindowSize = 4;
+    m_maxRayDepth = 0;
+    m_pathTracingStage->coarseSamplingWindowSize = m_coarseSamplingWindowSize;
+    m_pathTracingStage->maxRayDepth = m_maxRayDepth;
+
     setupPropertyGroup();
 }
 
@@ -390,6 +401,30 @@ void AntiAnti::setupPropertyGroup()
                 m_frame = 0;
         });
     }
+
+    {
+        auto ptGroup = addGroup("PathTracing");
+
+        ptGroup->addProperty<GLuint>("ReflectiveObject", m_pathTracingStage,
+            &DrawablePathTracingStage::reflectiveObjectIndex,
+            &DrawablePathTracingStage::setReflectiveObjectIndex);
+
+        ptGroup->addProperty<GLuint>("RayDepth",
+            [this]() { return m_maxRayDepth.data();},
+            [this](GLuint value) {
+            *m_maxRayDepth = value;
+            m_maxRayDepth.invalidate();
+            m_frame = 0;
+        });
+
+        ptGroup->addProperty<GLuint>("CoarseWindowSize",
+            [this]() { return m_coarseSamplingWindowSize.data();},
+            [this](GLuint value) {
+            *m_coarseSamplingWindowSize = value;
+            m_coarseSamplingWindowSize.invalidate();
+            m_frame = 0;
+        });
+    }
 }
 
 void AntiAnti::onInitialize()
@@ -420,13 +455,6 @@ void AntiAnti::onInitialize()
 
     globjects::NamedString::create("/data/antianti/ssao.glsl", new globjects::File("data/antianti/ssao.glsl"));
 
-
-    m_pathTracingStage = new GenericPathTracingStage();
-    // TODO DO
-    //m_pathTracingStage->setShaderFilesRootDir("C:/Libraries/Sources/gloperate/data/pathtracing");
-    m_pathTracingStage->camera = m_cameraCapability;
-    m_pathTracingStage->viewport = m_viewportCapability;
-    m_pathTracingStage->projection = m_projectionCapability;
 
     m_pipeline = make_unique<AbstractPipeline>();
     m_pipeline->addStage(m_pathTracingStage);   // takes ownership
@@ -719,6 +747,8 @@ void AntiAnti::setupDrawable()
         std::cout << "Could not load file" << std::endl;
         return;
     }
+
+    m_pathTracingStage->loadScene(*scene);
 
     for (const auto * geometry : scene->meshes()) {
         m_drawables.push_back(gloperate::make_unique<gloperate::PolygonalDrawable>(*geometry));
