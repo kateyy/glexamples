@@ -39,6 +39,7 @@ public:
         Source_Geometry = 4,
         Source_Depth = 5,
         Source_ShadowMap = 6,
+        Source_PathTracingColors = 10,
     };
 
     glm::vec2 viewport;
@@ -60,6 +61,10 @@ public:
     globjects::ref_ptr<globjects::Texture> lastFrame;
     globjects::ref_ptr<globjects::Framebuffer> fbo;
     int frame;
+
+
+    bool pathTracingEnabled;
+    globjects::ref_ptr<globjects::Texture> pathTracingColors;
 
     void process();
 protected:

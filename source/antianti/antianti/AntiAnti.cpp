@@ -35,6 +35,7 @@
 #include <gloperate/painter/CameraCapability.h>
 #include <gloperate/painter/Camera.h>
 #include <gloperate/painter/InputCapability.h>
+#include <gloperate/pipeline/AbstractPipeline.h>
 #include <gloperate/primitives/AdaptiveGrid.h>
 #include <gloperate/primitives/Scene.h>
 #include <gloperate/primitives/PolygonalDrawable.h>
@@ -42,19 +43,17 @@
 #include <gloperate/primitives/ScreenAlignedQuad.h>
 #include <gloperate/tools/CoordinateProvider.h>
 #include <gloperate/tools/DepthExtractor.h>
+#include <gloperate/rendering/GenericPathTracingStage.h>
 
 #include <reflectionzeug/PropertyGroup.h>
 #include <reflectionzeug/extensions/GlmProperties.hpp>
 
-#include <widgetzeug/make_unique.hpp>
 
 
 using namespace gl;
 using namespace glm;
 using namespace globjects;
 using namespace gloperate;
-
-using widgetzeug::make_unique;
 
 namespace
 {
@@ -101,7 +100,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
     , m_renderTargetCapability(addCapability(new gloperate::TypedRenderTargetCapability()))
     , m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
-    , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
+    , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability.data())))
     , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
     , m_inputCapability(addCapability(new HackedInputCapability()))
     , m_frame(0)
@@ -329,7 +328,8 @@ void AntiAnti::setupPropertyGroup()
                 {PostProcessing::Output::Source_Normals, "Normals"},
                 {PostProcessing::Output::Source_Geometry, "Geometry"},
                 {PostProcessing::Output::Source_Depth, "Depth"},
-                {PostProcessing::Output::Source_ShadowMap, "ShadowMap"}
+                { PostProcessing::Output::Source_ShadowMap, "ShadowMap" },
+                {PostProcessing::Output::Source_PathTracingColors, "PathTracingColors"}
             });
 
         ppGroup->addProperty<GLenum>("textureFormat",
@@ -419,6 +419,21 @@ void AntiAnti::onInitialize()
     setupTransparencyRandomness();
 
     globjects::NamedString::create("/data/antianti/ssao.glsl", new globjects::File("data/antianti/ssao.glsl"));
+
+
+    m_pathTracingStage = new GenericPathTracingStage();
+    // TODO DO
+    //m_pathTracingStage->setShaderFilesRootDir("C:/Libraries/Sources/gloperate/data/pathtracing");
+    m_pathTracingStage->camera = m_cameraCapability;
+    m_pathTracingStage->viewport = m_viewportCapability;
+    m_pathTracingStage->projection = m_projectionCapability;
+
+    m_pipeline = make_unique<AbstractPipeline>();
+    m_pipeline->addStage(m_pathTracingStage);   // takes ownership
+
+    m_pipeline->initialize();
+
+    m_postProcessing.pathTracingColors = m_pathTracingStage->colorTexture;
 }
 
 void AntiAnti::onPaint()
@@ -426,18 +441,17 @@ void AntiAnti::onPaint()
     if (m_shadowsEnabled)
         drawShadowMap();
 
-    if (m_viewportCapability->hasChanged())
+    if (m_viewportCapability.data()->hasChanged())
     {
-        m_viewportCapability->setChanged(false);
-        
+        m_viewportCapability.invalidate(); // ?? for the path tracing stage
         updateFramebuffer();
     }
 
     glViewport(
-        m_viewportCapability->x(),
-        m_viewportCapability->y(),
-        m_viewportCapability->width(),
-        m_viewportCapability->height());
+        m_viewportCapability.data()->x(),
+        m_viewportCapability.data()->y(),
+        m_viewportCapability.data()->width(),
+        m_viewportCapability.data()->height());
 
     if (m_dofAtCursor || m_inputCapability->ctrlPressed)
     {
@@ -447,32 +461,33 @@ void AntiAnti::onPaint()
         {
             glm::vec3 mouseWorldPos = m_coordProvider->unproject(m_inputCapability->lastMousePosition, depth);
 
-            float clickZDistance = -(m_cameraCapability->view() * glm::vec4(mouseWorldPos, 1.0)).z;
+            float clickZDistance = -(m_cameraCapability.data()->view() * glm::vec4(mouseWorldPos, 1.0)).z;
 
             if (glm::distance(clickZDistance, m_focalDepth) > 0.01f)
                 property<float>("focalDepth")->setValue(clickZDistance);
         }
     }
 
-    const auto inputTransform = m_projectionCapability->projection() * m_cameraCapability->view();
+    const auto inputTransform = m_projectionCapability.data()->projection() * m_cameraCapability.data()->view();
 
     const bool cameraHasChanged = m_lastTransform != inputTransform;
     if (cameraHasChanged)
     {
         m_lastTransform = inputTransform;
+        m_cameraCapability.invalidate(); // for the path tracing pipeline
 
         auto zRange = glm::vec2(
-            m_projectionCapability->zNear(),
-            m_projectionCapability->zFar());
+            m_projectionCapability.data()->zNear(),
+            m_projectionCapability.data()->zFar());
         m_program->setUniform("zRange", zRange);
 
         m_frame = 0;
     }
 
-    glm::vec3 inputEye = m_cameraCapability->eye();
+    glm::vec3 inputEye = m_cameraCapability.data()->eye();
     glm::vec3 dofShiftedEye = inputEye;
-    glm::vec3 viewVec = glm::normalize(m_cameraCapability->center() - inputEye) * m_focalDepth;
-    glm::vec3 focalPoint = m_cameraCapability->eye() + viewVec;
+    glm::vec3 viewVec = glm::normalize(m_cameraCapability.data()->center() - inputEye) * m_focalDepth;
+    glm::vec3 focalPoint = m_cameraCapability.data()->eye() + viewVec;
     glm::vec2 shearingFactor = glm::vec2();
 
     if (m_dofEnabled && !cameraHasChanged)
@@ -480,7 +495,7 @@ void AntiAnti::onPaint()
         if (m_usePointDoF)
         {
             glm::vec3 dofShift{ glm::diskRand(m_maxDofShift), 0.0f };
-            glm::vec3 dofShiftWorld = glm::mat3(m_cameraCapability->view()) * dofShift;
+            glm::vec3 dofShiftWorld = glm::mat3(m_cameraCapability.data()->view()) * dofShift;
             dofShiftedEye = inputEye + dofShiftWorld;
         }
         else
@@ -493,13 +508,13 @@ void AntiAnti::onPaint()
     auto camera = make_ref<gloperate::Camera>(
         dofShiftedEye,
         focalPoint,
-        m_cameraCapability->up());
-    camera->setZNear(m_projectionCapability->zNear());
-    camera->setZFar(m_projectionCapability->zFar());
-    camera->setFovy(m_projectionCapability->fovy());
-    camera->setAspectRatio(m_projectionCapability->aspectRatio());
+        m_cameraCapability.data()->up());
+    camera->setZNear(m_projectionCapability.data()->zNear());
+    camera->setZFar(m_projectionCapability.data()->zFar());
+    camera->setFovy(m_projectionCapability.data()->fovy());
+    camera->setAspectRatio(m_projectionCapability.data()->aspectRatio());
 
-    const auto transform = m_projectionCapability->projection() * camera->view();
+    const auto transform = m_projectionCapability.data()->projection() * camera->view();
 
 
     m_fbo->bind(GL_FRAMEBUFFER);
@@ -510,7 +525,7 @@ void AntiAnti::onPaint()
     glm::vec2 aaShift = glm::vec2(
         glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f),
         glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f))
-        / glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
+        / glm::vec2(m_viewportCapability.data()->width(), m_viewportCapability.data()->height());
 
     m_grid->setCamera(camera);
     m_grid->draw(aaShift, m_focalDepth, shearingFactor);
@@ -524,13 +539,13 @@ void AntiAnti::onPaint()
 
     m_program->setUniform("subpixelShift", aaShift);
     m_program->setUniform("viewMatrix", camera->view());
-    m_program->setUniform("projection", m_projectionCapability->projection());
+    m_program->setUniform("projection", m_projectionCapability.data()->projection());
     //m_program->setUniform(m_transformLocation, transform);
     m_program->setUniform("focalPlane", m_focalDepth);
     m_program->setUniform("shearingFactor", shearingFactor);
     //m_program->setUniform(m_timeLocation, time_now);
     m_program->setUniform("frame", m_frame);
-    m_program->setUniform("viewport", glm::vec2{ m_viewportCapability->width(), m_viewportCapability->height() });
+    m_program->setUniform("viewport", glm::vec2{ m_viewportCapability.data()->width(), m_viewportCapability.data()->height() });
     m_program->setUniform("transparency", m_useObjectBasedTransparency ? 0.0f : m_transparency);
     m_program->setUniform("shadowsEnabled", m_shadowsEnabled);
     m_program->setUniform("lightSource", m_lightPosition);
@@ -557,13 +572,15 @@ void AntiAnti::onPaint()
 
     glDisable(GL_CULL_FACE);
 
+    m_pipeline->execute();
+
     bool continueRendering = m_frame < m_numFrames;
 
     if (continueRendering)
         ++m_frame;
 
     m_postProcessing.camera = camera;
-    m_postProcessing.viewport = glm::vec2(m_viewportCapability->x(), m_viewportCapability->y());
+    m_postProcessing.viewport = glm::vec2(m_viewportCapability.data()->x(), m_viewportCapability.data()->y());
     m_postProcessing.frame = continueRendering ? m_frame : std::numeric_limits<int>::max();
 
     m_postProcessing.process();
@@ -571,10 +588,10 @@ void AntiAnti::onPaint()
 
     
     const auto rect = std::array<GLint, 4>{{
-        m_viewportCapability->x(),
-        m_viewportCapability->y(),
-        m_viewportCapability->width(),
-        m_viewportCapability->height()}};
+        m_viewportCapability.data()->x(),
+        m_viewportCapability.data()->y(),
+        m_viewportCapability.data()->width(),
+        m_viewportCapability.data()->height()}};
     
     auto targetfbo = m_targetFramebufferCapability->framebuffer();
     auto drawBuffer = GL_COLOR_ATTACHMENT0;
@@ -590,6 +607,9 @@ void AntiAnti::onPaint()
     
     m_fbo->blit(GL_COLOR_ATTACHMENT0, rect, targetfbo, drawBuffer, rect,
         GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+
+    m_viewportCapability.data()->setChanged(false);
 }
 
 void AntiAnti::setupFramebuffer()
@@ -649,10 +669,10 @@ void AntiAnti::setupProjection()
 {
     static const auto zNear = 0.3f, zFar = 30.f, fovy = 50.f;
 
-    m_projectionCapability->setZNear(zNear);
-    m_projectionCapability->setZFar(zFar);
-    m_projectionCapability->setFovy(radians(fovy));
-    m_lightZRange = { m_projectionCapability->zNear(), m_projectionCapability->zFar() };
+    m_projectionCapability.data()->setZNear(zNear);
+    m_projectionCapability.data()->setZFar(zFar);
+    m_projectionCapability.data()->setFovy(radians(fovy));
+    m_lightZRange = { m_projectionCapability.data()->zNear(), m_projectionCapability.data()->zFar() };
 
     m_grid->setNearFar(zNear, zFar);
 }
@@ -736,7 +756,7 @@ void AntiAnti::setupProgram()
 void AntiAnti::updateFramebuffer()
 {
     static const auto numSamples = 4u;
-    const auto width = m_viewportCapability->width(), height = m_viewportCapability->height();
+    const auto width = m_viewportCapability.data()->width(), height = m_viewportCapability.data()->height();
     
     m_colorAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
     m_normalAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
@@ -785,7 +805,7 @@ void AntiAnti::drawShadowMap()
     auto lightUp = glm::cross(-shiftedLightEye, glm::vec3(-1, 1, 0));
 
     auto transform = 
-        glm::perspective(m_projectionCapability->fovy(), 
+        glm::perspective(m_projectionCapability.data()->fovy(), 
             1.0f, m_lightZRange.x, m_lightZRange.y)
         * glm::lookAt(shiftedLightEye, shiftedLightCenter, lightUp);
 

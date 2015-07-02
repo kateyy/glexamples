@@ -11,6 +11,10 @@
 #include <globjects/base/ref_ptr.h>
 
 #include <gloperate/painter/Painter.h>
+#include <gloperate/pipeline/Data.h>
+#include <gloperate/painter/AbstractViewportCapability.h>
+#include <gloperate/painter/AbstractPerspectiveProjectionCapability.h>
+#include <gloperate/painter/AbstractCameraCapability.h>
 
 #include "PostProcessing.h"
 
@@ -25,17 +29,16 @@ namespace globjects
 
 namespace gloperate
 {
+    class AbstractPipeline;
     class AdaptiveGrid;
     class CoordinateProvider;
     class ResourceManager;
     class AbstractTargetFramebufferCapability;
     class TypedRenderTargetCapability;
-    class AbstractViewportCapability;
-    class AbstractPerspectiveProjectionCapability;
-    class AbstractCameraCapability;
     class AbstractInputCapability;
     class PolygonalDrawable;
     class ScreenAlignedQuad;
+    class GenericPathTracingStage;
 }
 
 
@@ -69,9 +72,9 @@ protected:
     /* capabilities */
     gloperate::AbstractTargetFramebufferCapability * m_targetFramebufferCapability;
     gloperate::TypedRenderTargetCapability * m_renderTargetCapability;
-    gloperate::AbstractViewportCapability * m_viewportCapability;
-    gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
-    gloperate::AbstractCameraCapability * m_cameraCapability;
+    gloperate::Data<gloperate::AbstractViewportCapability *> m_viewportCapability;
+    gloperate::Data<gloperate::AbstractPerspectiveProjectionCapability *> m_projectionCapability;
+    gloperate::Data<gloperate::AbstractCameraCapability *> m_cameraCapability;
     HackedInputCapability * m_inputCapability;
 
     /* members */
@@ -96,6 +99,9 @@ protected:
     std::vector<std::vector<bool>> m_transparencyRandomness;
 
     std::unique_ptr<gloperate::CoordinateProvider> m_coordProvider;
+
+    std::unique_ptr<gloperate::AbstractPipeline> m_pipeline;
+    gloperate::GenericPathTracingStage * m_pathTracingStage;
 
 protected:
 

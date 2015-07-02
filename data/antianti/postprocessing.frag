@@ -5,6 +5,8 @@ uniform sampler2D ColorTexture;
 uniform sampler2D NormalTexture;
 uniform sampler2D shadowMap;
 
+uniform sampler2D pathTracingColors;
+
 uniform mat3 normalMatrix;
 //uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
@@ -29,6 +31,7 @@ const int Source_Normals = 3;
 const int Source_Geometry = 4;
 const int Source_Depth = 5;
 const int Source_ShadowMap = 6;
+const int Source_PathTracingColors = 10;
 
 uniform int Source = Source_Final;
 
@@ -74,6 +77,9 @@ void main()
             // shadowDepth = (nearZ*farZ/4.0) / (farZ-shadowDepth*(farZ-nearZ));
 
             color = vec4(shadowDepth);
+            break;
+        case Source_PathTracingColors:
+            color = texture(pathTracingColors, v_uv);
             break;
     }
     

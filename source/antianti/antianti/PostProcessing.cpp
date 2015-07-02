@@ -23,6 +23,8 @@
 #include <gloperate/painter/AbstractCameraCapability.h>
 #include <gloperate/painter/AbstractPerspectiveProjectionCapability.h>
 
+using namespace gl;
+
 namespace {
 
 std::vector<glm::vec3> ssaoKernel(unsigned int size)
@@ -109,6 +111,7 @@ const unsigned int noiseSize = 128;
 
 PostProcessing::PostProcessing()
 : frame(0)
+, pathTracingEnabled(true)
 , useSSAO(true)
 , ssaoIntensity(1.0f)
 , ssaoRadius(0.05f)
@@ -142,6 +145,9 @@ void PostProcessing::initialize()
     m_screenAlignedQuad->program()->setUniform("lastFrame", static_cast<int>(5));
 
     m_screenAlignedQuad->program()->setUniform("useSSAO", false);
+
+
+    m_screenAlignedQuad->program()->setUniform("pathTracingColors", 10);
 }
 
 void PostProcessing::process()
@@ -189,6 +195,11 @@ void PostProcessing::render()
 
     lastFrame->bindActive(gl::GL_TEXTURE5);
 
+    if (pathTracingEnabled)
+    {
+        pathTracingColors->bindActive(GL_TEXTURE10);
+    }
+
     gl::glDisable(gl::GL_DEPTH_TEST);
 
 
@@ -204,6 +215,11 @@ void PostProcessing::render()
     m_ssaoNoise->unbindActive(gl::GL_TEXTURE8);
 
     lastFrame->unbindActive(gl::GL_TEXTURE5);
+
+    if (pathTracingEnabled)
+    {
+        pathTracingColors->unbindActive(GL_TEXTURE10);
+    }
 
     fbo->unbind(gl::GL_FRAMEBUFFER);
 }
