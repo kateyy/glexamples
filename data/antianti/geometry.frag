@@ -20,10 +20,10 @@ uniform bool shadowsEnabled;
 uniform bool linearizedShadowMap;
 uniform vec2 lightZRange;
 
-uniform bool hasDiff;
-uniform bool hasNorm;
-uniform bool hasSpec;
-uniform bool hasEmis;
+uniform float hasDiff;
+uniform float hasNorm;
+uniform float hasSpec;
+uniform float hasEmis;
 
 uniform sampler2D diff;
 uniform sampler2D norm;
@@ -92,7 +92,22 @@ void main()
     //    test = vec3(0.0, 1.0, 0.0);
     //}
 
-    vec3 normSample = mix(vec3(0.5, 0.5, 1.0), texture(norm, uv).xyz, hasNorm);
+
+	vec3 normSample;
+	if (hasNorm > 0.5)
+	{
+		normSample = mix(vec3(0.5, 0.5, 1.0), texture(norm, uv).xyz, hasNorm);
+    }
+    else
+    {
+	    float moo = texture(norm, uv).r;
+	    vec2 moo_tex = vec2(textureSize(norm, 0));
+	    float moo_xx = texture(norm, uv + vec2(2.0/ moo_tex.x, 0.0)).r;
+	    float moo_yy = texture(norm, uv + vec2(0.0, 2.0 / moo_tex.y)).r;
+	    float moo_x =  moo_xx - moo;
+	    float moo_y =  moo_yy - moo;
+	    normSample = normalize(vec3(moo_x, moo_y, 1.0))  * 0.5 + 0.5;
+    }
 
     //normSample = vec3(0.5, 0.500000, 1.0);
     vec3 n_tangent = normalize(normSample * 2.0 - 1.0);
@@ -147,4 +162,7 @@ void main()
 
     fragColor = vec4(  vec3(color) , 1.0);
     fragNormal = vec4(g_N, 1.0);
+
+    if (hasNorm < 0.5 && hasDiff < 0.5)
+		fragColor = fragNormal * 0.5 + 0.5;
 }

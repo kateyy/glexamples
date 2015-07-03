@@ -116,7 +116,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     // misc
     , m_numFrames(10000)
     , m_maxSubpixelShift(1.0f)
-    , m_accTextureFormat(GL_RGBA32F)
+    , m_accTextureFormat(GL_RGB32F)
     , m_backgroundColor({ 222, 230, 255 })
     // dof
     , m_dofEnabled(false)
@@ -422,9 +422,13 @@ void AntiAnti::setupPropertyGroup()
                 updateFramebuffer();
                 m_frame = 0;
         })->setStrings({
-            { GLenum::GL_RGBA8, "GL_RGBA8" },
-            { GLenum::GL_RGBA32F, "GL_RGBA32F" },
-            { GLenum::GL_RGBA16, "GL_RGBA16" }
+			{ GLenum::GL_RGB8, "GL_RGB8" },
+			{ GLenum::GL_RGB10, "GL_RGB10" },
+			{ GLenum::GL_RGB12, "GL_RGB12" },
+			{ GLenum::GL_RGB16, "GL_RGB16" },
+			{ GLenum::GL_RGB16F, "GL_RGB16F" },
+            { GLenum::GL_RGB32F, "GL_RGB32F" },
+			{ GLenum::GL_R11F_G11F_B10F, "GL_R11F_G11F_B10F" },
         });
     }
 
@@ -507,9 +511,10 @@ void AntiAnti::checkAndBindTexture(int meshID, aiTextureType type, std::string u
 {
     auto texture = m_sceneLoader.getTexture(meshID, type);
     bool uiae = texture.get() != nullptr;
+	float hack = uiae ? 1.0f : 0.0f;
     if (uniformName != "")
-        m_program->setUniform(uniformName, uiae);
-    if (texture)
+        m_program->setUniform(uniformName, hack);
+	if (texture)
         texture->bindActive(target);
 }
 
@@ -750,7 +755,9 @@ void AntiAnti::setupFramebuffer()
 
     m_fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 });
 
-    m_ppTexture = Texture::createDefault(GL_TEXTURE_2D);
+	m_ppTexture = Texture::createDefault(GL_TEXTURE_2D);
+	m_ppTexture->setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	m_ppTexture->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     m_ppfbo = make_ref<Framebuffer>();
     m_ppfbo->attachTexture(GL_COLOR_ATTACHMENT0, m_ppTexture);
@@ -867,7 +874,7 @@ void AntiAnti::updateFramebuffer()
     m_normalAttachment->image2D(0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
     m_depthAttachment->image2D(0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
 
-    m_ppTexture->image2D(0, m_accTextureFormat, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    m_ppTexture->image2D(0, m_accTextureFormat, width, height, 0, GL_RGB, GL_FLOAT, nullptr);
 }
 
 void AntiAnti::drawShadowMap()
