@@ -171,7 +171,8 @@ void AntiAnti::setupPropertyGroup()
         { SceneLoader::Scene::TRANSPARENCY_TEST, "Transparency Test" },
         { SceneLoader::Scene::IMROD, "Imrod" },
         { SceneLoader::Scene::D_SPONZA, "Dabrovic Sponza" },
-        { SceneLoader::Scene::C_SPONZA, "Crytek Sponza" }
+        { SceneLoader::Scene::C_SPONZA, "Crytek Sponza" },
+        { SceneLoader::Scene::MITSUBA, "Mitsuba" },
     });
 
 

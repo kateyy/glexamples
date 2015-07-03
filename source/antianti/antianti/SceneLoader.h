@@ -31,7 +31,8 @@ public:
         TRANSPARENCY_TEST,
         IMROD,
         D_SPONZA,
-        C_SPONZA
+        C_SPONZA,
+        MITSUBA,
     };
 
     Scene m_desiredScene;
