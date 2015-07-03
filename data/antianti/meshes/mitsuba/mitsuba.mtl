@@ -12,6 +12,7 @@ newmtl inside
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
+	map_Kd default.png
 
 newmtl case
 	Ns 32.0000
@@ -24,6 +25,7 @@ newmtl case
 	Kd 0.4860 0.6310 0.6630
 	Ks 0.7000 0.7000 0.7000
 	Ke 0.0000 0.0000 0.0000
+	map_Kd default.png
 
 newmtl backdrop
 	Ns 10.0000
