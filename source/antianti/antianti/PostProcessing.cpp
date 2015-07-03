@@ -57,9 +57,13 @@ std::vector<glm::vec3> ssaoKernel(unsigned int size)
     return kernel;
 }
 
-std::vector<glm::vec3> ssaoNoise(const unsigned int size)
+std::vector<glm::vec3> ssaoNoise(const unsigned int size, bool useSSAONoise)
 {
     std::vector<glm::vec3> kernel;
+    if (!useSSAONoise)
+    {
+        kernel.resize(size*size, glm::vec3(1.0, 0.0, 0.0));
+    }
 
     for(unsigned y = 0; y < size; ++y)
     {
@@ -82,9 +86,6 @@ globjects::Texture* ssaoKernelTexture(unsigned int size)
     texture->setParameter(gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
     texture->setParameter(gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
     texture->setParameter(gl::GL_TEXTURE_WRAP_S, gl::GL_MIRRORED_REPEAT);
-
-    texture->image1D(0, gl::GL_RGBA32F, size, 0, gl::GL_RGB, gl::GL_FLOAT, ssaoKernel(size).data());
-
     return texture;
 }
 
@@ -95,14 +96,11 @@ globjects::Texture* ssaoNoiseTexture(unsigned int size)
     texture->setParameter(gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
     texture->setParameter(gl::GL_TEXTURE_WRAP_S, gl::GL_MIRRORED_REPEAT);
     texture->setParameter(gl::GL_TEXTURE_WRAP_T, gl::GL_MIRRORED_REPEAT);
-
-    texture->image2D(0, gl::GL_RGBA32F, glm::ivec2(size), 0, gl::GL_RGB, gl::GL_FLOAT, ssaoNoise(size).data());
-
     return texture;
 }
 
 const unsigned int kernelSize = 16;
-const unsigned int noiseSize = 128;
+const unsigned int noiseSize = 32;
 
 }
 
@@ -173,7 +171,7 @@ void PostProcessing::render()
     if (useSSAO)
     {
         m_ssaoKernel->image1D(0, gl::GL_RGBA32F, kernelSize, 0, gl::GL_RGB, gl::GL_FLOAT, ssaoKernel(kernelSize).data());
-        m_ssaoNoise->image2D(0, gl::GL_RGBA32F, glm::ivec2(noiseSize), 0, gl::GL_RGB, gl::GL_FLOAT, ssaoNoise(noiseSize).data());
+        m_ssaoNoise->image2D(0, gl::GL_RGBA32F, glm::ivec2(noiseSize), 0, gl::GL_RGB, gl::GL_FLOAT, ssaoNoise(noiseSize, useSSAONoise).data());
     }
 
     m_screenAlignedQuad->program()->setUniform("Source", static_cast<gl::GLint>(output));

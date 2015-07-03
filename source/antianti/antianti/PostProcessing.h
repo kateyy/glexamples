@@ -38,13 +38,15 @@ public:
         Source_Normals = 3,
         Source_Geometry = 4,
         Source_Depth = 5,
-        Source_ShadowMap = 6,
+        Source_OcclusionMap = 6, 
+        Source_ShadowMap = 7,
     };
 
     glm::vec2 viewport;
     bool useSSAO;
     float ssaoRadius;
     float ssaoIntensity;
+    bool useSSAONoise;
     bool duringInterpolation;
     bool inInteraction;
 
