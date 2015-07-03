@@ -102,6 +102,7 @@ protected:
     int m_frame;
     float m_maxSubpixelShift;
     glm::mat4 m_lastTransform;
+    reflectionzeug::Color m_backgroundColor;
 
     bool m_backFaceCulling;
     bool m_backFaceCullingShadows;

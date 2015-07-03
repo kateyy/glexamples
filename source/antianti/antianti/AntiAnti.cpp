@@ -117,6 +117,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_numFrames(10000)
     , m_maxSubpixelShift(1.0f)
     , m_accTextureFormat(GL_RGBA32F)
+    , m_backgroundColor({ 222, 230, 255 })
     // dof
     , m_dofEnabled(false)
     , m_usePointDoF(false)
@@ -194,6 +195,13 @@ void AntiAnti::setupPropertyGroup()
         m_frame = 0;
     })->setOptions({
         { "precision", 1u },
+    });
+
+    this->addProperty<reflectionzeug::Color>("backgroundColor",
+        [this]() {return m_backgroundColor; },
+        [this](reflectionzeug::Color color) {
+            m_backgroundColor = color;
+            m_frame = 0;
     });
 
 
@@ -623,8 +631,8 @@ void AntiAnti::onPaint()
     const auto transform = m_projectionCapability->projection() * camera->view();
 
 
-    m_fbo->bind(GL_FRAMEBUFFER);
-    m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4{ 0.85f, 0.87f, 0.91f, 1.0f });
+    m_fbo->bind(GL_FRAMEBUFFER); 
+    m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4{ m_backgroundColor.red() / 255.0, m_backgroundColor.green() / 255.0, m_backgroundColor.blue() / 255.0, 1.0f });
     m_fbo->clearBuffer(GL_COLOR, 1, glm::vec4{ 0.0f, 0.0f, 0.0f, 0.0f });
     m_fbo->clearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
 
