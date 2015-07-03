@@ -177,6 +177,8 @@ void AntiAnti::setupPropertyGroup()
         { SceneLoader::Scene::D_SPONZA, "Dabrovic Sponza" },
         { SceneLoader::Scene::C_SPONZA, "Crytek Sponza" },
         { SceneLoader::Scene::MITSUBA, "Mitsuba" },
+        { SceneLoader::Scene::MEGACITY_SMALL, "Megacity Small" },
+        { SceneLoader::Scene::JAKOBI, "Jakobi" },
     });
 
     addProperty<glm::vec3>("cameraPosition",
@@ -209,12 +211,12 @@ void AntiAnti::setupPropertyGroup()
     enum CameraPreset {
         NOTHING = -1,
         IMROD_TEST,
-        SECOND_TEST,
+        JAKOBI_TEST,
     };
 
     std::vector<std::pair<glm::vec3, glm::vec3>> cameraPresets = {
         { { -4.42347, 32, 8.55784 }, { 0.900001, -1.9, -2.09999 } },
-        { { 2.64356, 32, 7.25805 }, { 0.9, -1.9, -2.1 } },
+        { { 0.348432, 0.415102, -0.488417 }, { -0.232397, -0.386651, 0.318336 } },
     };
 
     addProperty<CameraPreset>("cameraPresets",
@@ -228,7 +230,7 @@ void AntiAnti::setupPropertyGroup()
     })->setStrings({
         { CameraPreset::NOTHING, "Choose..." },
         { CameraPreset::IMROD_TEST, "Transparency Test" },
-        { CameraPreset::SECOND_TEST, "uiae Test" },
+        { CameraPreset::JAKOBI_TEST, "Jakobi test" },
     });
 
 
