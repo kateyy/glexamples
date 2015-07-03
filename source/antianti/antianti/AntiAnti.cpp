@@ -89,6 +89,8 @@ public:
     {
         if (key == gloperate::KeyLeftControl || key == gloperate::KeyRightControl)
             ctrlPressed = true;
+        if (key == gloperate::KeyP)
+            printCamPos = true;
     }
 
     void onKeyUp(gloperate::Key key) override
@@ -99,6 +101,7 @@ public:
 
     glm::vec2 lastMousePosition;
     bool ctrlPressed = false;
+    bool printCamPos = false;
 };
 
 AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
@@ -173,6 +176,51 @@ void AntiAnti::setupPropertyGroup()
         { SceneLoader::Scene::D_SPONZA, "Dabrovic Sponza" },
         { SceneLoader::Scene::C_SPONZA, "Crytek Sponza" },
         { SceneLoader::Scene::MITSUBA, "Mitsuba" },
+    });
+
+    addProperty<glm::vec3>("cameraPosition",
+        [this]() {return m_cameraCapability->eye(); },
+        [this](glm::vec3 cameraPosition) {
+            m_cameraCapability->setEye(cameraPosition);
+            m_frame = 0;
+    })->setOptions({
+        { "precision", 1u },
+    });
+
+    addProperty<glm::vec3>("cameraDirection",
+        [this]() {return m_cameraCapability->center() - m_cameraCapability->eye(); },
+        [this](glm::vec3 cameraDirection) {
+        m_cameraCapability->setCenter(m_cameraCapability->eye() + cameraDirection);
+        m_frame = 0;
+    })->setOptions({
+        { "precision", 1u },
+    });
+
+
+
+    enum CameraPreset {
+        NOTHING = -1,
+        IMROD_TEST,
+        SECOND_TEST,
+    };
+
+    std::vector<std::pair<glm::vec3, glm::vec3>> cameraPresets = {
+        { { -4.42347, 32, 8.55784 }, { 0.900001, -1.9, -2.09999 } },
+        { { 2.64356, 32, 7.25805 }, { 0.9, -1.9, -2.1 } },
+    };
+
+    addProperty<CameraPreset>("cameraPresets",
+        [this]() {return CameraPreset::NOTHING; },
+        [this, cameraPresets](CameraPreset preset) {
+        if (preset == CameraPreset::NOTHING)
+            return;
+        m_cameraCapability->setEye(cameraPresets[preset].first);
+        m_cameraCapability->setCenter(m_cameraCapability->eye() + cameraPresets[preset].second);
+        m_frame = 0;
+    })->setStrings({
+        { CameraPreset::NOTHING, "Choose..." },
+        { CameraPreset::IMROD_TEST, "Transparency Test" },
+        { CameraPreset::SECOND_TEST, "uiae Test" },
     });
 
 
@@ -464,6 +512,11 @@ void AntiAnti::checkAndUnbindTexture(int meshID, aiTextureType type, GLenum targ
         texture->bindActive(target);
 }
 
+void print_vec3(glm::vec3 v)
+{
+    std::cout << "{" << v.x << ", " << v.y << ", " << v.z << "}";
+}
+
 void AntiAnti::onPaint()
 {
     bool sceneChanged = m_sceneLoader.update();
@@ -486,6 +539,15 @@ void AntiAnti::onPaint()
         m_postProcessing.ssaoRadius = m_sceneLoader.getSsaoSettings().x;
         m_postProcessing.ssaoIntensity = m_sceneLoader.getSsaoSettings().y;
         m_frame = 0;
+    }
+    if (m_inputCapability->printCamPos)
+    {
+        std::cout << "{";
+        print_vec3(m_cameraCapability->eye());
+        std::cout << ", ";
+        print_vec3(m_cameraCapability->center() - m_cameraCapability->eye());
+        std::cout << "}," << std::endl;
+        m_inputCapability->printCamPos = false;
     }
 
     if (m_shadowsEnabled)
@@ -692,6 +754,13 @@ void AntiAnti::setupFramebuffer()
 
 
     m_shadowMap = Texture::createDefault(GL_TEXTURE_2D);
+    {
+        m_shadowMap->setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        m_shadowMap->setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        m_shadowMap->bind();
+        glm::vec4 color(0.0);
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, (float*)&color);
+    }
 
     // trying to work around Intel HD 3000 bugs (always requires a color attachment)
     m_fboShadowing = make_ref<Framebuffer>();
