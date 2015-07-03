@@ -28,7 +28,8 @@ const int Source_Color = 1;
 const int Source_Normals = 3;
 const int Source_Geometry = 4;
 const int Source_Depth = 5;
-const int Source_ShadowMap = 6;
+const int Source_OcclusionMap = 6;
+const int Source_ShadowMap = 7;
 
 uniform int Source = Source_Final;
 
@@ -51,6 +52,9 @@ void main()
             {
                 color.rgb *= ssao(v_uv, vec3(0.0));
             }
+            break;
+        case Source_OcclusionMap:
+            color.rgb = ssao(v_uv, vec3(0.0));
             break;
         case Source_Color:
             color = texture(ColorTexture, v_uv);

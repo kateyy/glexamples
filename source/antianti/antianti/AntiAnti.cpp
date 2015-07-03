@@ -253,6 +253,12 @@ void AntiAnti::setupPropertyGroup()
             { "step", 0.05f },
             { "precision", 2u },
         });
+        ssaoGroup->addProperty<bool>("useSSAONoise",
+            [this]() {return m_postProcessing.useSSAONoise; },
+            [this](bool useSSAONoise) {
+            m_postProcessing.useSSAONoise = useSSAONoise;
+            m_frame = 0;
+        });
     }
 
     {
@@ -341,13 +347,15 @@ void AntiAnti::setupPropertyGroup()
         ppGroup->addProperty<PostProcessing::Output>("Output",
             [this] () {return m_postProcessing.output; },
             [this] (PostProcessing::Output o) {
-                m_postProcessing.output = o; })
+                m_postProcessing.output = o;
+                m_frame = 0;})
             ->setStrings({
                 {PostProcessing::Output::Source_Final, "Final" },
                 {PostProcessing::Output::Source_Color, "Color" },
                 {PostProcessing::Output::Source_Normals, "Normals"},
                 {PostProcessing::Output::Source_Geometry, "Geometry"},
                 {PostProcessing::Output::Source_Depth, "Depth"},
+                {PostProcessing::Output::Source_OcclusionMap, "Occlusion Map"},
                 {PostProcessing::Output::Source_ShadowMap, "ShadowMap"}
             });
 
@@ -629,7 +637,7 @@ void AntiAnti::onPaint()
         ++m_frame;
 
     m_postProcessing.camera = camera;
-    m_postProcessing.viewport = glm::vec2(m_viewportCapability->x(), m_viewportCapability->y());
+    m_postProcessing.viewport = glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
     m_postProcessing.frame = continueRendering ? m_frame : std::numeric_limits<int>::max();
 
     m_postProcessing.process();
