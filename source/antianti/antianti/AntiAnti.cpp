@@ -221,12 +221,14 @@ void AntiAnti::setupPropertyGroup()
         IMROD_TEST,
         JAKOBI_TEST,
         C_SPONZA_AA,
+        JAKOBI_SSAO,
     };
 
     std::vector<std::pair<glm::vec3, glm::vec3>> cameraPresets = {
         { { -4.42347, 32, 8.55784 }, { 0.900001, -1.9, -2.09999 } },
         { { 0.348432, 0.415102, -0.488417 }, { -0.232397, -0.386651, 0.318336 } },
         {{-804.44, 208.115, -40.5258}, {27849.7, 2296.53, 214.473}},
+        {{0.252521, -0.00485591, -0.4329}, {-0.0350579, -0.0328542, 0.0745505}}
     };
 
     addProperty<CameraPreset>("cameraPresets",
@@ -242,6 +244,7 @@ void AntiAnti::setupPropertyGroup()
         { CameraPreset::IMROD_TEST, "Transparency Test" },
         { CameraPreset::JAKOBI_TEST, "Jakobi test" },
         { CameraPreset::C_SPONZA_AA, "C_SPONZA_AA" },
+        { CameraPreset::JAKOBI_SSAO, "JAKOBI_SSAO" },
     });
 
 

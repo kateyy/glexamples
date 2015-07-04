@@ -99,7 +99,7 @@ globjects::Texture* ssaoNoiseTexture(unsigned int size)
     return texture;
 }
 
-const unsigned int kernelSize = 16;
+const unsigned int kernelSize = 8;
 const unsigned int noiseSize = 32;
 
 }
