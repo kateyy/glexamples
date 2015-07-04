@@ -44,6 +44,9 @@
 #include <gloperate/tools/CoordinateProvider.h>
 #include <gloperate/tools/DepthExtractor.h>
 
+#include <glkernel/sample.h>
+#include <glkernel/shuffle.h>
+
 #include <reflectionzeug/PropertyGroup.h>
 #include <reflectionzeug/extensions/GlmProperties.hpp>
 
@@ -140,9 +143,14 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_useObjectBasedTransparency(true)
     , m_transparency(0.0f)
     , m_numTransparencySamples(8192)
+    , m_aaKernel(128)
 {
     m_sceneLoader.m_desiredScene = SceneLoader::IMROD;
     setupPropertyGroup();
+
+    auto num_samples = glkernel::sample::poisson_square(m_aaKernel, 30);
+    m_aaKernel = m_aaKernel.trimed(num_samples, 1, 1);
+    glkernel::shuffle::bucket_permutate(m_aaKernel);
 }
 
 AntiAnti::~AntiAnti() = default;
@@ -658,11 +666,10 @@ void AntiAnti::onPaint()
     m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4{ m_backgroundColor.red() / 255.0, m_backgroundColor.green() / 255.0, m_backgroundColor.blue() / 255.0, 1.0f });
     m_fbo->clearBuffer(GL_COLOR, 1, glm::vec4{ 0.0f, 0.0f, 0.0f, 0.0f });
     m_fbo->clearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
+    
 
-    glm::vec2 aaShift = glm::vec2(
-        glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f),
-        glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f))
-        / glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
+    glm::vec2 aaShift = (m_aaKernel[m_frame%m_aaKernel.width()] - 0.5f) * m_maxSubpixelShift;
+    aaShift /= glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
 
     if (m_sceneLoader.getEnableGrid()) {
         m_grid->setCamera(camera);
