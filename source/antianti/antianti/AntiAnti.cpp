@@ -211,11 +211,21 @@ void AntiAnti::setupPropertyGroup()
         NOTHING = -1,
         IMROD_TEST,
         JAKOBI_TEST,
+        JAKOBI_SSAO,
+        JAKOBI_AA,
+        TRANSPARENCY_DOF,
+        D_SPONZA_LIGHTING,
+        C_SPONZA_AA,
     };
 
     std::vector<std::pair<glm::vec3, glm::vec3>> cameraPresets = {
         { { -4.42347, 32, 8.55784 }, { 0.900001, -1.9, -2.09999 } },
         { { 0.348432, 0.415102, -0.488417 }, { -0.232397, -0.386651, 0.318336 } },
+        {{0.252521, -0.00485591, -0.4329}, {-0.0350579, -0.0328542, 0.0745505}},
+        {{0.474203, 0.489727, -0.182752}, {-0.315758, -0.43728, 0.111729}},
+        {{1.0575, 0.7301, -1.59997}, {-0.618056, -0.782045, 1.98035}},
+        {{8.22877, 2.69668, 0.759895}, {-0.000507355, -2.69668, -0.0926592}},
+        {{-804.44, 208.115, -40.5258}, {27849.7, 2296.53, 214.473}},
     };
 
     addProperty<CameraPreset>("cameraPresets",
@@ -230,6 +240,11 @@ void AntiAnti::setupPropertyGroup()
         { CameraPreset::NOTHING, "Choose..." },
         { CameraPreset::IMROD_TEST, "Transparency Test" },
         { CameraPreset::JAKOBI_TEST, "Jakobi test" },
+        {CameraPreset::JAKOBI_SSAO, "JAKOBI_SSAO"},
+        {CameraPreset::JAKOBI_AA, "JAKOBI_AA"},
+        {CameraPreset::TRANSPARENCY_DOF, "TRANSPARENCY_DOF"},
+        {CameraPreset::D_SPONZA_LIGHTING, "D_SPONZA_LIGHTING"},
+        {CameraPreset::C_SPONZA_AA, "C_SPONZA_AA"},
     });
 
 
