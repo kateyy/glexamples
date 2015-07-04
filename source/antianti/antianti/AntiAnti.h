@@ -12,6 +12,8 @@
 
 #include <gloperate/painter/Painter.h>
 
+#include <glkernel/Kernel.h>
+
 #include "PostProcessing.h"
 #include "SceneLoader.h"
 
@@ -133,4 +135,6 @@ protected:
     gl::GLenum m_accTextureFormat;
 
     SceneLoader m_sceneLoader;
+
+    glkernel::kernel2 m_aaKernel;
 };

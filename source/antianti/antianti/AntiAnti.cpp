@@ -44,6 +44,9 @@
 #include <gloperate/tools/CoordinateProvider.h>
 #include <gloperate/tools/DepthExtractor.h>
 
+#include <glkernel/sample.h>
+#include <glkernel/shuffle.h>
+
 #include <reflectionzeug/PropertyGroup.h>
 #include <reflectionzeug/extensions/GlmProperties.hpp>
 
@@ -140,9 +143,14 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_useObjectBasedTransparency(true)
     , m_transparency(0.0f)
     , m_numTransparencySamples(1024)
+    , m_aaKernel(128)
 {
     m_sceneLoader.m_desiredScene = SceneLoader::IMROD;
     setupPropertyGroup();
+
+    auto num_samples = glkernel::sample::poisson_square(m_aaKernel, 30);
+    m_aaKernel = m_aaKernel.trimed(num_samples, 1, 1);
+    glkernel::shuffle::bucket_permutate(m_aaKernel);
 }
 
 AntiAnti::~AntiAnti() = default;
@@ -212,11 +220,13 @@ void AntiAnti::setupPropertyGroup()
         NOTHING = -1,
         IMROD_TEST,
         JAKOBI_TEST,
+        C_SPONZA_AA,
     };
 
     std::vector<std::pair<glm::vec3, glm::vec3>> cameraPresets = {
         { { -4.42347, 32, 8.55784 }, { 0.900001, -1.9, -2.09999 } },
         { { 0.348432, 0.415102, -0.488417 }, { -0.232397, -0.386651, 0.318336 } },
+        {{-804.44, 208.115, -40.5258}, {27849.7, 2296.53, 214.473}},
     };
 
     addProperty<CameraPreset>("cameraPresets",
@@ -231,6 +241,7 @@ void AntiAnti::setupPropertyGroup()
         { CameraPreset::NOTHING, "Choose..." },
         { CameraPreset::IMROD_TEST, "Transparency Test" },
         { CameraPreset::JAKOBI_TEST, "Jakobi test" },
+        { CameraPreset::C_SPONZA_AA, "C_SPONZA_AA" },
     });
 
 
@@ -424,13 +435,13 @@ void AntiAnti::setupPropertyGroup()
                 updateFramebuffer();
                 m_frame = 0;
         })->setStrings({
-			{ GLenum::GL_RGB8, "GL_RGB8" },
-			{ GLenum::GL_RGB10, "GL_RGB10" },
-			{ GLenum::GL_RGB12, "GL_RGB12" },
-			{ GLenum::GL_RGB16, "GL_RGB16" },
-			{ GLenum::GL_RGB16F, "GL_RGB16F" },
+            { GLenum::GL_RGB8, "GL_RGB8" },
+            { GLenum::GL_RGB10, "GL_RGB10" },
+            { GLenum::GL_RGB12, "GL_RGB12" },
+            { GLenum::GL_RGB16, "GL_RGB16" },
+            { GLenum::GL_RGB16F, "GL_RGB16F" },
             { GLenum::GL_RGB32F, "GL_RGB32F" },
-			{ GLenum::GL_R11F_G11F_B10F, "GL_R11F_G11F_B10F" },
+            { GLenum::GL_R11F_G11F_B10F, "GL_R11F_G11F_B10F" },
         });
     }
 
@@ -513,10 +524,10 @@ void AntiAnti::checkAndBindTexture(int meshID, aiTextureType type, std::string u
 {
     auto texture = m_sceneLoader.getTexture(meshID, type);
     bool uiae = texture.get() != nullptr;
-	float hack = uiae ? 1.0f : 0.0f;
+    float hack = uiae ? 1.0f : 0.0f;
     if (uniformName != "")
         m_program->setUniform(uniformName, hack);
-	if (texture)
+    if (texture)
         texture->bindActive(target);
 }
 
@@ -642,11 +653,10 @@ void AntiAnti::onPaint()
     m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4{ m_backgroundColor.red() / 255.0, m_backgroundColor.green() / 255.0, m_backgroundColor.blue() / 255.0, 1.0f });
     m_fbo->clearBuffer(GL_COLOR, 1, glm::vec4{ 0.0f, 0.0f, 0.0f, 0.0f });
     m_fbo->clearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
+    
 
-    glm::vec2 aaShift = glm::vec2(
-        glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f),
-        glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f))
-        / glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
+    glm::vec2 aaShift = (m_aaKernel[m_frame%m_aaKernel.width()] - 0.5f) * m_maxSubpixelShift;
+    aaShift /= glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
 
     if (m_sceneLoader.getEnableGrid()) {
         m_grid->setCamera(camera);
@@ -757,9 +767,9 @@ void AntiAnti::setupFramebuffer()
 
     m_fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 });
 
-	m_ppTexture = Texture::createDefault(GL_TEXTURE_2D);
-	m_ppTexture->setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	m_ppTexture->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    m_ppTexture = Texture::createDefault(GL_TEXTURE_2D);
+    m_ppTexture->setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    m_ppTexture->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     m_ppfbo = make_ref<Framebuffer>();
     m_ppfbo->attachTexture(GL_COLOR_ATTACHMENT0, m_ppTexture);
