@@ -10,6 +10,8 @@
 
 #include <gloperate/resources/RawFile.h>
 #include <gloperate/primitives/Scene.h>
+#include <gloperate/primitives/PolygonalDrawable.h>
+#include <gloperate/primitives/PolygonalGeometry.h>
 #include <gloperate-assimp/AssimpSceneLoader.h>
 
 #include <widgetzeug/make_unique.hpp>
@@ -46,7 +48,7 @@ namespace
         { SceneLoader::D_SPONZA, "sponza.obj" },
         {SceneLoader::C_SPONZA, "sponza.obj"},
         { SceneLoader::MITSUBA, "mitsuba.obj" },
-        { SceneLoader::MEGACITY_SMALL, "simple.3ds" },
+        { SceneLoader::MEGACITY_SMALL, "simple2.obj" },
         { SceneLoader::JAKOBI, "jakobikirchplatz4.obj" },
     };
 
@@ -194,12 +196,31 @@ void SceneLoader::load(Scene scene)
         }
     }
 
-
     const auto gloperatescene = gloperate_assimp::AssimpSceneLoader().convertScene(m_aiScene);
 
     m_drawables.clear();
     for (const auto * geometry : gloperatescene->meshes())
-        m_drawables.push_back(widgetzeug::make_unique<gloperate::PolygonalDrawable>(*geometry));
+    {
+        auto * geo = geometry;
+        if (scene == MEGACITY_SMALL)
+        {
+            auto newGeo = new gloperate::PolygonalGeometry();
+
+            std::vector<glm::vec3> newVerts;
+            for (auto && v : geometry->vertices())
+            {
+                newVerts.push_back(v * 10.0f);
+            }
+            newGeo->setVertices(newVerts);
+            newGeo->setIndices(geometry->indices());
+            newGeo->setTexCoords(geometry->texCoords());
+            newGeo->setNormals(geometry->normals());
+
+            geo = newGeo;
+        }
+
+        m_drawables.push_back(widgetzeug::make_unique<gloperate::PolygonalDrawable>(*geo));
+    }
 
     delete gloperatescene;
 

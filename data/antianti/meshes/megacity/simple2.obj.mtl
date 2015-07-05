@@ -1,0 +1,133 @@
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v3.1.29665513)
+
+newmtl roads_blur_
+kd 1 1 1
+ka 1 1 1
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd ROADS.bmp
+
+newmtl grass-2
+kd 1 1 1
+ka 1 1 1
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd GRASS-2.bmp
+
+newmtl grass
+kd 1 1 1
+ka 1 1 1
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd GRASS.bmp
+
+newmtl JoinedMaterial_#13
+kd 1 1 1
+ka 1 1 1
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd BUILDZ3.bmp
+
+newmtl sand-01_blur_
+kd 1 1 1
+ka 1 1 1
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd SAND-01.bmp
+
+newmtl roads-2_blur_
+kd 1 1 1
+ka 1 1 1
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd ROADS2.bmp
+
+newmtl water
+kd 0.0862745 0.160784 0.247059
+ka 0.0862745 0.160784 0.247059
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 0.8
+Ns 16
+illum 2
+map_kd WATER-01.bmp
+map_ns WATER-01.bmp
+bump WATER-01.bmp
+map_bump WATER-01.bmp
+
+newmtl skyscrp
+kd 0.980392 0.980392 0.980392
+ka 0.980392 0.980392 0.980392
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd SKYSCRP.bmp
+
+newmtl buildz1_blur_
+kd 1 1 1
+ka 1 1 1
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd BUILDZ1.bmp
+
+newmtl buildz4_blur_
+kd 1 1 1
+ka 1 1 1
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd BUILDZ4.bmp
+
+newmtl buildz5
+kd 0.992157 0.992157 0.992157
+ka 0.992157 0.992157 0.992157
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd BUILDZ5.bmp
+
+newmtl buildz2_blur_
+kd 1 1 1
+ka 1 1 1
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd BUILDZ2.bmp
+
+newmtl buildz6
+kd 1 1 1
+ka 1 1 1
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd BUILDZ6.bmp
+
+newmtl tree-01
+kd 0 0 0
+ka 0 0 0
+ks 0.898039 0.898039 0.898039
+ke 0 0 0
+d 1
+illum 1
+map_kd TREES-02.bmp
+
