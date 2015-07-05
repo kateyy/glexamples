@@ -882,6 +882,7 @@ void AntiAnti::setupProgram()
 
     glBindAttribLocation(m_program->id(), 0, "a_vertex");
     glBindAttribLocation(m_program->id(), 1, "a_normal");
+    glBindAttribLocation(m_program->id(), 2, "a_texCoord");
 
     m_programShadowing = make_ref<Program>();
     m_programShadowing->attach(

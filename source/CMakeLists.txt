@@ -11,7 +11,11 @@ find_package(GLM REQUIRED)
 find_package(glbinding REQUIRED)
 find_package(globjects REQUIRED)
 find_package(gloperate REQUIRED)
+#find_package(glkernel REQUIRED)
 find_package(libzeug REQUIRED)
+
+# hack
+set(GLKERNEL_INCLUDES "C:/Libraries/glkernel/source/glkernel/include" CACHE PATH "GLKERNEL include path")
 
 
 # Qt5
@@ -48,6 +52,7 @@ include_directories(
     ${GLBINDING_INCLUDES}
     ${GLOBJECTS_INCLUDES}
     ${GLOPERATE_INCLUDES}
+    ${GLKERNEL_INCLUDES}
     ${LIBZEUG_INCLUDES}
 )
 
