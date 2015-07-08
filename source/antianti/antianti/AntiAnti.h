@@ -137,4 +137,5 @@ protected:
     SceneLoader m_sceneLoader;
 
     glkernel::kernel2 m_aaKernel;
+    glkernel::kernel2 m_dofKernel;
 };

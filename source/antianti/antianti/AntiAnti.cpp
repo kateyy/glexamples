@@ -144,13 +144,34 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_transparency(0.0f)
     , m_numTransparencySamples(8192)
     , m_aaKernel(128)
+    , m_dofKernel(1000)
 {
     m_sceneLoader.m_desiredScene = SceneLoader::IMROD;
     setupPropertyGroup();
 
     auto num_samples = glkernel::sample::poisson_square(m_aaKernel, 30);
     m_aaKernel = m_aaKernel.trimed(num_samples, 1, 1);
-    glkernel::shuffle::bucket_permutate(m_aaKernel);
+
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(m_aaKernel.m_kernel.begin() + 1, m_aaKernel.m_kernel.end(), g);
+
+    
+    num_samples = glkernel::sample::poisson_square(m_dofKernel, 30);
+    m_dofKernel = m_dofKernel.trimed(num_samples, 1, 1);
+
+    for (int i = 0; i < m_dofKernel.size(); i++)
+        m_dofKernel.m_kernel[i] = m_dofKernel.m_kernel[i] * 2.0f - 1.0f;
+
+    std::sort(m_dofKernel.m_kernel.begin(), m_dofKernel.m_kernel.begin() + num_samples, [](glm::vec2 a, glm::vec2 b){
+        return glm::length(a) < glm::length(b);
+    });
+    m_dofKernel.m_kernel.erase(std::remove_if(m_dofKernel.m_kernel.begin(), m_dofKernel.m_kernel.begin() + num_samples, [](glm::vec2 a){
+        return glm::length(a) > 1.0f;
+    }), m_dofKernel.m_kernel.end());
+    
+    m_numFrames = m_dofKernel.size();
 }
 
 AntiAnti::~AntiAnti() = default;
@@ -646,6 +667,7 @@ void AntiAnti::onPaint()
         else
         {
             shearingFactor = glm::diskRand(m_maxDofShift);
+            shearingFactor = m_dofKernel[m_frame % m_dofKernel.size()] * m_maxDofShift;
         }
     }
 
@@ -931,6 +953,7 @@ void AntiAnti::drawShadowMap()
     auto lightViewDir = glm::normalize(m_lightFocus - m_lightPosition);
 
     auto lightShift = glm::diskRand(m_maxLightSourceShift);
+    lightShift = m_dofKernel[m_frame%m_dofKernel.size()] * m_maxLightSourceShift;
     // https://stackoverflow.com/questions/10161553/rotate-a-vector-to-reach-another-vector
     auto rndDiscToViewDirAxis = glm::cross(lightViewDir, glm::vec3(0, 0, 1));
     float rndDiscToViewDirAngle = glm::asin(glm::length(rndDiscToViewDirAxis));
