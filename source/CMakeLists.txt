@@ -13,6 +13,33 @@ find_package(globjects REQUIRED)
 find_package(gloperate REQUIRED)
 find_package(libzeug REQUIRED)
 
+
+# Qt5
+
+# good resource: http://www.kdab.com/using-cmake-with-qt-5/
+
+# http://qt-project.org/forums/viewthread/30006/
+if(MSVC)
+    cmake_policy(SET CMP0020 NEW)
+endif()
+
+find_package(Qt5OpenGL  5.4 REQUIRED)
+find_package(Qt5Core    5.4 REQUIRED)
+# find_package(Qt5Gui     5.4 REQUIRED)
+find_package(Qt5Widgets 5.4 REQUIRED)
+
+# Qt5 options
+
+set(CMAKE_AUTOMOC ON)
+
+if(MSVC)
+    # -> msvc14 : declaration hides class member (problem in qt)
+    set(DEFAULT_COMPILE_FLAGS ${DEFAULT_COMPILE_FLAGS} /wd4458)
+endif()
+
+
+
+
 # Include directories
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -30,6 +57,10 @@ set(GLEXAMPLES_DEPENDENCY_LIBRARIES
     ${GLOBJECTS_LIBRARIES}
     ${GLOPERATE_LIBRARIES}
     ${LIBZEUG_LIBRARIES}
+    Qt5::Core
+    #Qt5::Gui
+    Qt5::Widgets
+    Qt5::OpenGL
 )
 
 # Applications

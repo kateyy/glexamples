@@ -3,9 +3,7 @@
 // from https://github.com/lanice/elemate
 // from https://github.com/hpicgs/cgsee
 
-uniform vec2 zRange;
-
-float linearize(float depth) {
+float linearize(float depth, vec2 zRange) {
     // d = (2.0 * zfar * znear / (zfar + znear - (zfar - znear) * (2.0 * z- 1.0)));
     // normalized to [0,1]
     // d = (d - znear) / (zfar - znear);

@@ -13,6 +13,7 @@
 #include <gloperate/painter/Painter.h>
 
 #include "PostProcessing.h"
+#include "SceneLoader.h"
 
 
 namespace globjects
@@ -50,13 +51,13 @@ public:
     
 protected:
     virtual void onInitialize() override;
+    void checkAndBindTexture(int meshID, aiTextureType type, std::string uniformName, gl::GLenum target);
+    void checkAndUnbindTexture(int meshID, aiTextureType type, gl::GLenum target);
     virtual void onPaint() override;
 
 private:
     void setupFramebuffer();
-    void setupProjection();
     void setupTransparencyRandomness();
-    void setupDrawable();
     void setupProgram();
     void updateFramebuffer();
 
@@ -92,7 +93,6 @@ protected:
     
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<globjects::Program> m_program;
-    std::vector<std::unique_ptr<gloperate::PolygonalDrawable>> m_drawables;
     std::vector<std::vector<bool>> m_transparencyRandomness;
 
     std::unique_ptr<gloperate::CoordinateProvider> m_coordProvider;
@@ -130,4 +130,6 @@ protected:
     PostProcessing m_postProcessing;
 
     gl::GLenum m_accTextureFormat;
+
+    SceneLoader m_sceneLoader;
 };

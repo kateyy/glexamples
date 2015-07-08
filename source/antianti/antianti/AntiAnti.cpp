@@ -28,6 +28,7 @@
 #include <gloperate/base/RenderTargetType.h>
 #include <gloperate/base/make_unique.hpp>
 #include <gloperate/resources/ResourceManager.h>
+#include <gloperate/resources/RawFile.h>
 #include <gloperate/painter/TargetFramebufferCapability.h>
 #include <gloperate/painter/TypedRenderTargetCapability.h>
 #include <gloperate/painter/ViewportCapability.h>
@@ -47,6 +48,10 @@
 #include <reflectionzeug/extensions/GlmProperties.hpp>
 
 #include <widgetzeug/make_unique.hpp>
+
+#include <assimp/material.h>
+
+#include "SceneLoader.h"
 
 
 using namespace gl;
@@ -117,20 +122,22 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_dofAtCursor(false)
     // shadows
     , m_shadowsEnabled(true)
-    , m_lightPosition({0, 5, 0})
-    , m_lightFocus()
+    , m_lightPosition({0, 54, 0})
+    , m_lightFocus({ 0, 0, 0 })
     , m_maxLightSourceShift(0.1f)
     , m_linearizedShadowMap(false)
     , m_shadowMapParamsChanged(true)
     , m_shadowMapFormat(GL_R32F)
     , m_shadowMapWidth(4096)
+    , m_lightZRange({0.300, 50.00})
     // transparency
     , m_backFaceCulling(false)
     , m_backFaceCullingShadows(false)
     , m_useObjectBasedTransparency(true)
-    , m_transparency(0.5f)
+    , m_transparency(0.0f)
     , m_numTransparencySamples(1024)
-{    
+{
+    m_sceneLoader.m_desiredScene = SceneLoader::IMROD;
     setupPropertyGroup();
 }
 
@@ -154,6 +161,18 @@ void AntiAnti::setupPropertyGroup()
             { "minimum", 0.0f },
             { "step", 0.05f },
             { "precision", 2u },
+    });
+
+    addProperty<SceneLoader::Scene>("scene",
+        [this]() {return m_sceneLoader.m_desiredScene; },
+        [this](SceneLoader::Scene scene) {
+            m_sceneLoader.m_desiredScene = scene;
+    })->setStrings({
+        { SceneLoader::Scene::TRANSPARENCY_TEST, "Transparency Test" },
+        { SceneLoader::Scene::IMROD, "Imrod" },
+        { SceneLoader::Scene::D_SPONZA, "Dabrovic Sponza" },
+        { SceneLoader::Scene::C_SPONZA, "Crytek Sponza" },
+        { SceneLoader::Scene::MITSUBA, "Mitsuba" },
     });
 
 
@@ -233,6 +252,12 @@ void AntiAnti::setupPropertyGroup()
             { "minimum", 0.0f },
             { "step", 0.05f },
             { "precision", 2u },
+        });
+        ssaoGroup->addProperty<bool>("useSSAONoise",
+            [this]() {return m_postProcessing.useSSAONoise; },
+            [this](bool useSSAONoise) {
+            m_postProcessing.useSSAONoise = useSSAONoise;
+            m_frame = 0;
         });
     }
 
@@ -322,13 +347,15 @@ void AntiAnti::setupPropertyGroup()
         ppGroup->addProperty<PostProcessing::Output>("Output",
             [this] () {return m_postProcessing.output; },
             [this] (PostProcessing::Output o) {
-                m_postProcessing.output = o; })
+                m_postProcessing.output = o;
+                m_frame = 0;})
             ->setStrings({
                 {PostProcessing::Output::Source_Final, "Final" },
                 {PostProcessing::Output::Source_Color, "Color" },
                 {PostProcessing::Output::Source_Normals, "Normals"},
                 {PostProcessing::Output::Source_Geometry, "Geometry"},
                 {PostProcessing::Output::Source_Depth, "Depth"},
+                {PostProcessing::Output::Source_OcclusionMap, "Occlusion Map"},
                 {PostProcessing::Output::Source_ShadowMap, "ShadowMap"}
             });
 
@@ -412,17 +439,55 @@ void AntiAnti::onInitialize()
     m_grid = make_ref<gloperate::AdaptiveGrid>();
     m_grid->setColor({0.6f, 0.6f, 0.6f});
 
-    setupDrawable();
     setupProgram();
-    setupProjection();
     setupFramebuffer();
-    setupTransparencyRandomness();
 
     globjects::NamedString::create("/data/antianti/ssao.glsl", new globjects::File("data/antianti/ssao.glsl"));
+
+
+}
+
+void AntiAnti::checkAndBindTexture(int meshID, aiTextureType type, std::string uniformName, GLenum target)
+{
+    auto texture = m_sceneLoader.getTexture(meshID, type);
+    bool uiae = texture.get() != nullptr;
+    if (uniformName != "")
+        m_program->setUniform(uniformName, uiae);
+    if (texture)
+        texture->bindActive(target);
+}
+
+void AntiAnti::checkAndUnbindTexture(int meshID, aiTextureType type, GLenum target)
+{
+    auto texture = m_sceneLoader.getTexture(meshID, type);
+    if (texture)
+        texture->bindActive(target);
 }
 
 void AntiAnti::onPaint()
 {
+    bool sceneChanged = m_sceneLoader.update();
+    if (sceneChanged)
+    {
+        setupTransparencyRandomness();
+
+        vec2 nearFar = m_sceneLoader.getNearFar();
+        float fovy = 50.0f;
+        m_projectionCapability->setZNear(nearFar.x);
+        m_projectionCapability->setZFar(nearFar.y);
+        m_projectionCapability->setFovy(radians(fovy));
+
+        m_lightZRange = nearFar;
+        m_lightPosition = m_sceneLoader.getLightPos();
+        m_maxLightSourceShift = m_sceneLoader.getLightMaxShift();
+
+        m_cameraCapability->setEye(m_sceneLoader.getCameraPos());
+        m_cameraCapability->setCenter(m_sceneLoader.getCameraCenter());
+        m_postProcessing.ssaoRadius = m_sceneLoader.getSsaoSettings().x;
+        m_postProcessing.ssaoIntensity = m_sceneLoader.getSsaoSettings().y;
+        m_frame = 0;
+    }
+
     if (m_shadowsEnabled)
         drawShadowMap();
 
@@ -450,7 +515,7 @@ void AntiAnti::onPaint()
             float clickZDistance = -(m_cameraCapability->view() * glm::vec4(mouseWorldPos, 1.0)).z;
 
             if (glm::distance(clickZDistance, m_focalDepth) > 0.01f)
-                property<float>("focalDepth")->setValue(clickZDistance);
+                property<float>("DepthOfField/focalDepth")->setValue(clickZDistance);
         }
     }
 
@@ -460,12 +525,6 @@ void AntiAnti::onPaint()
     if (cameraHasChanged)
     {
         m_lastTransform = inputTransform;
-
-        auto zRange = glm::vec2(
-            m_projectionCapability->zNear(),
-            m_projectionCapability->zFar());
-        m_program->setUniform("zRange", zRange);
-
         m_frame = 0;
     }
 
@@ -512,9 +571,12 @@ void AntiAnti::onPaint()
         glm::linearRand<float>(-m_maxSubpixelShift * 0.5f, m_maxSubpixelShift * 0.5f))
         / glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
 
-    m_grid->setCamera(camera);
-    m_grid->draw(aaShift, m_focalDepth, shearingFactor);
+    if (m_sceneLoader.getEnableGrid()) {
+        m_grid->setCamera(camera);
+        m_grid->draw(aaShift, m_focalDepth, shearingFactor);
+    }
     
+    gl::glEnable(gl::GL_DEPTH_TEST);
     glSet(GL_CULL_FACE, m_backFaceCulling);
     glCullFace(GL_BACK);
 
@@ -533,21 +595,33 @@ void AntiAnti::onPaint()
     m_program->setUniform("viewport", glm::vec2{ m_viewportCapability->width(), m_viewportCapability->height() });
     m_program->setUniform("transparency", m_useObjectBasedTransparency ? 0.0f : m_transparency);
     m_program->setUniform("shadowsEnabled", m_shadowsEnabled);
-    m_program->setUniform("lightSource", m_lightPosition);
+    m_program->setUniform("light", m_lightPosition); // TODO let there be area lights
+    m_program->setUniform("camera", camera->eye());
+    m_program->setUniform("lightZRange", m_lightZRange);
 
     m_program->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
     m_program->setUniform("transparencyNoise1D", 1);
-    m_program->setUniform("shadowMap", 2);
+    m_program->setUniform("smap", 2);
+    m_program->setUniform("diff", 3);
+    m_program->setUniform("norm", 4);
+    m_program->setUniform("spec", 5);
+    m_program->setUniform("emis", 6);
 
     m_transparencyNoise->bindActive(GL_TEXTURE1);
     m_shadowMap->bindActive(GL_TEXTURE2);
 
-    for (auto i = 0u; i < m_drawables.size(); ++i)
+    for (auto i = 0u; i < m_sceneLoader.m_drawables.size(); ++i)
     {
-        //m_program->setUniform(m_transparencyLocation, i % 2 == 0 ? m_transparency : 1.0f);
         if (m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
             continue;
-        m_drawables[i]->draw();
+
+        checkAndBindTexture(i, aiTextureType_DIFFUSE, "hasDiff", GL_TEXTURE3);
+        checkAndBindTexture(i, aiTextureType_NORMALS, "hasNorm", GL_TEXTURE4);
+        checkAndBindTexture(i, aiTextureType_HEIGHT, "", GL_TEXTURE4);
+        checkAndBindTexture(i, aiTextureType_SPECULAR, "hasSpec", GL_TEXTURE5);
+        checkAndBindTexture(i, aiTextureType_EMISSIVE, "hasEmis", GL_TEXTURE6);
+
+        m_sceneLoader.m_drawables[i]->draw();
     }
     
     m_program->release();
@@ -563,7 +637,7 @@ void AntiAnti::onPaint()
         ++m_frame;
 
     m_postProcessing.camera = camera;
-    m_postProcessing.viewport = glm::vec2(m_viewportCapability->x(), m_viewportCapability->y());
+    m_postProcessing.viewport = glm::vec2(m_viewportCapability->width(), m_viewportCapability->height());
     m_postProcessing.frame = continueRendering ? m_frame : std::numeric_limits<int>::max();
 
     m_postProcessing.process();
@@ -645,18 +719,6 @@ void AntiAnti::setupFramebuffer()
     m_postProcessing.initialize();
 }
 
-void AntiAnti::setupProjection()
-{
-    static const auto zNear = 0.3f, zFar = 30.f, fovy = 50.f;
-
-    m_projectionCapability->setZNear(zNear);
-    m_projectionCapability->setZFar(zFar);
-    m_projectionCapability->setFovy(radians(fovy));
-    m_lightZRange = { m_projectionCapability->zNear(), m_projectionCapability->zFar() };
-
-    m_grid->setNearFar(zNear, zFar);
-}
-
 void AntiAnti::setupTransparencyRandomness()
 {
     std::random_device rd;
@@ -668,7 +730,7 @@ void AntiAnti::setupTransparencyRandomness()
         randomness[i] = true;
     
     m_transparencyRandomness.clear();
-    for (auto& drawable : m_drawables) {
+    for (auto& drawable : m_sceneLoader.m_drawables) {
         std::shuffle(randomness.begin(), randomness.end(), g);
         randomness[0] = true; // make sure the object is always rendered during camera movement
         m_transparencyRandomness.push_back(randomness);
@@ -691,28 +753,13 @@ void AntiAnti::setupTransparencyRandomness()
     m_transparencyNoise->image1D(0, GL_R32F, static_cast<GLsizei>(m_numTransparencySamples), 0, GL_RED, GL_FLOAT, noise.data());
 }
 
-void AntiAnti::setupDrawable()
-{
-    const auto scene = m_resourceManager.load<gloperate::Scene>("data/transparency/transparency_scene.obj");
-    if (!scene)
-    {
-        std::cout << "Could not load file" << std::endl;
-        return;
-    }
-
-    for (const auto * geometry : scene->meshes()) {
-        m_drawables.push_back(gloperate::make_unique<gloperate::PolygonalDrawable>(*geometry));
-    }
-
-    delete scene;
-}
-
 void AntiAnti::setupProgram()
 {
     static const auto shaderPath = std::string{"data/antianti/"};
     const auto shaderName = "geometry";
     
     const auto vertexShader = shaderPath + shaderName + ".vert";
+    const auto geometryShader = shaderPath + shaderName + ".geom";
     const auto fragmentShader = shaderPath + shaderName + ".frag";
     auto depthUtilShader = Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + "depth_util.frag");
     auto transparencyUtilShader = Shader::fromFile(GL_FRAGMENT_SHADER, shaderPath + "transparency_util.frag");
@@ -720,6 +767,7 @@ void AntiAnti::setupProgram()
     m_program = make_ref<Program>();
     m_program->attach(
         Shader::fromFile(GL_VERTEX_SHADER, vertexShader),
+        Shader::fromFile(GL_GEOMETRY_SHADER, geometryShader),
         Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShader),
         depthUtilShader, transparencyUtilShader);
 
@@ -789,7 +837,7 @@ void AntiAnti::drawShadowMap()
             1.0f, m_lightZRange.x, m_lightZRange.y)
         * glm::lookAt(shiftedLightEye, shiftedLightCenter, lightUp);
 
-    m_programShadowing->setUniform("zRange", m_lightZRange);
+    m_programShadowing->setUniform("lightZRange", m_lightZRange);
     m_programShadowing->setUniform("transform", transform);
     m_programShadowing->setUniform("linearizedShadowMap", m_linearizedShadowMap);
 
@@ -804,10 +852,10 @@ void AntiAnti::drawShadowMap()
 
     m_transparencyNoise->bindActive(GL_TEXTURE1);
 
-    for (auto i = 0u; i < m_drawables.size(); ++i) {
+    for (auto i = 0u; i < m_sceneLoader.m_drawables.size(); ++i) {
         if (m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
             continue;
-        m_drawables[i]->draw();
+        m_sceneLoader.m_drawables[i]->draw();
     }
 
 
