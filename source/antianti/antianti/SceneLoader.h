@@ -33,6 +33,7 @@ public:
         D_SPONZA,
         C_SPONZA,
         MITSUBA,
+        JAKOBI,
     };
 
     Scene m_desiredScene;

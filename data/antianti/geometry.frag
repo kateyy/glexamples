@@ -33,7 +33,7 @@ uniform sampler2D emis;
 uniform sampler2D smap;
 
 const float ambientFactor = 0.08;
-const float diffuseFactor = 1.4;
+const float diffuseFactor = 1.20;
 const float specularFactor = 4.0;
 const float emissionFactor = 0.33;
 
@@ -87,14 +87,14 @@ void main()
     
     // ambient
     
-    vec3 ambient = ambientFactor * vec3(0.384, 0.512, 0.768);
+    vec3 ambient = ambientFactor * vec3(0.384, 0.512, 0.968);
 
     // diffuse
 
     float l_face = lambert(l, n_world);
     float l_frag = lambert(l * tbn, n_tangent);
 
-    float l_both = mix(l_face, l_frag, 1.0); // fakie fakie...
+    float l_both = mix(l_face, l_frag, 1.0) * 0.5 + 0.5; // fakie fakie...
 
     vec3 diffSample = (hasDiff) ? texture(diff, uv).xyz : vec3(g_N * 0.5 + 0.5);
     vec3 diffuse = diffuseFactor * diffSample * l_both;
@@ -129,8 +129,8 @@ void main()
         shadow = step(0.0, sign(g_S.w)) * step(scoord.z, sdist);
     }
 
-    vec3 color = shadow * (ambient + diffuse + diffuse * specular) + emission;
+    vec3 color = ambient + (shadow * 0.75 + 0.25) * (diffuse + diffuse * specular) + emission;
 
     fragColor = vec4(  vec3(color) , 1.0);
-    fragNormal = vec4(g_N, 1.0);
+    fragNormal = vec4(g_N_face, 1.0);
 }

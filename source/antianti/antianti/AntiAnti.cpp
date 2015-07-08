@@ -89,6 +89,8 @@ public:
     {
         if (key == gloperate::KeyLeftControl || key == gloperate::KeyRightControl)
             ctrlPressed = true;
+        if (key == gloperate::KeyP)
+            printCamPos = true;
     }
 
     void onKeyUp(gloperate::Key key) override
@@ -99,6 +101,7 @@ public:
 
     glm::vec2 lastMousePosition;
     bool ctrlPressed = false;
+    bool printCamPos = false;
 };
 
 AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
@@ -114,6 +117,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_numFrames(10000)
     , m_maxSubpixelShift(1.0f)
     , m_accTextureFormat(GL_RGBA32F)
+    , m_backgroundColor({ 255, 255, 255 })
     // dof
     , m_dofEnabled(false)
     , m_usePointDoF(false)
@@ -125,7 +129,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_lightPosition({0, 54, 0})
     , m_lightFocus({ 0, 0, 0 })
     , m_maxLightSourceShift(0.1f)
-    , m_linearizedShadowMap(false)
+    , m_linearizedShadowMap(true)
     , m_shadowMapParamsChanged(true)
     , m_shadowMapFormat(GL_R32F)
     , m_shadowMapWidth(4096)
@@ -173,6 +177,74 @@ void AntiAnti::setupPropertyGroup()
         { SceneLoader::Scene::D_SPONZA, "Dabrovic Sponza" },
         { SceneLoader::Scene::C_SPONZA, "Crytek Sponza" },
         { SceneLoader::Scene::MITSUBA, "Mitsuba" },
+        { SceneLoader::Scene::JAKOBI, "Jakobi" },
+    });
+
+    addProperty<glm::vec3>("cameraPosition",
+        [this]() {return m_cameraCapability->eye(); },
+        [this](glm::vec3 cameraPosition) {
+            m_cameraCapability->setEye(cameraPosition);
+            m_frame = 0;
+    })->setOptions({
+        { "precision", 1u },
+    });
+
+    addProperty<glm::vec3>("cameraDirection",
+        [this]() {return m_cameraCapability->center() - m_cameraCapability->eye(); },
+        [this](glm::vec3 cameraDirection) {
+        m_cameraCapability->setCenter(m_cameraCapability->eye() + cameraDirection);
+        m_frame = 0;
+    })->setOptions({
+        { "precision", 1u },
+    });
+
+    this->addProperty<reflectionzeug::Color>("backgroundColor",
+        [this]() {return m_backgroundColor; },
+        [this](reflectionzeug::Color color) {
+            m_backgroundColor = color;
+            m_frame = 0;
+    });
+
+
+
+    enum CameraPreset {
+        NOTHING = -1,
+        IMROD_TEST,
+        JAKOBI_TEST,
+        JAKOBI_SSAO,
+        JAKOBI_AA,
+        TRANSPARENCY_DOF,
+        D_SPONZA_LIGHTING,
+        C_SPONZA_AA,
+    };
+
+    std::vector<std::pair<glm::vec3, glm::vec3>> cameraPresets = {
+        { { -4.42347, 32, 8.55784 }, { 0.900001, -1.9, -2.09999 } },
+        { { 0.348432, 0.415102, -0.488417 }, { -0.232397, -0.386651, 0.318336 } },
+        {{0.252521, -0.00485591, -0.4329}, {-0.0350579, -0.0328542, 0.0745505}},
+        {{0.474203, 0.489727, -0.182752}, {-0.315758, -0.43728, 0.111729}},
+        {{1.0575, 0.7301, -1.59997}, {-0.618056, -0.782045, 1.98035}},
+        {{8.22877, 2.69668, 0.759895}, {-0.000507355, -2.69668, -0.0926592}},
+        {{-804.44, 208.115, -40.5258}, {27849.7, 2296.53, 214.473}},
+    };
+
+    addProperty<CameraPreset>("cameraPresets",
+        [this]() {return CameraPreset::NOTHING; },
+        [this, cameraPresets](CameraPreset preset) {
+        if (preset == CameraPreset::NOTHING)
+            return;
+        m_cameraCapability->setEye(cameraPresets[preset].first);
+        m_cameraCapability->setCenter(m_cameraCapability->eye() + cameraPresets[preset].second);
+        m_frame = 0;
+    })->setStrings({
+        { CameraPreset::NOTHING, "Choose..." },
+        { CameraPreset::IMROD_TEST, "Transparency Test" },
+        { CameraPreset::JAKOBI_TEST, "Jakobi test" },
+        {CameraPreset::JAKOBI_SSAO, "JAKOBI_SSAO"},
+        {CameraPreset::JAKOBI_AA, "JAKOBI_AA"},
+        {CameraPreset::TRANSPARENCY_DOF, "TRANSPARENCY_DOF"},
+        {CameraPreset::D_SPONZA_LIGHTING, "D_SPONZA_LIGHTING"},
+        {CameraPreset::C_SPONZA_AA, "C_SPONZA_AA"},
     });
 
 
@@ -464,6 +536,11 @@ void AntiAnti::checkAndUnbindTexture(int meshID, aiTextureType type, GLenum targ
         texture->bindActive(target);
 }
 
+void print_vec3(glm::vec3 v)
+{
+    std::cout << "{" << v.x << ", " << v.y << ", " << v.z << "}";
+}
+
 void AntiAnti::onPaint()
 {
     bool sceneChanged = m_sceneLoader.update();
@@ -486,6 +563,15 @@ void AntiAnti::onPaint()
         m_postProcessing.ssaoRadius = m_sceneLoader.getSsaoSettings().x;
         m_postProcessing.ssaoIntensity = m_sceneLoader.getSsaoSettings().y;
         m_frame = 0;
+    }
+    if (m_inputCapability->printCamPos)
+    {
+        std::cout << "{";
+        print_vec3(m_cameraCapability->eye());
+        std::cout << ", ";
+        print_vec3(m_cameraCapability->center() - m_cameraCapability->eye());
+        std::cout << "}," << std::endl;
+        m_inputCapability->printCamPos = false;
     }
 
     if (m_shadowsEnabled)
@@ -561,8 +647,8 @@ void AntiAnti::onPaint()
     const auto transform = m_projectionCapability->projection() * camera->view();
 
 
-    m_fbo->bind(GL_FRAMEBUFFER);
-    m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4{ 0.85f, 0.87f, 0.91f, 1.0f });
+    m_fbo->bind(GL_FRAMEBUFFER); 
+    m_fbo->clearBuffer(GL_COLOR, 0, glm::vec4{ m_backgroundColor.red() / 255.0, m_backgroundColor.green() / 255.0, m_backgroundColor.blue() / 255.0, 1.0f });
     m_fbo->clearBuffer(GL_COLOR, 1, glm::vec4{ 0.0f, 0.0f, 0.0f, 0.0f });
     m_fbo->clearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
 
@@ -692,6 +778,13 @@ void AntiAnti::setupFramebuffer()
 
 
     m_shadowMap = Texture::createDefault(GL_TEXTURE_2D);
+    {
+        m_shadowMap->setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        m_shadowMap->setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        m_shadowMap->bind();
+        glm::vec4 color(0.0);
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, (float*)&color);
+    }
 
     // trying to work around Intel HD 3000 bugs (always requires a color attachment)
     m_fboShadowing = make_ref<Framebuffer>();
