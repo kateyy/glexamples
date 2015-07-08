@@ -33,6 +33,7 @@ public:
         D_SPONZA,
         C_SPONZA,
         MITSUBA,
+        MEGACITY_SMALL,
         JAKOBI,
     };
 

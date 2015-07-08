@@ -206,6 +206,7 @@ void AntiAnti::setupPropertyGroup()
         { SceneLoader::Scene::D_SPONZA, "Dabrovic Sponza" },
         { SceneLoader::Scene::C_SPONZA, "Crytek Sponza" },
         { SceneLoader::Scene::MITSUBA, "Mitsuba" },
+        { SceneLoader::Scene::MEGACITY_SMALL, "Megacity Small" },
         { SceneLoader::Scene::JAKOBI, "Jakobi" },
     });
 
