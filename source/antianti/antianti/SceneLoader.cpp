@@ -35,26 +35,28 @@ namespace
         { SceneLoader::IMROD, "Imrod/" },
         { SceneLoader::D_SPONZA, "dabrovic-sponza/" },
         {SceneLoader::C_SPONZA, "crytek-sponza/"},
-        {SceneLoader::MITSUBA, "mitsuba/"},
+        { SceneLoader::MITSUBA, "mitsuba/" },
+        { SceneLoader::JAKOBI, "jakobi/" },
     };
     std::unordered_map<SceneLoader::Scene, std::string> filenames = { 
         { SceneLoader::TRANSPARENCY_TEST, "transparency_scene.obj" },
         { SceneLoader::IMROD, "Imrod.obj" },
         { SceneLoader::D_SPONZA, "sponza.obj" },
         {SceneLoader::C_SPONZA, "sponza.obj"},
-        {SceneLoader::MITSUBA, "mitsuba.obj"},
+        { SceneLoader::MITSUBA, "mitsuba.obj" },
+        { SceneLoader::JAKOBI, "jakobikirchplatz4.obj" },
     };
 
     std::vector<aiTextureType> texTypesToLoad = { aiTextureType_DIFFUSE, aiTextureType_EMISSIVE, aiTextureType_HEIGHT, aiTextureType_NORMALS, aiTextureType_SPECULAR };
 
-    //                                    TRANSPARENCY_TEST  IMROD              D_SPONZA           C_SPONZA           MITSUBA           
-    std::vector<glm::vec2> nearFars =     {{0.3, 30.0},      {0.3, 70.0},       {0.3, 50.0},       {5.0, 3000.0},     {0.3, 30.0},      };
-    std::vector<glm::vec3> camPositions = {{0.2, 1.5, -2.8}, {-4.5, 32.0, 8.7}, {15.5, 3.9, 0.1},  {-1300, 250, -23}, {0.25, 4.1, 4.75},};
-    std::vector<glm::vec3> camViews =     {{0.0, -1.5, 2.6}, {0.9, -1.9, -2.1}, {-3.0, -0.9, 0.0}, {3.0, -0.5, 0.0},  {0.0, -1.8, -2.4},};
-    std::vector<bool> enableGrid =        {true,             true,              false,             false,             false,            };
-    std::vector<glm::vec2> ssaoSettings = {{0.05, 1.0},      {0.8, 1.5},        {0.5, 1.5},        {15.0, 1.5},       {0.5, 1.0},       };
-    std::vector<glm::vec3> lightPositions = {{0, 20, 0},     {0, 54, 0},        {0, 18, 0},        {0, 2000, 0},      {10, 20, 0},       };
-    std::vector<float> lightMaxShifts =   {0.1f,             1.0f,              1.0f,              15.0f,             0.7f,             };
+    //                                    TRANSPARENCY_TEST  IMROD              D_SPONZA           C_SPONZA           MITSUBA           JAKOBI
+    std::vector<glm::vec2> nearFars =     {{0.3, 30.0},      {0.3, 70.0},       {0.3, 50.0},       {5.0, 3000.0},     {0.3, 30.0},      {0.05, 8.0},       };
+    std::vector<glm::vec3> camPositions = {{0.2, 1.5, -2.8}, {-4.5, 32.0, 8.7}, {15.5, 3.9, 0.1},  {-1300, 250, -23}, {0.25, 4.1, 4.75},{0.34, 0.39, -0.48},};
+    std::vector<glm::vec3> camViews =     {{0.0, -1.5, 2.6}, {0.9, -1.9, -2.1}, {-3.0, -0.9, 0.0}, {3.0, -0.5, 0.0},  {0.0, -1.8, -2.4},{-0.24, -0.37, 0.33},};
+    std::vector<bool> enableGrid =        {true,             true,              false,             false,             false,            false,             };
+    std::vector<glm::vec2> ssaoSettings = {{0.05, 1.0},      {0.8, 1.5},        {0.5, 1.5},        {15.0, 1.5},       {0.5, 1.0},       {0.1, 1.5},        };
+    std::vector<glm::vec3> lightPositions = {{0, 20, 0},     {0, 54, 0},        {0, 18, 0},        {0, 2000, 0},      {10, 20, 0},      {-2, 6, -2},       };
+    std::vector<float> lightMaxShifts =   {0.1f,             1.0f,              1.0f,              15.0f,             0.7f,             0.2f,              };
 }
 
 

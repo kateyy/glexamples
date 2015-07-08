@@ -1,0 +1,2233 @@
+# 
+# Wavefront material file
+# Converted by the DEEP Exploration  Deep Exploration 5.5 5.5.4.2708 Release
+# Right Hemisphere, LTD
+# http://www.righthemisphere.com/
+# 
+
+newmtl Materia126
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe8.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe8.png
+map_Ns 
+
+newmtl Materia125
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe7.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe7.png
+map_Ns 
+
+newmtl Material121
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1ba1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1ba1.png
+map_Ns 
+
+newmtl Materia124
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd H6gelaen.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA H6gelaen.png
+map_Ns 
+
+newmtl Material111
+Ka 0 0 0
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Materia123
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe8.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe8.png
+map_Ns 
+
+newmtl Materia122
+Ka 0 0 0
+Kd 0.4824 0.6667 0.4824
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material122
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4fas.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4fas.png
+map_Ns 
+
+newmtl Material321
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd DET_scho.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA DET_scho.png
+map_Ns 
+
+newmtl Materia121
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4fenst.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4fenst.png
+map_Ns 
+
+newmtl Material57
+Ka 0 0 0
+Kd 0.749 0.749 0.749
+Ks 0.749 0.749 0.749
+illum 2
+Ns 20
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material59
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3sch.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3sch.png
+map_Ns 
+
+newmtl Material58
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4sch.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4sch.png
+map_Ns 
+
+newmtl Material91
+Ka 0 0 0
+Kd 0.4941 0.4941 0.4941
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material431
+Ka 0 0 0
+Kd 0.4 0.4 0.4
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material45
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BA4h2dac.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2dac.png
+map_Ns 
+
+newmtl Material44
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fas.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fas.png
+map_Ns 
+
+newmtl Material421
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2dac.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2dac.png
+map_Ns 
+
+newmtl Materia112
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fa1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fa1.png
+map_Ns 
+
+newmtl Material401
+Ka 0 0 0
+Kd 0.9843 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Materia119
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe6.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe6.png
+map_Ns 
+
+newmtl Materia111
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fas.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fas.png
+map_Ns 
+
+newmtl Materia120
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe7.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe7.png
+map_Ns 
+
+newmtl Material81
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe4.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe4.png
+map_Ns 
+
+newmtl Material211
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4gruen.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4gruen.png
+map_Ns 
+
+newmtl Material301
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1f11.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1f11.png
+map_Ns 
+
+newmtl Material112
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1bod.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1bod.png
+map_Ns 
+
+newmtl Material141
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1fe1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1fe1.png
+map_Ns 
+
+newmtl Material251
+Ka 0 0 0
+Kd 0.4941 0.4941 0.4941
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Materia118
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fas.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fas.png
+map_Ns 
+
+newmtl Materia117
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe4.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe4.png
+map_Ns 
+
+newmtl Material161
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1fe2.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1fe2.png
+map_Ns 
+
+newmtl Materia116
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe6.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe6.png
+map_Ns 
+
+newmtl Materia115
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd DET_scho.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA DET_scho.png
+map_Ns 
+
+newmtl Materia114
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe4.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe4.png
+map_Ns 
+
+newmtl Materia113
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe5.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe5.png
+map_Ns 
+
+newmtl Material351
+Ka 0 0 0
+Kd 0.749 0.749 0.749
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material61
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe2.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe2.png
+map_Ns 
+
+newmtl Material71
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe3.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe3.png
+map_Ns 
+
+newmtl Material51
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fe1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fe1.png
+map_Ns 
+
+newmtl Material411
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h6fen.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h6fen.png
+map_Ns 
+
+newmtl Material911
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BF4tuer3.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4tuer3.png
+map_Ns 
+
+newmtl Material98
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd SFZdach.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA SFZdach.png
+map_Ns 
+
+newmtl Material90
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BF4h5ver.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h5ver.png
+map_Ns 
+
+newmtl Material96
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BA4fenst.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4fenst.png
+map_Ns 
+
+newmtl Materia110
+Ka 0 0 0
+Kd 0.6941 0.6941 0.6941
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material93
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BA4tuer1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4tuer1.png
+map_Ns 
+
+newmtl Materia109
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4h5bal.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h5bal.png
+map_Ns 
+
+newmtl Materia101
+Ka 0 0 0
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Materia108
+Ka 0 0 0
+Kd 0.2667 0.2667 0.2667
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Materia107
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BF4h5fe2.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h5fe2.png
+map_Ns 
+
+newmtl Materia106
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BF4h5fe4.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h5fe4.png
+map_Ns 
+
+newmtl Materia105
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BF4h5ve1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h5ve1.png
+map_Ns 
+
+newmtl Materia104
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4tuer3.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4tuer3.png
+map_Ns 
+
+newmtl Materia103
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BF4tuer3.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4tuer3.png
+map_Ns 
+
+newmtl Materia102
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd BF4h5fe3.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h5fe3.png
+map_Ns 
+
+newmtl Materia100
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BF4h5fe3.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h5fe3.png
+map_Ns 
+
+newmtl Material99
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd BF4h5fe2.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h5fe2.png
+map_Ns 
+
+newmtl Material97
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BF4tuer2.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4tuer2.png
+map_Ns 
+
+newmtl Material95
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BF4h5fe1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h5fe1.png
+map_Ns 
+
+newmtl Material94
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BF4h5fen.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h5fen.png
+map_Ns 
+
+newmtl Material92
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BF4H5tue.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4H5tue.png
+map_Ns 
+
+newmtl Material89
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd BF4h5bal.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BF4h5bal.png
+map_Ns 
+
+newmtl Material88
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd BA4h2dac.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2dac.png
+map_Ns 
+
+newmtl Material87
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4fe6.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4fe6.png
+map_Ns 
+
+newmtl Material131
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2dac.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2dac.png
+map_Ns 
+
+newmtl Material55
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2fe7.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2fe7.png
+map_Ns 
+
+newmtl Material56
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4fen.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4fen.png
+map_Ns 
+
+newmtl Material86
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4fe5.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4fe5.png
+map_Ns 
+
+newmtl Material79
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4fa1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4fa1.png
+map_Ns 
+
+newmtl Material85
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4fe4.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4fe4.png
+map_Ns 
+
+newmtl Material84
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4fe3.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4fe3.png
+map_Ns 
+
+newmtl Material83
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4fe2.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4fe2.png
+map_Ns 
+
+newmtl Material82
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4fe1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4fe1.png
+map_Ns 
+
+newmtl Material811
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4sc1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4sc1.png
+map_Ns 
+
+newmtl Material80
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4tue.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4tue.png
+map_Ns 
+
+newmtl Material78
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4bal.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4bal.png
+map_Ns 
+
+newmtl Material77
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h4fas.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h4fas.png
+map_Ns 
+
+newmtl Material75
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3bal.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3bal.png
+map_Ns 
+
+newmtl Material76
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fas.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fas.png
+map_Ns 
+
+newmtl Material74
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3f10.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3f10.png
+map_Ns 
+
+newmtl Material73
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fe9.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fe9.png
+map_Ns 
+
+newmtl Material72
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fe8.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fe8.png
+map_Ns 
+
+newmtl Material711
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fe7.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fe7.png
+map_Ns 
+
+newmtl Material70
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fe6.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fe6.png
+map_Ns 
+
+newmtl Material69
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fe5.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fe5.png
+map_Ns 
+
+newmtl Material68
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fe4.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fe4.png
+map_Ns 
+
+newmtl Material67
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fe3.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fe3.png
+map_Ns 
+
+newmtl Material66
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fe2.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fe2.png
+map_Ns 
+
+newmtl Material65
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fe1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fe1.png
+map_Ns 
+
+newmtl Material64
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fen.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fen.png
+map_Ns 
+
+newmtl Material60
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3fa1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3fa1.png
+map_Ns 
+
+newmtl Material63
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3tu1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3tu1.png
+map_Ns 
+
+newmtl Material62
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3sc1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3sc1.png
+map_Ns 
+
+newmtl Material611
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h3tue.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h3tue.png
+map_Ns 
+
+newmtl Material47
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2fas.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2fas.png
+map_Ns 
+
+newmtl Material412
+Ka 0 0 0
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material54
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2fe6.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2fe6.png
+map_Ns 
+
+newmtl Material53
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2fe5.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2fe5.png
+map_Ns 
+
+newmtl Material48
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2fe2.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2fe2.png
+map_Ns 
+
+newmtl Material46
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2fe1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2fe1.png
+map_Ns 
+
+newmtl Material151
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1fas.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1fas.png
+map_Ns 
+
+newmtl Material221
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1fe5.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1fe5.png
+map_Ns 
+
+newmtl Material52
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2fas.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2fas.png
+map_Ns 
+
+newmtl Material511
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2fe4.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2fe4.png
+map_Ns 
+
+newmtl Material171
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2fen.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2fen.png
+map_Ns 
+
+newmtl Material50
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2fe3.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2fe3.png
+map_Ns 
+
+newmtl Material49
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2bal.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2bal.png
+map_Ns 
+
+newmtl Material391
+Ka 0 0 0
+Kd 0.9294 0.9294 0.8392
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material331
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd TRErolls.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA TRErolls.png
+map_Ns 
+
+newmtl Material381
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd TREroll2.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA TREroll2.png
+map_Ns 
+
+newmtl Material371
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd TRErollh.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA TRErollh.png
+map_Ns 
+
+newmtl Material361
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd TREroll1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA TREroll1.png
+map_Ns 
+
+newmtl Material341
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+map_Kd TREroll1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA TREroll1.png
+map_Ns 
+
+newmtl Material191
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1lam.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1lam.png
+map_Ns 
+
+newmtl Material271
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1fe9.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1fe9.png
+map_Ns 
+
+newmtl Material311
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1f12.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1f12.png
+map_Ns 
+
+newmtl Material291
+Ka 0 0 0
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material281
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1f10.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1f10.png
+map_Ns 
+
+newmtl Material261
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1fe8.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1fe8.png
+map_Ns 
+
+newmtl Material241
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1fe7.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1fe7.png
+map_Ns 
+
+newmtl Material201
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1fe3.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1fe3.png
+map_Ns 
+
+newmtl Material231
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1fe6.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1fe6.png
+map_Ns 
+
+newmtl Material212
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1fe4.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1fe4.png
+map_Ns 
+
+newmtl Material181
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h2dac.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h2dac.png
+map_Ns 
+
+newmtl Material101
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1bal.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1bal.png
+map_Ns 
+
+newmtl Material312
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd BA4h1fen.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA BA4h1fen.png
+map_Ns 
+
+newmtl Material927
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd DETschi1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA DETschi1.png
+map_Ns 
+
+newmtl Material826
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd DETschir.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA DETschir.png
+map_Ns 
+
+newmtl Material7218
+Ka 0 0 0
+Kd 0.0667 0.0667 0.0667
+Ks 0 0 0
+illum 2
+Ns 60
+d 0.49
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material2217
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd SFZstuet.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA SFZstuet.png
+map_Ns 
+
+newmtl Material1026
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd DETschi2.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA DETschi2.png
+map_Ns 
+
+newmtl Material6218
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+d 0.49
+map_Kd DETstuhl.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA DETstuhl.png
+map_Ns 
+
+newmtl Material5217
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd DETstuhl.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA DETstuhl.png
+map_Ns 
+
+newmtl Material4216
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd C_Stuhls.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA C_Stuhls.png
+map_Ns 
+
+newmtl Material3216
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd C_Stuhlr.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA C_Stuhlr.png
+map_Ns 
+
+newmtl Material1316
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 2
+map_Kd C_RundTi.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA C_RundTi.png
+map_Ns 
+
+newmtl Material2316
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 60
+d 0.49
+map_Kd C_RundTi.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA C_RundTi.png
+map_Ns 
+
+newmtl Material676
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+Ns 50
+map_Kd C_Platte.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA C_Platte.png
+map_Ns 

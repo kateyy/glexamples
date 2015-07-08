@@ -1,0 +1,1944 @@
+# 3ds Max Wavefront OBJ Exporter v0.94b - (c)2007 guruware
+# File Created: 24.06.2009 13:39:54
+
+newmtl Materia126
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe8.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe8.tga
+
+newmtl Materia125
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe7.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe7.tga
+
+newmtl Material121
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1ba1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1ba1.tga
+
+newmtl Materia124
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\H6gelaen.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\H6gelaen.tga
+
+newmtl Material111
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Materia123
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe8.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe8.tga
+
+newmtl Materia122
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.4824 0.6667 0.4824
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material122
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fas.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fas.tga
+
+newmtl Material321
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DET_scho.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DET_scho.tga
+
+newmtl Materia121
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4fenst.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4fenst.tga
+
+newmtl Material57
+	Ns 20.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.7490 0.7490 0.7490
+	Ks 0.7490 0.7490 0.7490
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material59
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3sch.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3sch.tga
+
+newmtl Material58
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4sch.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4sch.tga
+
+newmtl Material91
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.4941 0.4941 0.4941
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material431
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.4000 0.4000 0.4000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material45
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2dac.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2dac.tga
+
+newmtl Material44
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fas.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fas.tga
+
+newmtl Material421
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2dac.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2dac.tga
+
+newmtl Materia112
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fa1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fa1.tga
+
+newmtl Material401
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.9843 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Materia119
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe6.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe6.tga
+
+newmtl Materia111
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fas.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fas.tga
+
+newmtl Materia120
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe7.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe7.tga
+
+newmtl Material81
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe4.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe4.tga
+
+newmtl Material211
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4gruen.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4gruen.tga
+
+newmtl Material301
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1f11.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1f11.tga
+
+newmtl Material112
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1bod.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1bod.tga
+
+newmtl Material141
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe1.tga
+
+newmtl Material251
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.4941 0.4941 0.4941
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Materia118
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fas.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fas.tga
+
+newmtl Materia117
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe4.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe4.tga
+
+newmtl Material161
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe2.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe2.tga
+
+newmtl Materia116
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe6.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe6.tga
+
+newmtl Materia115
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DET_scho.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DET_scho.tga
+
+newmtl Materia114
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe4.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe4.tga
+
+newmtl Materia113
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe5.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe5.tga
+
+newmtl Material351
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.7490 0.7490 0.7490
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material61
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe2.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe2.tga
+
+newmtl Material71
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe3.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe3.tga
+
+newmtl Material51
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fe1.tga
+
+newmtl Material411
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fen.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h6fen.tga
+
+newmtl Material911
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4tuer3.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4tuer3.tga
+
+newmtl Material98
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\SFZdach.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\SFZdach.tga
+
+newmtl Material90
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5ver.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5ver.tga
+
+newmtl Material96
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4fenst.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4fenst.tga
+
+newmtl Materia110
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.6941 0.6941 0.6941
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material93
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4tuer1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4tuer1.tga
+
+newmtl Materia109
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5bal.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5bal.tga
+
+newmtl Materia101
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Materia108
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.2667 0.2667 0.2667
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Materia107
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe2.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe2.tga
+
+newmtl Materia106
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe4.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe4.tga
+
+newmtl Materia105
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5ve1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5ve1.tga
+
+newmtl Materia104
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4tuer3.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4tuer3.tga
+
+newmtl Materia103
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4tuer3.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4tuer3.tga
+
+newmtl Materia102
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe3.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe3.tga
+
+newmtl Materia100
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe3.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe3.tga
+
+newmtl Material99
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe2.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe2.tga
+
+newmtl Material97
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4tuer2.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4tuer2.tga
+
+newmtl Material95
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fe1.tga
+
+newmtl Material94
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fen.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5fen.tga
+
+newmtl Material92
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4H5tue.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4H5tue.tga
+
+newmtl Material89
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5bal.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BF4h5bal.tga
+
+newmtl Material88
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2dac.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2dac.tga
+
+newmtl Material87
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe6.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe6.tga
+
+newmtl Material131
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2dac.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2dac.tga
+
+newmtl Material55
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe7.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe7.tga
+
+newmtl Material56
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fen.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fen.tga
+
+newmtl Material86
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe5.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe5.tga
+
+newmtl Material79
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fa1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fa1.tga
+
+newmtl Material85
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe4.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe4.tga
+
+newmtl Material84
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe3.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe3.tga
+
+newmtl Material83
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe2.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe2.tga
+
+newmtl Material82
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fe1.tga
+
+newmtl Material811
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4sc1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4sc1.tga
+
+newmtl Material80
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4tue.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4tue.tga
+
+newmtl Material78
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4bal.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4bal.tga
+
+newmtl Material77
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fas.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h4fas.tga
+
+newmtl Material75
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3bal.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3bal.tga
+
+newmtl Material76
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fas.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fas.tga
+
+newmtl Material74
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3f10.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3f10.tga
+
+newmtl Material73
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe9.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe9.tga
+
+newmtl Material72
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe8.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe8.tga
+
+newmtl Material711
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe7.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe7.tga
+
+newmtl Material70
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe6.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe6.tga
+
+newmtl Material69
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe5.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe5.tga
+
+newmtl Material68
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe4.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe4.tga
+
+newmtl Material67
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe3.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe3.tga
+
+newmtl Material66
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe2.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe2.tga
+
+newmtl Material65
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fe1.tga
+
+newmtl Material64
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fen.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fen.tga
+
+newmtl Material60
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fa1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3fa1.tga
+
+newmtl Material63
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3tu1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3tu1.tga
+
+newmtl Material62
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3sc1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3sc1.tga
+
+newmtl Material611
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3tue.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h3tue.tga
+
+newmtl Material47
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fas.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fas.tga
+
+newmtl Material412
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material54
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe6.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe6.tga
+
+newmtl Material53
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe5.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe5.tga
+
+newmtl Material48
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe2.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe2.tga
+
+newmtl Material46
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe1.tga
+
+newmtl Material151
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fas.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fas.tga
+
+newmtl Material221
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe5.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe5.tga
+
+newmtl Material52
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fas.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fas.tga
+
+newmtl Material511
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe4.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe4.tga
+
+newmtl Material171
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fen.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fen.tga
+
+newmtl Material50
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe3.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2fe3.tga
+
+newmtl Material49
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2bal.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2bal.tga
+
+newmtl Material391
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.9294 0.9294 0.8392
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material331
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\TRErolls.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\TRErolls.tga
+
+newmtl Material381
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\TREroll2.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\TREroll2.tga
+
+newmtl Material371
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\TRErollh.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\TRErollh.tga
+
+newmtl Material361
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\TREroll1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\TREroll1.tga
+
+newmtl Material341
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\TREroll1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\TREroll1.tga
+
+newmtl Material191
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1lam.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1lam.tga
+
+newmtl Material271
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe9.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe9.tga
+
+newmtl Material311
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1f12.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1f12.tga
+
+newmtl Material291
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material281
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1f10.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1f10.tga
+
+newmtl Material261
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe8.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe8.tga
+
+newmtl Material241
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe7.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe7.tga
+
+newmtl Material201
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe3.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe3.tga
+
+newmtl Material231
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe6.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe6.tga
+
+newmtl Material212
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe4.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fe4.tga
+
+newmtl Material181
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2dac.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h2dac.tga
+
+newmtl Material101
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1bal.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1bal.tga
+
+newmtl Material312
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fen.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\BA4h1fen.tga
+
+newmtl Material128
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material118
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_Fusswe.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_Fusswe.tga
+
+newmtl Material927
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DETschi1.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DETschi1.tga
+
+newmtl Material826
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DETschir.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DETschir.tga
+
+newmtl Material7218
+	Ns 60.0000
+	Ni 1.5000
+	d 0.4900
+	Tr 0.4900
+	Tf 0.4900 0.4900 0.4900 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0667 0.0667 0.0667
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material2217
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\SFZstuet.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\SFZstuet.tga
+
+newmtl Material1026
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DETschi2.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DETschi2.tga
+
+newmtl Material6218
+	Ns 60.0000
+	Ni 1.5000
+	d 0.4900
+	Tr 0.4900
+	Tf 0.4900 0.4900 0.4900 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DETstuhl.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DETstuhl.tga
+
+newmtl Material5217
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DETstuhl.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\DETstuhl.tga
+
+newmtl Material4216
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_Stuhls.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_Stuhls.tga
+
+newmtl Material3216
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_Stuhlr.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_Stuhlr.tga
+
+newmtl Material1316
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_RundTi.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_RundTi.tga
+
+newmtl Material2316
+	Ns 60.0000
+	Ni 1.5000
+	d 0.4900
+	Tr 0.4900
+	Tf 0.4900 0.4900 0.4900 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_RundTi.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_RundTi.tga
+
+newmtl Material676
+	Ns 50.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_Platte.tga
+	map_Kd C:\Users\daniel.mueller.HPI\_dev\_nprc\examples\jackobi\C_Platte.tga
