@@ -15,6 +15,7 @@ find_package(assimp REQUIRED)
 include_directories(
     BEFORE
     ${ASSIMP_INCLUDE_DIRS}
+    "C:/projects/glkernel/source/glkernel/include"
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
