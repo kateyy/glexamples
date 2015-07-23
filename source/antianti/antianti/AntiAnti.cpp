@@ -783,6 +783,8 @@ void AntiAnti::setupFramebuffer()
     {
         m_shadowMap->setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         m_shadowMap->setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        m_shadowMap->setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        m_shadowMap->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         m_shadowMap->bind();
         glm::vec4 color(0.0);
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, (float*)&color);
