@@ -1,4 +1,4 @@
-#version 140
+#version 150
 
 uniform vec3 camera;
 
@@ -10,7 +10,9 @@ in vec3 g_L;
 in vec3 g_E;
 in vec2 g_T;
 
-in vec4 g_S;
+
+const uint numLights = 3u;
+in vec4 g_S[numLights];
 
 out vec4 fragColor;
 out vec4 fragNormal;
@@ -18,7 +20,8 @@ out vec4 fragNormal;
 uniform uint time;
 uniform bool shadowsEnabled;
 uniform bool linearizedShadowMap;
-uniform vec2 lightZRange;
+uniform vec2 lightZRanges[numLights];
+uniform float lightIntensities[numLights];
 
 uniform bool hasDiff;
 uniform bool hasNorm;
@@ -30,7 +33,7 @@ uniform sampler2D norm;
 uniform sampler2D spec;
 uniform sampler2D emis;
 
-uniform sampler2D smap;
+uniform sampler2DArray smap;
 
 const float ambientFactor = 0.08;
 const float diffuseFactor = 1.20;
@@ -116,17 +119,32 @@ void main()
     
 
     float shadow = 1.0;
-
-    if (shadowsEnabled) {
-        vec4 scoord = g_S / g_S.w;
-            if (linearizedShadowMap)
-                scoord.z = linearize(scoord.z, lightZRange);
-        scoord.z -= 0.0001;
-        //scoord.y = 1.0 - scoord.y;
-
-        float sdist = texture(smap, scoord.xy).r;
         
-        shadow = step(0.0, sign(g_S.w)) * step(scoord.z, sdist);
+    if (shadowsEnabled)
+    {
+        shadow = 0.0;
+        uint numActiveLights = 0u;
+        for (uint lightIdx = 0u; lightIdx < numLights; ++lightIdx)
+        {
+            if (lightIntensities[lightIdx] < 0.0)
+                continue;
+
+            ++numActiveLights;
+
+            vec4 scoord = g_S[lightIdx] / g_S[lightIdx].w;
+                if (linearizedShadowMap)
+                    scoord.z = linearize(scoord.z, lightZRanges[lightIdx]);
+            scoord.z -= 0.0001;
+            //scoord.y = 1.0 - scoord.y;
+
+            float sdist = texture(smap, vec3(scoord.xy, float(lightIdx))).r;
+
+            shadow += step(0.0, sign(g_S[lightIdx].w)) * step(scoord.z, sdist);
+        }
+        if (numActiveLights > 0u)
+            shadow /= float(numActiveLights);
+        else
+            shadow = 1.0;
     }
 
     vec3 color = ambient + (shadow * 0.75 + 0.25) * (diffuse + diffuse * specular) + emission;

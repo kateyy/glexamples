@@ -125,15 +125,15 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_focalDepth(3.0f)
     , m_dofAtCursor(false)
     // shadows
+    , m_lights({
+    { true, { 0, 54, 0 }, { 0, 0, 0 }, 0.1f, 1.0f, { 0.300, 50.00 } },
+    { false, { 54, 54, 0 }, { 0, 0, 0 }, 1.0f, 0.5f, { 0.300, 50.00 } },
+})
     , m_shadowsEnabled(true)
-    , m_lightPosition({0, 54, 0})
-    , m_lightFocus({ 0, 0, 0 })
-    , m_maxLightSourceShift(0.1f)
     , m_linearizedShadowMap(true)
     , m_shadowMapParamsChanged(true)
     , m_shadowMapFormat(GL_R32F)
     , m_shadowMapWidth(4096)
-    , m_lightZRange({0.300, 50.00})
     // transparency
     , m_backFaceCulling(false)
     , m_backFaceCullingShadows(false)
@@ -334,6 +334,62 @@ void AntiAnti::setupPropertyGroup()
     }
 
     {
+        auto lights_group = addGroup("Lights");
+
+        for (size_t i = 0; i < m_lights.size(); ++i)
+        {
+            auto & light = m_lights.at(i);
+            auto lprops = lights_group->addGroup("Light" + std::to_string(i));
+
+            lprops->addProperty<vec3>("Position",
+                [this, &light] () { return light.position; },
+                [this, &light] (const vec3 & pos) {
+                light.position = pos;
+                m_frame = 0;
+            });
+            lprops->addProperty<vec3>("FocalPoint",
+                [this, &light] () { return light.focalPoint; },
+                [this, &light] (const vec3 & pos) {
+                light.focalPoint = pos;
+                m_frame = 0;
+            });
+            lprops->addProperty<float>("Radius",
+                [this, &light] () {return light.radius; },
+                [this, &light] (float radius) {
+                light.radius = radius;
+                m_frame = 0;
+            })->setOptions({
+                { "minimum", 0.0f },
+                { "step", 0.05f },
+                { "precision", 2u },
+            });
+            lprops->addProperty<float>("Intensity",
+                [this, &light] () {return light.intensity; },
+                [this, &light] (float intensity) {
+                light.intensity = intensity;
+                m_frame = 0;
+            })->setOptions({
+                { "minimum", 0.0f },
+                { "step", 0.05f },
+                { "precision", 2u },
+            });
+            lprops->addProperty<float>("zNear",
+                [this, &light] () { return light.zRange.x; },
+                [this, &light] (float zNear) {
+                light.zRange.x = zNear;
+                m_frame = 0;
+            })->setOptions({ { "step", 0.1f } });
+
+            lprops->addProperty<float>("zFar",
+                [this, &light] () { return light.zRange.y; },
+                [this, &light] (float zFar) {
+                light.zRange.y = zFar;
+                m_frame = 0;
+            })->setOptions({ { "step", 1.0f } });
+        }
+    }
+
+    {
         auto shadows = addGroup("Shadows");
 
         shadows->addProperty<bool>("enable",
@@ -341,31 +397,6 @@ void AntiAnti::setupPropertyGroup()
             [this](bool enable) {
                 m_shadowsEnabled = enable;
                 m_frame = 0;
-        });
-
-        shadows->addProperty<vec3>("LightPosition",
-            [this] () { return m_lightPosition; },
-            [this] (const vec3 & pos) {
-                m_lightPosition = pos;
-                m_frame = 0;
-        });
-        shadows->addProperty<vec3>("LightFocus",
-            [this] () { return m_lightFocus; },
-            [this] (const vec3 & pos) {
-                m_lightFocus = pos;
-                m_frame = 0;
-        });
-
-        shadows->addProperty<float>("LightSourceRadius",
-            [this]() {return m_maxLightSourceShift; },
-            [this](float lightSourceShift) {
-                m_maxLightSourceShift = lightSourceShift;
-                m_frame = 0;
-        })->setOptions({
-            { "minimum", 0.0f },
-            { "step", 0.05f },
-            { "precision", 2u },
-            { "title", "Light Radius" }
         });
 
         shadows->addProperty<bool>("linearizedShadowMap",
@@ -397,22 +428,8 @@ void AntiAnti::setupPropertyGroup()
             {"minimum", 1},
             {"maximum", std::numeric_limits<GLint>::max() } });
             //{"maximum", maxTextureSize } });
-
-        shadows->addProperty<float>("zNear",
-            [this] () { return m_lightZRange.x; },
-            [this] (float zNear) {
-                m_lightZRange.x = zNear;
-                m_frame = 0;
-        })->setOptions({ { "step", 0.1f } });
-
-        shadows->addProperty<float>("zFar",
-            [this] () { return m_lightZRange.y; },
-            [this] (float zFar) {
-                m_lightZRange.y = zFar;
-                m_frame = 0;
-        })->setOptions({ { "step", 1.0f } });
     }
-    
+
     {
         auto ppGroup = addGroup("Postprocessing");
 
@@ -554,9 +571,11 @@ void AntiAnti::onPaint()
         m_projectionCapability->setZFar(nearFar.y);
         m_projectionCapability->setFovy(radians(fovy));
 
-        m_lightZRange = nearFar;
-        m_lightPosition = m_sceneLoader.getLightPos();
-        m_maxLightSourceShift = m_sceneLoader.getLightMaxShift();
+        auto & mainLight = m_lights[0];
+
+        mainLight.zRange = nearFar;
+        mainLight.position = m_sceneLoader.getLightPos();
+        mainLight.radius = m_sceneLoader.getLightMaxShift();
 
         m_cameraCapability->setEye(m_sceneLoader.getCameraPos());
         m_cameraCapability->setCenter(m_sceneLoader.getCameraCenter());
@@ -586,7 +605,7 @@ void AntiAnti::onPaint()
     }
 
     if (m_shadowsEnabled)
-        drawShadowMap();
+        drawShadowMaps();
 
     if (m_viewportCapability->hasChanged())
     {
@@ -683,9 +702,20 @@ void AntiAnti::onPaint()
     m_program->setUniform("viewport", glm::vec2{ m_viewportCapability->width(), m_viewportCapability->height() });
     m_program->setUniform("transparency", m_useObjectBasedTransparency ? 0.0f : m_transparency);
     m_program->setUniform("shadowsEnabled", m_shadowsEnabled);
-    m_program->setUniform("light", m_lightPosition); // TODO let there be area lights
     m_program->setUniform("camera", camera->eye());
-    m_program->setUniform("lightZRange", m_lightZRange);
+
+    std::vector<glm::vec3> lightPositions;
+    std::vector<glm::vec2> lightzRanges;
+    std::vector<float> lightIntensities;
+    for (auto & light : m_lights)
+    {
+        lightPositions.push_back(light.position);
+        lightzRanges.push_back(light.zRange);
+        lightIntensities.push_back(light.enabled ? light.intensity : -1.0f);    // don't use bool uniforms, workaround Nvidia bug
+    }
+    m_program->setUniform("lightPositions", lightPositions);
+    m_program->setUniform("lightZRanges", lightzRanges);
+    m_program->setUniform("lightIntensities", lightIntensities);
 
     m_program->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
     m_program->setUniform("transparencyNoise1D", 1);
@@ -779,7 +809,7 @@ void AntiAnti::setupFramebuffer()
     m_ppfbo->printStatus(true);
 
 
-    m_shadowMap = Texture::createDefault(GL_TEXTURE_2D);
+    m_shadowMap = Texture::createDefault(GL_TEXTURE_2D_ARRAY);
     {
         m_shadowMap->setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         m_shadowMap->setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -791,8 +821,11 @@ void AntiAnti::setupFramebuffer()
     }
 
     // trying to work around Intel HD 3000 bugs (always requires a color attachment)
-    m_fboShadowing = make_ref<Framebuffer>();
-    m_fboShadowing->attachTexture(GL_COLOR_ATTACHMENT0, m_shadowMap);
+    for (size_t i = 0; i < m_lights.size(); ++i)
+    {
+        auto fboShadowing = make_ref<Framebuffer>();
+        m_fbosShadowing.push_back(fboShadowing);
+    }
 
 
     m_renderTargetCapability->setRenderTarget(
@@ -890,34 +923,73 @@ void AntiAnti::updateFramebuffer()
     m_ppTexture->image2D(0, m_accTextureFormat, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
 }
 
-void AntiAnti::drawShadowMap()
+void AntiAnti::drawShadowMaps()
 {
     if (m_shadowMapParamsChanged)
     {
-        m_shadowMap->image2D(0, m_shadowMapFormat, m_shadowMapWidth, m_shadowMapWidth, 0, GL_RED, GL_FLOAT, 0);
+        m_shadowMap->image3D(0, m_shadowMapFormat, m_shadowMapWidth, m_shadowMapWidth, GLsizei(m_lights.size()), 0, GL_RED, GL_FLOAT, nullptr);
+        //m_shadowMap->storage3D(1, m_shadowMapFormat, m_shadowMapWidth, m_shadowMapWidth, GLsizei(m_lights.size()));
 
         m_shadowMapRenderbuffer = make_ref<Renderbuffer>();
         m_shadowMapRenderbuffer->storage(GL_DEPTH_COMPONENT24, m_shadowMapWidth, m_shadowMapWidth);
-        m_fboShadowing->attachRenderBuffer(GL_DEPTH_ATTACHMENT, m_shadowMapRenderbuffer);
 
-        m_fboShadowing->printStatus(true);
+        //for (size_t i = 0; i < m_fbosShadowing.size(); ++i)
+        {
+            size_t i = 0;
+
+            auto fbo = m_fbosShadowing[i];
+            fbo->attachTexture(GL_COLOR_ATTACHMENT0, m_shadowMap, GLint(i));
+
+            fbo->attachRenderBuffer(GL_DEPTH_ATTACHMENT, m_shadowMapRenderbuffer);
+            fbo->printStatus(true);
+        }
+
         m_shadowMapParamsChanged = false;
     }
 
     glEnable(GL_DEPTH_TEST);
     glSet(GL_CULL_FACE, m_backFaceCullingShadows);
 
-    m_fboShadowing->bind(GL_FRAMEBUFFER);
-    
     glViewport(0, 0, m_shadowMapWidth, m_shadowMapWidth);
 
-    
-    m_fboShadowing->clearBuffer(GL_COLOR, 0, vec4(1));
-    m_fboShadowing->clearBuffer(GL_DEPTH, 0, vec4(1));
+    std::vector<glm::mat4> shadowTransforms(m_lights.size());
+    for (size_t i = 0; i < m_lights.size(); ++i)
+    {
+        auto & fbo = *m_fbosShadowing[0];
+        fbo.attachTexture(GL_COLOR_ATTACHMENT0, m_shadowMap, GLint(i));
+        fbo.printStatus(true);
 
-    auto lightViewDir = glm::normalize(m_lightFocus - m_lightPosition);
+        drawShadowMap(
+            m_lights[i],
+            fbo,
+            &shadowTransforms[i]);
+    }
 
-    auto lightShift = glm::diskRand(m_maxLightSourceShift);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+
+    // transform depth NDC to texture coordinates for lookup in fragment shader
+    auto shadowBias = glm::mat4(
+        0.5f, 0.0f, 0.0f, 0.0f
+        , 0.0f, 0.5f, 0.0f, 0.0f
+        , 0.0f, 0.0f, 0.5f, 0.0f
+        , 0.5f, 0.5f, 0.5f, 1.0f);
+
+    m_program->use();
+    m_program->setUniform("biasedDepthTransforms", shadowTransforms);
+    m_program->setUniform("linearizedShadowMap", m_linearizedShadowMap);
+}
+
+void AntiAnti::drawShadowMap(const LightSource & light, globjects::Framebuffer & fbo, glm::mat4 * shadowTransform) const
+{
+    fbo.bind(GL_FRAMEBUFFER);
+
+    fbo.clearBuffer(GL_COLOR, 0, vec4(1));
+    fbo.clearBuffer(GL_DEPTH, 0, vec4(1));
+
+    auto lightViewDir = glm::normalize(light.focalPoint - light.position);
+
+    auto lightShift = glm::diskRand(light.radius);
     // https://stackoverflow.com/questions/10161553/rotate-a-vector-to-reach-another-vector
     auto rndDiscToViewDirAxis = glm::cross(lightViewDir, glm::vec3(0, 0, 1));
     float rndDiscToViewDirAngle = glm::asin(glm::length(rndDiscToViewDirAxis));
@@ -925,16 +997,19 @@ void AntiAnti::drawShadowMap()
     auto orientedLightShift = glm::vec3(glm::rotate(glm::mat4(), rndDiscToViewDirAngle, rndDiscToViewDirAxis) * glm::vec4(lightShift, 0, 1));
 
     // shift the whole light viewport on its disk (don't rotate it around its center!)
-    auto shiftedLightEye = m_lightPosition + orientedLightShift;
-    auto shiftedLightCenter = m_lightFocus + orientedLightShift;
+    auto shiftedLightEye = light.position + orientedLightShift;
+    auto shiftedLightCenter = light.focalPoint + orientedLightShift;
     auto lightUp = glm::cross(-shiftedLightEye, glm::vec3(-1, 1, 0));
 
-    auto transform = 
-        glm::perspective(m_projectionCapability->fovy(), 
-            1.0f, m_lightZRange.x, m_lightZRange.y)
+    auto transform =
+        glm::perspective(m_projectionCapability->fovy(),
+            1.0f, light.zRange.x, light.zRange.y)
         * glm::lookAt(shiftedLightEye, shiftedLightCenter, lightUp);
 
-    m_programShadowing->setUniform("lightZRange", m_lightZRange);
+    if (shadowTransform)
+        *shadowTransform = transform;
+
+    m_programShadowing->setUniform("lightZRange", light.zRange);
     m_programShadowing->setUniform("transform", transform);
     m_programShadowing->setUniform("linearizedShadowMap", m_linearizedShadowMap);
 
@@ -949,7 +1024,8 @@ void AntiAnti::drawShadowMap()
 
     m_transparencyNoise->bindActive(GL_TEXTURE1);
 
-    for (auto i = 0u; i < m_sceneLoader.m_drawables.size(); ++i) {
+    for (auto i = 0u; i < m_sceneLoader.m_drawables.size(); ++i)
+    {
         if (m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
             continue;
         m_sceneLoader.m_drawables[i]->draw();
@@ -958,17 +1034,5 @@ void AntiAnti::drawShadowMap()
 
     m_programShadowing->release();
 
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
-
-    m_fboShadowing->unbind();
-
-    // transform depth NDC to texture coordinates for lookup in fragment shader
-    auto shadowBias = glm::mat4(
-        0.5f, 0.0f, 0.0f, 0.0f
-        , 0.0f, 0.5f, 0.0f, 0.0f
-        , 0.0f, 0.0f, 0.5f, 0.0f
-        , 0.5f, 0.5f, 0.5f, 1.0f);
-    m_program->setUniform("biasedDepthTransform", shadowBias * transform);
-    m_program->setUniform("linearizedShadowMap", m_linearizedShadowMap);
+    fbo.unbind();
 }

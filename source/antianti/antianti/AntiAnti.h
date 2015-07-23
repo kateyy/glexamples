@@ -56,12 +56,24 @@ protected:
     virtual void onPaint() override;
 
 private:
+    struct LightSource
+    {
+        bool enabled;
+        glm::vec3 position;
+        glm::vec3 focalPoint;
+        float radius;
+        float intensity;
+        glm::vec2 zRange;
+    };
+
+private:
     void setupFramebuffer();
     void setupTransparencyRandomness();
     void setupProgram();
     void updateFramebuffer();
 
-    void drawShadowMap();
+    void drawShadowMaps();
+    void drawShadowMap(const LightSource & light, globjects::Framebuffer & fbo, glm::mat4 * shadowTransform = nullptr) const;
 
 protected:
 
@@ -81,7 +93,7 @@ protected:
     globjects::ref_ptr<globjects::Texture> m_normalAttachment;
     globjects::ref_ptr<globjects::Texture> m_depthAttachment;
 
-    globjects::ref_ptr<globjects::Framebuffer> m_fboShadowing;
+    std::vector<globjects::ref_ptr<globjects::Framebuffer>> m_fbosShadowing;
     globjects::ref_ptr<globjects::Texture> m_shadowMap;
     globjects::ref_ptr<globjects::Renderbuffer> m_shadowMapRenderbuffer;
     globjects::ref_ptr<globjects::Program> m_programShadowing;
@@ -118,11 +130,9 @@ protected:
 
     int m_numFrames;
     
+    std::vector<LightSource> m_lights;
+
     bool m_shadowsEnabled;
-    glm::vec3 m_lightPosition;
-    glm::vec3 m_lightFocus;
-    glm::vec2 m_lightZRange;
-    float m_maxLightSourceShift;
     bool m_linearizedShadowMap;
     bool m_shadowMapParamsChanged;
     gl::GLenum m_shadowMapFormat;

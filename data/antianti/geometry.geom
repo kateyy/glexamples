@@ -10,7 +10,9 @@ in vec3 v_L[3];
 in vec3 v_E[3];
 in vec2 v_T[3];
 
-in vec4 v_S[3];
+const uint numLights = 3u;
+// in vec4 v_S[numLights][3];
+uniform mat4 biasedDepthTransforms[numLights];
 
 flat out int g_vertexID;
 out vec3 g_worldPos;
@@ -20,7 +22,7 @@ out vec3 g_L;
 out vec3 g_E;
 out vec2 g_T;
 
-out vec4 g_S;
+out vec4 g_S[numLights];
 
 void main()
 {
@@ -37,12 +39,17 @@ void main()
             g_L = v_L[i];
             g_E = v_E[i];
             g_T = v_T[i];
-            g_S = v_S[i];
+            for (uint lightIdx = 0u; lightIdx < numLights; ++lightIdx)
+            {
+                // g_S[lightIdx] = v_S[lightIdx][i];
+                g_S[lightIdx] = biasedDepthTransforms[lightIdx] * vec4(v_worldPos[i], 1.0);
+            }
 
             EmitVertex();
        }
+       EndPrimitive();
+
 // use this to fix normals in the jakobi szene
-//       EndPrimitive();
 //       normal = normalize(cross(v_worldPos[2] - v_worldPos[0], v_worldPos[1] -v_worldPos[0]));
 //       for(int i = gl_in.length()-1; i >= 0; i--)
 //       {
