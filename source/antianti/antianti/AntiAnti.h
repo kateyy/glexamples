@@ -53,6 +53,8 @@ public:
     
 protected:
     virtual void onInitialize() override;
+    void updateDofKernel();
+    void updateLightKernel();
     void checkAndBindTexture(int meshID, aiTextureType type, std::string uniformName, gl::GLenum target);
     void checkAndUnbindTexture(int meshID, aiTextureType type, gl::GLenum target);
     virtual void onPaint() override;
@@ -116,6 +118,8 @@ protected:
     bool m_usePointDoF;
     float m_maxDofShift;
     float m_focalDepth;
+    int m_dofSamples;
+    bool m_dofSortSamples;
     bool m_dofAtCursor;
 
     int m_numFrames;
@@ -125,6 +129,8 @@ protected:
     glm::vec3 m_lightFocus;
     glm::vec2 m_lightZRange;
     float m_maxLightSourceShift;
+    int m_lightSamples;
+    bool m_lightSortSamples;
     bool m_linearizedShadowMap;
     bool m_shadowMapParamsChanged;
     gl::GLenum m_shadowMapFormat;
@@ -138,4 +144,5 @@ protected:
 
     glkernel::kernel2 m_aaKernel;
     glkernel::kernel2 m_dofKernel;
+    glkernel::kernel2 m_lightKernel;
 };

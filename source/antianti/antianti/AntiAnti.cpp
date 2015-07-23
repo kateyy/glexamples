@@ -126,12 +126,16 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_usePointDoF(false)
     , m_maxDofShift(0.01f)
     , m_focalDepth(3.0f)
+    , m_dofSamples(1024)
+    , m_dofSortSamples(true)
     , m_dofAtCursor(false)
     // shadows
     , m_shadowsEnabled(true)
     , m_lightPosition({0, 54, 0})
     , m_lightFocus({ 0, 0, 0 })
     , m_maxLightSourceShift(0.1f)
+    , m_lightSamples(1024)
+    , m_lightSortSamples(false)
     , m_linearizedShadowMap(true)
     , m_shadowMapParamsChanged(true)
     , m_shadowMapFormat(GL_R32F)
@@ -144,7 +148,6 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_transparency(0.0f)
     , m_numTransparencySamples(8192)
     , m_aaKernel(128)
-    , m_dofKernel(1000)
 {
     m_sceneLoader.m_desiredScene = SceneLoader::IMROD;
     setupPropertyGroup();
@@ -152,26 +155,12 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     auto num_samples = glkernel::sample::poisson_square(m_aaKernel, 30);
     m_aaKernel = m_aaKernel.trimed(num_samples, 1, 1);
 
-
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(m_aaKernel.m_kernel.begin() + 1, m_aaKernel.m_kernel.end(), g);
 
-    
-    num_samples = glkernel::sample::poisson_square(m_dofKernel, 30);
-    m_dofKernel = m_dofKernel.trimed(num_samples, 1, 1);
-
-    for (int i = 0; i < m_dofKernel.size(); i++)
-        m_dofKernel.m_kernel[i] = m_dofKernel.m_kernel[i] * 2.0f - 1.0f;
-
-    std::sort(m_dofKernel.m_kernel.begin(), m_dofKernel.m_kernel.begin() + num_samples, [](glm::vec2 a, glm::vec2 b){
-        return glm::length(a) < glm::length(b);
-    });
-    m_dofKernel.m_kernel.erase(std::remove_if(m_dofKernel.m_kernel.begin(), m_dofKernel.m_kernel.begin() + num_samples, [](glm::vec2 a){
-        return glm::length(a) > 1.0f;
-    }), m_dofKernel.m_kernel.end());
-    
-    m_numFrames = m_dofKernel.size();
+    updateDofKernel();
+    updateLightKernel();
 }
 
 AntiAnti::~AntiAnti() = default;
@@ -317,6 +306,24 @@ void AntiAnti::setupPropertyGroup()
             { "precision", 2u },
         });
 
+        dofGroup->addProperty<int>("numSamples",
+            [this]() { return (int)m_dofKernel.size(); },
+            [this](int numSamples) {
+            if (numSamples == m_dofKernel.size())
+                return;
+            m_dofSamples = numSamples;
+            updateDofKernel();
+            m_frame = 0;
+        });
+
+        dofGroup->addProperty<bool>("sortSamples",
+            [this]() { return m_dofSortSamples; },
+            [this](bool sortSamples) {
+            m_dofSortSamples = sortSamples;
+            updateDofKernel();
+            m_frame = 0;
+        });
+
         dofGroup->addProperty<bool>("doofAtCursor",
             [this]() {return m_dofAtCursor; },
             [this](bool atCursor) {
@@ -396,6 +403,24 @@ void AntiAnti::setupPropertyGroup()
             { "step", 0.05f },
             { "precision", 2u },
             { "title", "Light Radius" }
+        });
+
+        shadows->addProperty<int>("numSamples",
+            [this]() { return (int)m_lightKernel.size(); },
+            [this](int numSamples) {
+            if (numSamples == m_lightKernel.size())
+                return;
+            m_lightSamples = numSamples;
+            updateLightKernel();
+            m_frame = 0;
+        });
+
+        shadows->addProperty<bool>("sortSamples",
+            [this]() { return m_lightSortSamples; },
+            [this](bool sortSamples) {
+            m_lightSortSamples = sortSamples;
+            updateLightKernel();
+            m_frame = 0;
         });
 
         shadows->addProperty<bool>("linearizedShadowMap",
@@ -549,8 +574,45 @@ void AntiAnti::onInitialize()
     setupFramebuffer();
 
     globjects::NamedString::create("/data/antianti/ssao.glsl", new globjects::File("data/antianti/ssao.glsl"));
+}
 
+glkernel::kernel2 getKernel(int numSamples, bool sort)
+{
+    glkernel::kernel2 kernel(numSamples);
+    auto actual_num_samples = glkernel::sample::poisson_square(kernel, 30);
+    kernel = kernel.trimed(numSamples, 1, 1);
 
+    for (int i = 0; i < kernel.size(); i++)
+        kernel.m_kernel[i] = kernel.m_kernel[i] * 2.0f - 1.0f;
+
+    if(sort)
+    {
+        std::sort(kernel.m_kernel.begin(), kernel.m_kernel.end(), [](glm::vec2 a, glm::vec2 b){
+            return glm::length(a) < glm::length(b);
+        });
+    }
+    else
+    {
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(kernel.m_kernel.begin() + 1, kernel.m_kernel.end(), g);
+    }
+
+    kernel.m_kernel.erase(std::remove_if(kernel.m_kernel.begin(), kernel.m_kernel.end(), [](glm::vec2 a){
+        return glm::length(a) > 1.0f;
+    }), kernel.m_kernel.end());
+
+    return kernel;
+}
+
+void AntiAnti::updateDofKernel()
+{
+    m_dofKernel = getKernel(m_dofSamples, m_dofSortSamples);
+}
+
+void AntiAnti::updateLightKernel()
+{
+    m_lightKernel = getKernel(m_lightSamples, m_lightSortSamples);
 }
 
 void AntiAnti::checkAndBindTexture(int meshID, aiTextureType type, std::string uniformName, GLenum target)
@@ -954,7 +1016,7 @@ void AntiAnti::drawShadowMap()
     auto lightViewDir = glm::normalize(m_lightFocus - m_lightPosition);
 
     auto lightShift = glm::diskRand(m_maxLightSourceShift);
-    lightShift = m_dofKernel[m_frame%m_dofKernel.size()] * m_maxLightSourceShift;
+    lightShift = m_lightKernel[m_frame%m_lightKernel.size()] * m_maxLightSourceShift;
     // https://stackoverflow.com/questions/10161553/rotate-a-vector-to-reach-another-vector
     auto rndDiscToViewDirAxis = glm::cross(lightViewDir, glm::vec3(0, 0, 1));
     float rndDiscToViewDirAngle = glm::asin(glm::length(rndDiscToViewDirAxis));
