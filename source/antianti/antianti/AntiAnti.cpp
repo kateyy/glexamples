@@ -564,6 +564,7 @@ void AntiAnti::onPaint()
         m_postProcessing.ssaoIntensity = m_sceneLoader.getSsaoSettings().y;
         m_frame = 0;
     }
+
     if (m_inputCapability->printCamPos)
     {
         std::cout << "{";
@@ -572,6 +573,16 @@ void AntiAnti::onPaint()
         print_vec3(m_cameraCapability->center() - m_cameraCapability->eye());
         std::cout << "}," << std::endl;
         m_inputCapability->printCamPos = false;
+    }
+
+    const auto inputTransform = m_projectionCapability->projection() * m_cameraCapability->view();
+
+    const bool cameraHasChanged = m_lastTransform != inputTransform;
+
+    if (cameraHasChanged)
+    {
+        m_lastTransform = inputTransform;
+        m_frame = 0;
     }
 
     if (m_shadowsEnabled)
@@ -603,15 +614,6 @@ void AntiAnti::onPaint()
             if (glm::distance(clickZDistance, m_focalDepth) > 0.01f)
                 property<float>("DepthOfField/focalDepth")->setValue(clickZDistance);
         }
-    }
-
-    const auto inputTransform = m_projectionCapability->projection() * m_cameraCapability->view();
-
-    const bool cameraHasChanged = m_lastTransform != inputTransform;
-    if (cameraHasChanged)
-    {
-        m_lastTransform = inputTransform;
-        m_frame = 0;
     }
 
     glm::vec3 inputEye = m_cameraCapability->eye();
