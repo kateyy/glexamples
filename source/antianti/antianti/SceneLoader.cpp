@@ -6,6 +6,7 @@
 #include <glbinding/gl/enum.h>
 
 #include <globjects/Texture.h>
+#include <globjects/globjects.h>
 
 #include <gloperate/resources/RawFile.h>
 #include <gloperate/primitives/Scene.h>
@@ -127,6 +128,7 @@ ref_ptr<Texture> loadTexture(std::string filepath, aiTextureType type)
     texture->setParameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
     texture->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     texture->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    texture->setParameter(GL_TEXTURE_MAX_ANISOTROPY_EXT, globjects::getFloat(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
 
     QImage image = loadImage(filepath);
 
