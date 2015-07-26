@@ -32,7 +32,7 @@ uniform sampler2D emis;
 
 uniform sampler2D smap;
 
-const float ambientFactor = 0.6;
+uniform float ambientFactor = 0.6;
 const float diffuseFactor = 1.00;
 const float specularFactor = 4.0;
 const float emissionFactor = 0.33;

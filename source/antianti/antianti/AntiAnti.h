@@ -108,6 +108,7 @@ protected:
     float m_maxSubpixelShift;
     glm::mat4 m_lastTransform;
     reflectionzeug::Color m_backgroundColor;
+    float m_ambientFactor;
 
     bool m_enableTransparency;
     bool m_backFaceCulling;

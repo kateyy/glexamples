@@ -63,6 +63,7 @@ namespace
     std::vector<glm::vec3> lightPositions = {{0, 20, 0},     {0, 54, 0},        {0, 18, 0},        {0, 2000, 0},      {10, 20, 0},      {7, 11, -7},        {-0.4, 1.2, -0.7}, };
     std::vector<bool> enableShadows =     {false,            true,              true,              false,             true,             true,              true,              };
     std::vector<float> lightMaxShifts =   {0.1f,             1.0f,              1.0f,              15.0f,             0.7f,             0.6f,              0.05f,             };
+    std::vector<float> ambientFactors =   {1.0f,             0.4f,              0.5f,              0.6f,              0.4f,             1.2f,              0.4f,              };
 }
 
 
@@ -119,6 +120,11 @@ bool SceneLoader::getEnableTransparency()
     if (m_currentScene == MITSUBA)
         return true;
     return false;
+}
+
+float SceneLoader::getAmbientFactor()
+{
+    return ambientFactors[m_currentScene];
 }
 
 

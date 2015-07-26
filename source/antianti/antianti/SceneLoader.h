@@ -51,6 +51,7 @@ public:
     glm::vec3 getLightPos();
     float getLightMaxShift();
     bool getEnableTransparency();
+    float getAmbientFactor();
 
     // a texture of type someType for drawable m_drawables[i] can be retrieved with 
     // getTexture(i, someType). returned texture is null if the drawable has no texture of that type.

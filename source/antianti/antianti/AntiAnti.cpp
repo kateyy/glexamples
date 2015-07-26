@@ -121,6 +121,7 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_maxSubpixelShift(1.0f)
     , m_accTextureFormat(GL_RGB32F)
     , m_backgroundColor({ 255, 255, 255 })
+    , m_ambientFactor(1.0f)
     // dof
     , m_dofEnabled(false)
     , m_usePointDoF(false)
@@ -265,6 +266,17 @@ void AntiAnti::setupPropertyGroup()
         {CameraPreset::TRANSPARENCY_DOF, "TRANSPARENCY_DOF"},
         {CameraPreset::D_SPONZA_LIGHTING, "D_SPONZA_LIGHTING"},
         {CameraPreset::C_SPONZA_AA, "C_SPONZA_AA"},
+    });
+
+    addProperty<float>("ambientFactor",
+        [this]() {return m_ambientFactor; },
+        [this](float ambientFactor) {
+        m_ambientFactor = ambientFactor;
+        m_frame = 0;
+    })->setOptions({
+        {"minimum", 0.0f},
+        {"step", 0.05f},
+        {"precision", 2u},
     });
 
 
@@ -658,6 +670,7 @@ void AntiAnti::onPaint()
         m_projectionCapability->setZNear(nearFar.x);
         m_projectionCapability->setZFar(nearFar.y);
         m_projectionCapability->setFovy(radians(fovy));
+        m_ambientFactor = m_sceneLoader.getAmbientFactor();
 
         m_shadowsEnabled = m_sceneLoader.getEnableShadows();
         m_lightZRange = nearFar;
@@ -792,6 +805,7 @@ void AntiAnti::onPaint()
     m_program->setUniform("light", m_lightPosition); // TODO let there be area lights
     m_program->setUniform("camera", camera->eye());
     m_program->setUniform("lightZRange", m_lightZRange);
+    m_program->setUniform("ambientFactor", m_ambientFactor);
 
     m_program->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
     m_program->setUniform("transparencyNoise1D", 1);
