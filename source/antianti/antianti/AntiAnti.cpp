@@ -132,14 +132,14 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_linearizedShadowMap(true)
     , m_shadowMapParamsChanged(true)
     , m_shadowMapFormat(GL_R32F)
-    , m_shadowMapWidth(4096)
+    , m_shadowMapWidth(2048)
     , m_lightZRange({0.300, 50.00})
     // transparency
     , m_backFaceCulling(false)
     , m_backFaceCullingShadows(false)
     , m_useObjectBasedTransparency(true)
     , m_transparency(0.0f)
-    , m_numTransparencySamples(1024)
+    , m_numTransparencySamples(8192)
 {
     m_sceneLoader.m_desiredScene = SceneLoader::IMROD;
     setupPropertyGroup();

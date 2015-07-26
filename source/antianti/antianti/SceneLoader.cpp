@@ -56,8 +56,8 @@ namespace
     std::vector<glm::vec3> camViews =     {{0.0, -1.5, 2.6}, {0.9, -1.9, -2.1}, {-3.0, -0.9, 0.0}, {3.0, -0.5, 0.0},  {0.0, -1.8, -2.4},{-0.24, -0.37, 0.33},};
     std::vector<bool> enableGrid =        {true,             true,              false,             false,             false,            false,             };
     std::vector<glm::vec2> ssaoSettings = {{0.05, 1.0},      {0.8, 1.5},        {0.5, 1.5},        {15.0, 1.5},       {0.5, 1.0},       {0.1, 1.5},        };
-    std::vector<glm::vec3> lightPositions = {{0, 20, 0},     {0, 54, 0},        {0, 18, 0},        {0, 2000, 0},      {10, 20, 0},      {-2, 6, -2},       };
-    std::vector<float> lightMaxShifts =   {0.1f,             1.0f,              1.0f,              15.0f,             0.7f,             0.2f,              };
+    std::vector<glm::vec3> lightPositions = {{0, 20, 0},     {0, 54, 0},        {0, 18, 0},        {0, 2000, 0},      {10, 20, 0},      {-0.4, 1.2, -0.7}, };
+    std::vector<float> lightMaxShifts =   {0.1f,             1.0f,              1.0f,              15.0f,             0.7f,             0.05f,             };
 }
 
 
