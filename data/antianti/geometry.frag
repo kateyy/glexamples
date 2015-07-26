@@ -124,8 +124,15 @@ void main()
     float l_frag = lambert(l * tbn, n_tangent);
 
     float l_both = mix(l_face, l_frag, 1.0) * 0.5 + 0.5; // fakie fakie...
+    
+    vec3 treePlaneColor = vec3(50, 76, 63) / 255.0; // Megacity
 
-    vec3 diffSample = mix(vec3(g_N * 0.5 + 0.5), texture(diff, uv).xyz, hasDiff);
+    vec3 diffTexColor = texture(diff, uv).rgb;
+    
+    if ((hasDiff > 0.5) && (distance(diffTexColor, treePlaneColor) < 0.001))
+        discard;
+    
+    vec3 diffSample = mix(vec3(g_N * 0.5 + 0.5), diffTexColor, hasDiff);
     vec3 diffuse = diffuseFactor * diffSample * l_both;
 
     // specular 
