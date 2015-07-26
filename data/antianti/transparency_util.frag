@@ -1,7 +1,7 @@
 #version 140
 
 uniform sampler1D transparencyNoise1D;
-uniform usampler1D transparencyOffsets1D;
+uniform usampler2D transparencyOffsets;
 uniform int transparencyNoise1DSamples;
 uniform int frame;
 uniform int drawableID;
@@ -16,7 +16,7 @@ bool transparency_discard(int vertexID)
     fragOffset += drawableID;
     fragOffset += vertexID;
 
-    fragOffset = int(texture(transparencyOffsets1D, float(fragOffset) / 122.0).x);
+    fragOffset = int(texture(transparencyOffsets, gl_FragCoord.xy / textureSize(transparencyOffsets, 0).xy).x);
 
     float random = texelFetch(transparencyNoise1D, 
         (frame + vertexID + fragOffset + drawableID) % int(transparencyNoise1DSamples), 0).x;

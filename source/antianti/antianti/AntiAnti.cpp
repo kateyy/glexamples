@@ -809,7 +809,7 @@ void AntiAnti::onPaint()
 
     m_program->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
     m_program->setUniform("transparencyNoise1D", 1);
-    m_program->setUniform("transparencyOffsets1D", 7);
+    m_program->setUniform("transparencyOffsets", 7);
     m_program->setUniform("smap", 2);
     m_program->setUniform("diff", 3);
     m_program->setUniform("norm", 4);
@@ -964,10 +964,11 @@ void AntiAnti::setupTransparencyRandomness()
         m_transparencyNoise->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         m_transparencyNoise->setParameter(GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 
-        m_transparencyOffsets = make_ref<Texture>(GL_TEXTURE_1D);
+        m_transparencyOffsets = make_ref<Texture>(GL_TEXTURE_2D);
         m_transparencyOffsets->setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         m_transparencyOffsets->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         m_transparencyOffsets->setParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
+        m_transparencyOffsets->setParameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
 
     std::vector<float> noise(m_numTransparencySamples);
@@ -978,11 +979,12 @@ void AntiAnti::setupTransparencyRandomness()
     m_transparencyNoise->unbindActive(GL_TEXTURE1);
     m_transparencyNoise->image1D(0, GL_R32F, static_cast<GLsizei>(m_numTransparencySamples), 0, GL_RED, GL_FLOAT, noise.data());
 
-    std::vector<GLuint> offsets(123);
+    int offsetsSize = 64;
+    std::vector<GLuint> offsets(offsetsSize * offsetsSize);
     for (GLint i = 0; i < offsets.size(); ++i)
         offsets[i] = i;
     std::shuffle(offsets.begin(), offsets.end(), g);
-    m_transparencyOffsets->image1D(0, GL_R16UI, static_cast<GLsizei>(offsets.size()), 0, GL_RED_INTEGER, GL_UNSIGNED_INT, offsets.data());
+    m_transparencyOffsets->image2D(0, GL_R16UI, glm::ivec2(offsetsSize), 0, GL_RED_INTEGER, GL_UNSIGNED_INT, offsets.data());
 }
 
 void AntiAnti::setupProgram()
