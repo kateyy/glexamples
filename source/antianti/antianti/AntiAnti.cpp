@@ -795,6 +795,7 @@ void AntiAnti::onPaint()
 
     m_program->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
     m_program->setUniform("transparencyNoise1D", 1);
+    m_program->setUniform("transparencyOffsets1D", 7);
     m_program->setUniform("smap", 2);
     m_program->setUniform("diff", 3);
     m_program->setUniform("norm", 4);
@@ -802,6 +803,7 @@ void AntiAnti::onPaint()
     m_program->setUniform("emis", 6);
 
     m_transparencyNoise->bindActive(GL_TEXTURE1);
+    m_transparencyOffsets->bindActive(GL_TEXTURE7);
     m_shadowMap->bindActive(GL_TEXTURE2);
 
     for (auto i = 0u; i < m_sceneLoader.m_drawables.size(); ++i)
@@ -815,6 +817,7 @@ void AntiAnti::onPaint()
         checkAndBindTexture(i, aiTextureType_SPECULAR, "hasSpec", GL_TEXTURE5);
         checkAndBindTexture(i, aiTextureType_EMISSIVE, "hasEmis", GL_TEXTURE6);
 
+        m_program->setUniform("drawableID", GLint(i));
         m_sceneLoader.m_drawables[i]->draw();
     }
     
@@ -940,11 +943,17 @@ void AntiAnti::setupTransparencyRandomness()
     }
 
     //pixel based
-    if (!m_transparencyNoise) {
+    if (!m_transparencyNoise)
+    {
         m_transparencyNoise = make_ref<Texture>(GL_TEXTURE_1D);
-        m_transparencyNoise->setParameter(gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
-        m_transparencyNoise->setParameter(gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
-        m_transparencyNoise->setParameter(gl::GL_TEXTURE_WRAP_S, gl::GL_MIRRORED_REPEAT);
+        m_transparencyNoise->setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        m_transparencyNoise->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        m_transparencyNoise->setParameter(GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+
+        m_transparencyOffsets = make_ref<Texture>(GL_TEXTURE_1D);
+        m_transparencyOffsets->setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        m_transparencyOffsets->setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        m_transparencyOffsets->setParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
     }
 
     std::vector<float> noise(m_numTransparencySamples);
@@ -954,6 +963,12 @@ void AntiAnti::setupTransparencyRandomness()
     std::shuffle(noise.begin(), noise.end(), g);
     m_transparencyNoise->unbindActive(GL_TEXTURE1);
     m_transparencyNoise->image1D(0, GL_R32F, static_cast<GLsizei>(m_numTransparencySamples), 0, GL_RED, GL_FLOAT, noise.data());
+
+    std::vector<GLuint> offsets(123);
+    for (GLint i = 0; i < offsets.size(); ++i)
+        offsets[i] = i;
+    std::shuffle(offsets.begin(), offsets.end(), g);
+    m_transparencyOffsets->image1D(0, GL_R16UI, static_cast<GLsizei>(offsets.size()), 0, GL_RED_INTEGER, GL_UNSIGNED_INT, offsets.data());
 }
 
 void AntiAnti::setupProgram()
@@ -1052,14 +1067,17 @@ void AntiAnti::drawShadowMap()
     m_programShadowing->setUniform("transparency", (m_enableTransparency && !m_useObjectBasedTransparency) ? m_transparency : 0.0f);
     m_programShadowing->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
     m_programShadowing->setUniform("transparencyNoise1D", 1);
+    m_programShadowing->setUniform("transparencyOffsets1D", 7);
 
     m_programShadowing->use();
 
     m_transparencyNoise->bindActive(GL_TEXTURE1);
+    m_transparencyOffsets->bindActive(GL_TEXTURE7);
 
     for (auto i = 0u; i < m_sceneLoader.m_drawables.size(); ++i) {
         if (m_enableTransparency && m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
             continue;
+        m_programShadowing->setUniform("drawableID", GLint(i));
         m_sceneLoader.m_drawables[i]->draw();
     }
 

@@ -94,6 +94,7 @@ protected:
     globjects::ref_ptr<globjects::Texture> m_ppTexture;
 
     globjects::ref_ptr<globjects::Texture> m_transparencyNoise;
+    globjects::ref_ptr<globjects::Texture> m_transparencyOffsets;
     
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<globjects::Program> m_program;
