@@ -601,7 +601,7 @@ void AntiAnti::onPaint()
         m_viewportCapability->width(),
         m_viewportCapability->height());
 
-    if (m_dofAtCursor || m_inputCapability->ctrlPressed)
+    if (m_dofEnabled && (m_dofAtCursor || m_inputCapability->ctrlPressed))
     {
         float depth = m_coordProvider->depthAt(m_inputCapability->lastMousePosition);
 
