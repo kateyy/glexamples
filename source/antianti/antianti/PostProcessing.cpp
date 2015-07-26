@@ -110,6 +110,7 @@ PostProcessing::PostProcessing()
 , useSSAO(true)
 , ssaoIntensity(1.0f)
 , ssaoRadius(0.05f)
+, useSSAONoise(true)
 , output(Output::Source_Final)
 {
 }
