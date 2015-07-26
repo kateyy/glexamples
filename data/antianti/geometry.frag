@@ -32,8 +32,8 @@ uniform sampler2D emis;
 
 uniform sampler2D smap;
 
-const float ambientFactor = 0.08;
-const float diffuseFactor = 1.20;
+const float ambientFactor = 0.6;
+const float diffuseFactor = 1.00;
 const float specularFactor = 4.0;
 const float emissionFactor = 0.33;
 
@@ -116,14 +116,14 @@ void main()
     
     // ambient
     
-    vec3 ambient = ambientFactor * vec3(0.384, 0.512, 0.968);
+    vec3 ambient = ambientFactor * vec3(0.434, 0.512, 0.668);
 
     // diffuse
 
     float l_face = lambert(l, n_world);
     float l_frag = lambert(l * tbn, n_tangent);
 
-    float l_both = mix(l_face, l_frag, 1.0) * 0.5 + 0.5; // fakie fakie...
+    float l_both = mix(l_face, l_frag, 1.0) ; // fakie fakie...
     
     vec3 treePlaneColor = vec3(50, 76, 63) / 255.0; // Megacity
 
@@ -165,7 +165,7 @@ void main()
         shadow = step(0.0, sign(g_S.w)) * step(scoord.z, sdist);
     }
 
-    vec3 color = ambient + (shadow * 0.75 + 0.25) * (diffuse + diffuse * specular) + emission;
+    vec3 color = ambient * diffSample + (shadow) * (diffuse + diffuse * specular) + emission;
 
     fragColor = vec4(  vec3(color) , 1.0);
     fragNormal = vec4(g_N_face, 1.0);
