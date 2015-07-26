@@ -108,6 +108,7 @@ protected:
     glm::mat4 m_lastTransform;
     reflectionzeug::Color m_backgroundColor;
 
+    bool m_enableTransparency;
     bool m_backFaceCulling;
     bool m_backFaceCullingShadows;
     float m_transparency;

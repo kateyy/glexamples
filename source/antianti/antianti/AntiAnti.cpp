@@ -142,10 +142,11 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_shadowMapWidth(2048)
     , m_lightZRange({0.300, 50.00})
     // transparency
+    , m_enableTransparency(false)
     , m_backFaceCulling(false)
     , m_backFaceCullingShadows(false)
-    , m_useObjectBasedTransparency(true)
-    , m_transparency(0.0f)
+    , m_useObjectBasedTransparency(false)
+    , m_transparency(0.5f)
     , m_numTransparencySamples(8192)
     , m_aaKernel(128)
 {
@@ -506,6 +507,13 @@ void AntiAnti::setupPropertyGroup()
     {
         auto ppGroup = addGroup("Transparency");
 
+        ppGroup->addProperty<bool>("enable",
+            [this]() {return m_enableTransparency; },
+            [this](bool enableTransparency) {
+            m_enableTransparency = enableTransparency;
+            m_frame = 0;
+        });
+
         ppGroup->addProperty<float>("transparency",
             [this]() { return m_transparency; },
             [this](float transparency) {
@@ -651,6 +659,7 @@ void AntiAnti::onPaint()
         m_projectionCapability->setZFar(nearFar.y);
         m_projectionCapability->setFovy(radians(fovy));
 
+        m_shadowsEnabled = m_sceneLoader.getEnableShadows();
         m_lightZRange = nearFar;
         m_lightPosition = m_sceneLoader.getLightPos();
         m_maxLightSourceShift = m_sceneLoader.getLightMaxShift();
@@ -778,7 +787,7 @@ void AntiAnti::onPaint()
     //m_program->setUniform(m_timeLocation, time_now);
     m_program->setUniform("frame", m_frame);
     m_program->setUniform("viewport", glm::vec2{ m_viewportCapability->width(), m_viewportCapability->height() });
-    m_program->setUniform("transparency", m_useObjectBasedTransparency ? 0.0f : m_transparency);
+    m_program->setUniform("transparency", (m_enableTransparency && !m_useObjectBasedTransparency) ? m_transparency : 0.0f);
     m_program->setUniform("shadowsEnabled", m_shadowsEnabled);
     m_program->setUniform("light", m_lightPosition); // TODO let there be area lights
     m_program->setUniform("camera", camera->eye());
@@ -797,7 +806,7 @@ void AntiAnti::onPaint()
 
     for (auto i = 0u; i < m_sceneLoader.m_drawables.size(); ++i)
     {
-        if (m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
+        if (m_enableTransparency && m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
             continue;
 
         checkAndBindTexture(i, aiTextureType_DIFFUSE, "hasDiff", GL_TEXTURE3);
@@ -1040,7 +1049,7 @@ void AntiAnti::drawShadowMap()
     //needed for transparency
     m_programShadowing->setUniform("frame", m_frame);
     m_programShadowing->setUniform("viewport", glm::vec2{ m_shadowMapWidth, m_shadowMapWidth });
-    m_programShadowing->setUniform("transparency", m_useObjectBasedTransparency ? 0.0f : m_transparency);
+    m_programShadowing->setUniform("transparency", (m_enableTransparency && !m_useObjectBasedTransparency) ? m_transparency : 0.0f);
     m_programShadowing->setUniform("transparencyNoise1DSamples", m_numTransparencySamples);
     m_programShadowing->setUniform("transparencyNoise1D", 1);
 
@@ -1049,7 +1058,7 @@ void AntiAnti::drawShadowMap()
     m_transparencyNoise->bindActive(GL_TEXTURE1);
 
     for (auto i = 0u; i < m_sceneLoader.m_drawables.size(); ++i) {
-        if (m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
+        if (m_enableTransparency && m_useObjectBasedTransparency && !m_transparencyRandomness[i][m_frame % m_numTransparencySamples])
             continue;
         m_sceneLoader.m_drawables[i]->draw();
     }
