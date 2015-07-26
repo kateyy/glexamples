@@ -85,7 +85,7 @@ globjects::Texture* ssaoKernelTexture(unsigned int size)
     globjects::Texture* texture = new globjects::Texture(gl::GL_TEXTURE_1D);
     texture->setParameter(gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
     texture->setParameter(gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
-    texture->setParameter(gl::GL_TEXTURE_WRAP_S, gl::GL_MIRRORED_REPEAT);
+    texture->setParameter(gl::GL_TEXTURE_WRAP_S, gl::GL_REPEAT);
     return texture;
 }
 
@@ -94,8 +94,8 @@ globjects::Texture* ssaoNoiseTexture(unsigned int size)
     globjects::Texture* texture = new globjects::Texture(gl::GL_TEXTURE_2D);
     texture->setParameter(gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
     texture->setParameter(gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
-    texture->setParameter(gl::GL_TEXTURE_WRAP_S, gl::GL_MIRRORED_REPEAT);
-    texture->setParameter(gl::GL_TEXTURE_WRAP_T, gl::GL_MIRRORED_REPEAT);
+    texture->setParameter(gl::GL_TEXTURE_WRAP_S, gl::GL_REPEAT);
+    texture->setParameter(gl::GL_TEXTURE_WRAP_T, gl::GL_REPEAT);
     return texture;
 }
 
