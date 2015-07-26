@@ -116,7 +116,7 @@ void main()
     
     // ambient
     
-    vec3 ambient = ambientFactor * vec3(0.434, 0.512, 0.668);
+    vec3 ambient = ambientFactor * vec3(0.654, 0.602, 0.658);
 
     // diffuse
 
