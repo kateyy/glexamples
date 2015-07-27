@@ -6,6 +6,8 @@
 #include <random>
 #include <limits>
 
+#include <QString>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
@@ -55,6 +57,7 @@
 #include <assimp/material.h>
 
 #include "SceneLoader.h"
+#include "PerfCounter.h"
 
 
 using namespace gl;
@@ -873,11 +876,16 @@ void AntiAnti::onPaint()
         drawBuffer = GL_BACK_LEFT;
     }
     
+    std::cout << PerfCounter::generateString().toStdString() << std::endl;
+    PerfCounter::beginGL("blit");
+
     m_ppfbo->blit(GL_COLOR_ATTACHMENT0, rect, targetfbo, drawBuffer, rect,
         GL_COLOR_BUFFER_BIT, GL_NEAREST);
     
     m_fbo->blit(GL_COLOR_ATTACHMENT0, rect, targetfbo, drawBuffer, rect,
         GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+    PerfCounter::endGL("blit");
 }
 
 void AntiAnti::setupFramebuffer()

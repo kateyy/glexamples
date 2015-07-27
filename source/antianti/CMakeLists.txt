@@ -43,6 +43,7 @@ set(sources
     ${source_path}/plugin.cpp
     ${source_path}/antianti/AntiAnti.cpp
     ${source_path}/antianti/ImageLoader.cpp
+    ${source_path}/antianti/PerfCounter.cpp
     ${source_path}/antianti/PostProcessing.cpp
     ${source_path}/antianti/SceneLoader.cpp
 )
@@ -50,6 +51,7 @@ set(sources
 set(api_includes
     ${include_path}/antianti/AntiAnti.h
     ${include_path}/antianti/ImageLoader.h
+    ${include_path}/antianti/PerfCounter.h
     ${include_path}/antianti/PostProcessing.h
     ${include_path}/antianti/SceneLoader.h
 )
