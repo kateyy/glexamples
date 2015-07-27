@@ -237,6 +237,7 @@ void AntiAnti::setupPropertyGroup()
         TRANSPARENCY_DOF,
         D_SPONZA_LIGHTING,
         C_SPONZA_AA,
+        JAKOBI_SHADOWS,
     };
 
     std::vector<std::pair<glm::vec3, glm::vec3>> cameraPresets = {
@@ -247,6 +248,7 @@ void AntiAnti::setupPropertyGroup()
         {{1.0575, 0.7301, -1.59997}, {-0.618056, -0.782045, 1.98035}},
         {{8.22877, 2.69668, 0.759895}, {-0.000507355, -2.69668, -0.0926592}},
         {{-804.44, 208.115, -40.5258}, {27849.7, 2296.53, 214.473}},
+        {{0.225261, -0.0145792, -0.413558}, {-0.0163724, -0.0544686, 0.068054}},
     };
 
     addProperty<CameraPreset>("cameraPresets",
@@ -266,6 +268,7 @@ void AntiAnti::setupPropertyGroup()
         {CameraPreset::TRANSPARENCY_DOF, "TRANSPARENCY_DOF"},
         {CameraPreset::D_SPONZA_LIGHTING, "D_SPONZA_LIGHTING"},
         {CameraPreset::C_SPONZA_AA, "C_SPONZA_AA"},
+        {CameraPreset::JAKOBI_SHADOWS, "JAKOBI_SHADOWS"},
     });
 
     addProperty<float>("ambientFactor",
