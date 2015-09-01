@@ -92,6 +92,10 @@ protected:
     globjects::ref_ptr<globjects::Texture> m_ppTexture;
 
     globjects::ref_ptr<globjects::Texture> m_transparencyNoise;
+
+	globjects::ref_ptr<globjects::Texture> m_dofKernel;
+	glm::uint16 m_dofKernelWidth;
+	bool m_dofKernel_invalid;
     
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<globjects::Program> m_program;

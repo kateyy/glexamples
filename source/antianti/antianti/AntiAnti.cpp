@@ -50,6 +50,9 @@
 #include <reflectionzeug/PropertyGroup.h>
 #include <reflectionzeug/extensions/GlmProperties.hpp>
 
+#include <QImage>
+#include <QColor>
+
 #include <widgetzeug/make_unique.hpp>
 
 #include <assimp/material.h>
@@ -115,6 +118,8 @@ AntiAnti::AntiAnti(gloperate::ResourceManager & resourceManager)
     , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
     , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
     , m_inputCapability(addCapability(new HackedInputCapability()))
+    , m_dofKernelWidth(32)
+    , m_dofKernel_invalid(true)
     , m_frame(0)
     // misc
     , m_numFrames(10000)
@@ -291,6 +296,13 @@ void AntiAnti::setupPropertyGroup()
             [this]() {return m_dofAtCursor; },
             [this](bool atCursor) {
                 m_dofAtCursor = atCursor;
+        });
+
+        dofGroup->addProperty<glm::uint16>("kernelWidth",
+            [this](){return m_dofKernelWidth; },
+            [this](glm::uint16 w){
+            m_dofKernelWidth = w;
+            m_dofKernel_invalid = true;
         });
     }
 
@@ -595,6 +607,60 @@ void AntiAnti::onPaint()
         m_viewportCapability->width(),
         m_viewportCapability->height());
 
+    static std::vector<glm::vec2> dof_Samples;
+
+    if (m_dofKernel_invalid)
+    {
+        //if (!m_dofKernel)
+        //{
+        //    m_dofKernel = globjects::Texture::createDefault(GL_TEXTURE_1D);
+        //    m_dofKernel->setParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //}
+
+        auto samples = glkernel::kernel2{ m_dofKernelWidth, m_dofKernelWidth };
+
+        size_t num_samples = 0;
+
+        while (num_samples < m_dofKernelWidth*m_dofKernelWidth)
+        {
+            //num_samples = glkernel::sample::poisson_square(samples, 0.058f, 1024);
+            num_samples = glkernel::sample::poisson_square(samples);
+        }
+
+        std::vector<glm::vec2> kacke;
+        for (int i = 0; i < samples.size(); ++i)
+            kacke.push_back(samples[i]);
+
+        QImage mask("mask-test2.png");
+
+        std::vector<glm::vec2> kacke_masked;
+        for (int i = 0; i < kacke.size(); ++i)
+        {
+            const auto p = kacke[i];
+            QColor c = mask.pixel(p.x * mask.width(), p.y * mask.height());
+            if (c.redF() > 0.5f)
+                kacke_masked.push_back(kacke[i]);
+        }
+
+
+        std::sort(kacke_masked.begin() + 1, kacke_masked.end(),
+            [](const glm::vec2 & a, const glm::vec2 & b) -> bool
+        {
+            auto foo = glm::distance(a, glm::vec2(0.5f, 0.5f)) < glm::distance(b, glm::vec2(0.5f, 0.5f));
+            return foo;
+        });
+
+        //m_dofKernel->image1D(0, GL_RG32F, static_cast<GLsizei>(kacke.size()), 0, GL_RG, GL_FLOAT, kacke.data());
+
+        // moep, actually not using the texture;
+
+        dof_Samples = kacke_masked;
+
+        std::cout << " NUMMMOR " << kacke_masked.size() << std::endl;
+
+        m_dofKernel_invalid = false;
+    }
+
     if (m_dofAtCursor || m_inputCapability->ctrlPressed)
     {
         float depth = m_coordProvider->depthAt(m_inputCapability->lastMousePosition);
@@ -629,13 +695,15 @@ void AntiAnti::onPaint()
     {
         if (m_usePointDoF)
         {
-            glm::vec3 dofShift{ glm::diskRand(m_maxDofShift), 0.0f };
+            //glm::vec3 dofShift{ glm::diskRand(m_maxDofShift), 0.0f };
+            glm::vec3 dofShift{ (dof_Samples[m_frame % dof_Samples.size()] - 0.5f) * m_maxDofShift, 0.0f };
             glm::vec3 dofShiftWorld = glm::mat3(m_cameraCapability->view()) * dofShift;
             dofShiftedEye = inputEye + dofShiftWorld;
         }
         else
         {
-            shearingFactor = glm::diskRand(m_maxDofShift);
+            //shearingFactor = glm::diskRand(m_maxDofShift);
+            shearingFactor = (dof_Samples[m_frame % dof_Samples.size()] - 0.5f) * m_maxDofShift;
         }
     }
 

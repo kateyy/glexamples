@@ -33,4 +33,6 @@ void main()
         fragColor = opaqueColor * complTotalAlpha + transparentColor.rgb * ((1.0 - complTotalAlpha) / transparentColor.a);
     else
         fragColor = opaqueColor;
+
+        fragColor = (pow(fragColor.xyz, vec3(122.0 / 2.2)), 1.0);
 }

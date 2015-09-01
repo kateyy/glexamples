@@ -84,7 +84,7 @@ void main()
     vec4 last = texture(lastFrame, v_uv);
     // TODO ping pong textures, allow to accumulate the final image, while printing some intermediate data to the output framebuffer
     // accColor = mix(last, accColor, 1.0/float(frame));
-    color = mix(last, color, 1.0/float(frame));
+    color = mix(last, pow(color, vec4(1.0/1.0)), 1.0/float(frame));
     color.a = 1.0;
     
     outColor = color;

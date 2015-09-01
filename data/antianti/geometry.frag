@@ -33,9 +33,9 @@ uniform sampler2D emis;
 uniform sampler2D smap;
 
 const float ambientFactor = 0.08;
-const float diffuseFactor = 1.20;
-const float specularFactor = 4.0;
-const float emissionFactor = 0.33;
+const float diffuseFactor = 1.0;
+const float specularFactor = 8.0;
+const float emissionFactor = 2.00;
 
 
 bool transparency_discard(int vertexID);
@@ -116,7 +116,7 @@ void main()
     
     // ambient
     
-    vec3 ambient = ambientFactor * vec3(0.384, 0.512, 0.968);
+    vec3 ambient = ambientFactor * vec3(0.984, 0.612, 0.0068);
 
     // diffuse
 
@@ -138,11 +138,11 @@ void main()
     float rdotn = max(dot(r_tangent, l_tangent), 0.0);
 
     float shininess = 2.0;
-    vec3 specular = float(hasSpec) * specularFactor * texture(spec, uv).xyz * clamp(pow(rdotn, shininess), 0.0, 1.0);
+    vec3 specular = float(hasSpec) * specularFactor * texture(spec, uv).xyz * pow(rdotn, shininess);
 
     // emission 
     vec3 emission = float(hasEmis) * emissionFactor * texture(emis, uv).xyz;
-    
+   // emission = pow(emission, vec3(8.0));
 
     float shadow = 1.0;
 
